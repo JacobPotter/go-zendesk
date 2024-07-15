@@ -24,23 +24,25 @@ type TriggerAction struct {
 	Value interface{} `json:"value"`
 }
 
+type TriggerConditions struct {
+	All []TriggerCondition `json:"all"`
+	Any []TriggerCondition `json:"any"`
+}
+
 // Trigger is zendesk trigger JSON payload format
 //
 // ref: https://developer.zendesk.com/rest_api/docs/core/triggers#json-format
 type Trigger struct {
-	ID         int64  `json:"id,omitempty"`
-	Title      string `json:"title"`
-	Active     bool   `json:"active,omitempty"`
-	Position   int64  `json:"position,omitempty"`
-	Conditions struct {
-		All []TriggerCondition `json:"all"`
-		Any []TriggerCondition `json:"any"`
-	} `json:"conditions"`
-	Actions     []TriggerAction `json:"actions"`
-	Description string          `json:"description,omitempty"`
-	CategoryID  string          `json:"category_id,omitempty"`
-	CreatedAt   *time.Time      `json:"created_at,omitempty"`
-	UpdatedAt   *time.Time      `json:"updated_at,omitempty"`
+	ID          int64             `json:"id,omitempty"`
+	Title       string            `json:"title"`
+	Active      bool              `json:"active,omitempty"`
+	Position    int64             `json:"position,omitempty"`
+	Conditions  TriggerConditions `json:"conditions"`
+	Actions     []TriggerAction   `json:"actions"`
+	Description string            `json:"description,omitempty"`
+	CategoryID  string            `json:"category_id,omitempty"`
+	CreatedAt   *time.Time        `json:"created_at,omitempty"`
+	UpdatedAt   *time.Time        `json:"updated_at,omitempty"`
 }
 
 // TriggerListOptions is options for GetTriggers

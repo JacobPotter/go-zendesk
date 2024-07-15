@@ -9,16 +9,16 @@ import (
 
 // Macro is information about zendesk macro
 type Macro struct {
-	Actions     []MacroAction `json:"actions"`
-	Active      bool          `json:"active"`
-	CreatedAt   time.Time     `json:"created_at,omitempty"`
-	Description interface{}   `json:"description"`
-	ID          int64         `json:"id,omitempty"`
-	Position    int           `json:"position,omitempty"`
-	Restriction interface{}   `json:"restriction"`
-	Title       string        `json:"title"`
-	UpdatedAt   time.Time     `json:"updated_at,omitempty"`
-	URL         string        `json:"url,omitempty"`
+	Actions     []MacroAction    `json:"actions"`
+	Active      bool             `json:"active"`
+	CreatedAt   time.Time        `json:"created_at,omitempty"`
+	Description interface{}      `json:"description"`
+	ID          int64            `json:"id,omitempty"`
+	Position    int              `json:"position,omitempty"`
+	Restriction MacroRestriction `json:"restriction"`
+	Title       string           `json:"title"`
+	UpdatedAt   time.Time        `json:"updated_at,omitempty"`
+	URL         string           `json:"url,omitempty"`
 }
 
 // MacroAction is definition of what the macro does to the ticket
@@ -27,6 +27,12 @@ type Macro struct {
 type MacroAction struct {
 	Field string `json:"field"`
 	Value string `json:"value"`
+}
+
+// MacroRestriction is definition of group restriction for the macro
+type MacroRestriction struct {
+	Type string  `json:"type"`
+	IDS  []int64 `json:"ids"`
 }
 
 // MacroListOptions is parameters used of GetMacros

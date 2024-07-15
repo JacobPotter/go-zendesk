@@ -12,7 +12,7 @@ type Macro struct {
 	Actions     []MacroAction    `json:"actions"`
 	Active      bool             `json:"active"`
 	CreatedAt   time.Time        `json:"created_at,omitempty"`
-	Description interface{}      `json:"description"`
+	Description string           `json:"description"`
 	ID          int64            `json:"id,omitempty"`
 	Position    int              `json:"position,omitempty"`
 	Restriction MacroRestriction `json:"restriction"`

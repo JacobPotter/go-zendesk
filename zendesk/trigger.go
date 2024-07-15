@@ -43,6 +43,7 @@ type Trigger struct {
 	CategoryID  string            `json:"category_id,omitempty"`
 	CreatedAt   *time.Time        `json:"created_at,omitempty"`
 	UpdatedAt   *time.Time        `json:"updated_at,omitempty"`
+	URL         string            `json:"url,omitempty"`
 }
 
 // TriggerListOptions is options for GetTriggers

@@ -8,7 +8,7 @@ import (
 )
 
 type TriggerCategory struct {
-	ID        int64     `json:"id"`
+	ID        string    `json:"id"`
 	CreatedAt time.Time `json:"created_at"`
 	Name      string    `json:"name"`
 	Position  int64     `json:"position"`

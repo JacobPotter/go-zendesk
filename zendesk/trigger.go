@@ -40,7 +40,7 @@ type Trigger struct {
 	Conditions  TriggerConditions `json:"conditions"`
 	Actions     []TriggerAction   `json:"actions"`
 	Description string            `json:"description,omitempty"`
-	CategoryID  int64             `json:"category_id,omitempty"`
+	CategoryID  string            `json:"category_id,omitempty"`
 	CreatedAt   *time.Time        `json:"created_at,omitempty"`
 	UpdatedAt   *time.Time        `json:"updated_at,omitempty"`
 	URL         string            `json:"url,omitempty"`

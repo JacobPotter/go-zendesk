@@ -26,16 +26,16 @@ type TriggerCategoryListOptions struct {
 // TriggerAPI an interface containing all trigger related methods
 type TriggerCategoryAPI interface {
 	GetTriggerCategories(ctx context.Context, opts *TriggerCategoryListOptions) ([]TriggerCategory, CursorPaginationMeta, error)
-	CreateTriggerCategory(ctx context.Context, trigger TriggerCategory) (TriggerCategory, error)
-	GetTriggerCategory(ctx context.Context, id int64) (Trigger, error)
-	UpdateTriggerCategory(ctx context.Context, id int64, trigger Trigger) (Trigger, error)
+	CreateTriggerCategory(ctx context.Context, triggerCategory TriggerCategory) (TriggerCategory, error)
+	GetTriggerCategory(ctx context.Context, id int64) (TriggerCategory, error)
+	UpdateTriggerCategory(ctx context.Context, id int64, triggerCategory TriggerCategory) (TriggerCategory, error)
 	DeleteTriggerCategory(ctx context.Context, id int64) error
 }
 
 // GetTriggerCategories fetch trigger category list
 //
 // ref: https://developer.zendesk.com/rest_api/docs/support/triggers#getting-triggers
-func (z *Client) GetTriggerCategories(ctx context.Context, opts *TriggerListOptions) ([]TriggerCategory, CursorPaginationMeta, error) {
+func (z *Client) GetTriggerCategories(ctx context.Context, opts *TriggerCategoryListOptions) ([]TriggerCategory, CursorPaginationMeta, error) {
 	var data struct {
 		TriggerCategories []TriggerCategory `json:"trigger_categories"`
 		CursorPaginationMeta
@@ -65,7 +65,7 @@ func (z *Client) GetTriggerCategories(ctx context.Context, opts *TriggerListOpti
 // CreateTriggerCategories creates new trigger category
 //
 // ref: https://developer.zendesk.com/rest_api/docs/support/triggers#create-trigger
-func (z *Client) CreateTriggerCategories(ctx context.Context, triggerCategory TriggerCategory) (TriggerCategory, error) {
+func (z *Client) CreateTriggerCategory(ctx context.Context, triggerCategory TriggerCategory) (TriggerCategory, error) {
 	var data, result struct {
 		TriggerCategory TriggerCategory `json:"trigger_category"`
 	}
@@ -106,12 +106,12 @@ func (z *Client) GetTriggerCategory(ctx context.Context, id int64) (TriggerCateg
 // UpdateTrigger updates the specified trigger category and returns the updated one
 //
 // ref: https://developer.zendesk.com/rest_api/docs/support/triggers#update-trigger
-func (z *Client) UpdateTriggerCategories(ctx context.Context, id int64, trigger TriggerCategory) (TriggerCategory, error) {
+func (z *Client) UpdateTriggerCategory(ctx context.Context, id int64, triggerCategory TriggerCategory) (TriggerCategory, error) {
 	var data, result struct {
 		TriggerCategory TriggerCategory `json:"trigger_category"`
 	}
 
-	data.TriggerCategory = trigger
+	data.TriggerCategory = triggerCategory
 	body, err := z.put(ctx, fmt.Sprintf("/trigger_categories/%d.json", id), data)
 	if err != nil {
 		return TriggerCategory{}, err
@@ -128,7 +128,7 @@ func (z *Client) UpdateTriggerCategories(ctx context.Context, id int64, trigger 
 // DeleteTrigger deletes the specified trigger category
 //
 // ref: https://developer.zendesk.com/rest_api/docs/support/triggers#delete-trigger
-func (z *Client) DeleteTriggerCategories(ctx context.Context, id int64) error {
+func (z *Client) DeleteTriggerCategory(ctx context.Context, id int64) error {
 	err := z.delete(ctx, fmt.Sprintf("/trigger_categories/%d.json", id))
 	if err != nil {
 		return err

@@ -43,6 +43,7 @@ type Automation struct {
 	RawTitle    string               `json:"raw_title,omitempty"`
 	CreatedAt   *time.Time           `json:"created_at,omitempty"`
 	UpdatedAt   *time.Time           `json:"updated_at,omitempty"`
+	URL         string               `json:"url,omitempty"`
 }
 
 // AutomationListOptions is options for GetAutomations

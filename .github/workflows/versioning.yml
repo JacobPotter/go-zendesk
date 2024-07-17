@@ -1,0 +1,33 @@
+# Terraform Provider release workflow.
+name: Versioning
+
+# This GitHub action creates a release when a tag that matches the pattern
+# "v*" (e.g. v0.1.0) is created.
+on:
+  push:
+    branches:
+      - master
+
+# Releases need permissions to read and write the repository contents.
+# GitHub considers creating releases and uploading assets as writing contents.
+permissions:
+  contents: write
+
+jobs:
+  versioning:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Git Semantic Version
+        uses: PaulHatch/semantic-version@v5.4.0
+        with:
+          major_pattern: "feat(major):"
+          minor_pattern: "feat:"
+          bump_each_commit: true
+          enable_prerelease_mode: true
+          branch: master
+          tag_prefix: "v"
+          debug: true

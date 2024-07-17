@@ -28,10 +28,18 @@ type Webhook struct {
 	UpdatedBy      string                 `json:"updated_by,omitempty"`
 }
 
+type WebhookCredentials struct {
+	HeaderName  string `json:"name,omitempty"`
+	HeaderValue string `json:"value,omitempty"`
+	Username    string `json:"username,omitempty"`
+	Password    string `json:"password,omitempty"`
+	Token       string `json:"token,omitempty"`
+}
+
 type WebhookAuthentication struct {
-	Type        string      `json:"type"`
-	Data        interface{} `json:"data"`
-	AddPosition string      `json:"add_position"`
+	Type        string              `json:"type"`
+	Data        *WebhookCredentials `json:"data"`
+	AddPosition string              `json:"add_position"`
 }
 
 type WebhookSigningSecret struct {

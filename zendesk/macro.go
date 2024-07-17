@@ -12,7 +12,7 @@ type Macro struct {
 	Actions     []MacroAction    `json:"actions"`
 	Active      bool             `json:"active"`
 	CreatedAt   time.Time        `json:"created_at,omitempty"`
-	Description string           `json:"description"`
+	Description string           `json:"description,omitempty"`
 	ID          int64            `json:"id,omitempty"`
 	Position    int              `json:"position,omitempty"`
 	Restriction MacroRestriction `json:"restriction,omitempty"`
@@ -31,8 +31,8 @@ type MacroAction struct {
 
 // MacroRestriction is definition of group restriction for the macro
 type MacroRestriction struct {
-	Type string  `json:"type"`
-	IDS  []int64 `json:"ids"`
+	Type string  `json:"type,omitempty"`
+	IDS  []int64 `json:"ids,omitempty"`
 }
 
 // MacroListOptions is parameters used of GetMacros

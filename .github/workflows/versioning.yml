@@ -40,7 +40,7 @@ jobs:
           tag_name: ${{ steps.semantic.outputs.version_tag }}
           release_name: ${{ steps.semantic.outputs.version_tag }}
           draft: false
-          prerelease: true
+          prerelease: false
       - name: Publish
         uses: actions/setup-go@v5
         with:

@@ -28,11 +28,13 @@ jobs:
           major_pattern: "feat(major):"
           minor_pattern: "feat:"
           bump_each_commit: true
+          bump_each_commit_patch_pattern: "fix:"
           enable_prerelease_mode: true
           branch: master
           tag_prefix: "v"
           debug: true
       - name: Create Release
+        if: ${{ steps.semantic.outputs.is_tagged == 'true' }}
         uses: actions/create-release@latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -40,8 +42,9 @@ jobs:
           tag_name: ${{ steps.semantic.outputs.version_tag }}
           release_name: ${{ steps.semantic.outputs.version_tag }}
           draft: false
-          prerelease: true
+          prerelease: false
       - name: Publish
+        if: ${{ steps.semantic.outputs.is_tagged == 'true' }}
         uses: actions/setup-go@v5
         with:
           go-version: "1.22.2"

@@ -41,3 +41,8 @@ jobs:
           release_name: ${{ steps.semantic.outputs.version_tag }}
           draft: false
           prerelease: true
+      - name: Publish
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22.2"
+      - run: GOPROXY=proxy.golang.org go list -m github.com/JacobPotter/go-zendesk@${{ steps.semantic.outputs.version_tag }}

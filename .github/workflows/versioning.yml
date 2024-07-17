@@ -18,10 +18,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
         with:
           fetch-depth: 0
       - name: Git Semantic Version
+        id: semantic
         uses: PaulHatch/semantic-version@v5.4.0
         with:
           major_pattern: "feat(major):"
@@ -31,3 +32,12 @@ jobs:
           branch: master
           tag_prefix: "v"
           debug: true
+      - name: Create Release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.semantic.outputs.version_tag }}
+          release_name: ${{ steps.semantic.outputs.version_tag }}
+          draft: false
+          prerelease: true

@@ -15,6 +15,7 @@ type Webhook struct {
 	CreatedBy      string                 `json:"created_by,omitempty"`
 	Description    string                 `json:"description,omitempty"`
 	Endpoint       string                 `json:"endpoint"`
+	CustomHeaders  map[string]string      `json:"custom_headers,omitempty"`
 	ExternalSource interface{}            `json:"external_source,omitempty"`
 	HTTPMethod     string                 `json:"http_method"`
 	ID             string                 `json:"id,omitempty"`

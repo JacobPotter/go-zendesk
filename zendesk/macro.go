@@ -15,7 +15,7 @@ type Macro struct {
 	Description string           `json:"description"`
 	ID          int64            `json:"id,omitempty"`
 	Position    int              `json:"position,omitempty"`
-	Restriction MacroRestriction `json:"restriction"`
+	Restriction MacroRestriction `json:"restriction,omitempty"`
 	Title       string           `json:"title"`
 	UpdatedAt   time.Time        `json:"updated_at,omitempty"`
 	URL         string           `json:"url,omitempty"`

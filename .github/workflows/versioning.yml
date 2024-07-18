@@ -21,6 +21,9 @@ jobs:
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
         with:
           fetch-depth: 0
+      - name: Get Latest Tag
+        id: tag
+        uses: WyriHaximus/github-action-get-previous-tag@v1.4.0
       - name: Git Semantic Version
         id: semantic
         uses: PaulHatch/semantic-version@v5.4.0
@@ -30,11 +33,11 @@ jobs:
           bump_each_commit: true
           bump_each_commit_patch_pattern: "fix:"
           enable_prerelease_mode: true
-          branch: master
+          branch: main
           tag_prefix: "v"
           debug: true
       - name: Create Release
-        if: ${{ steps.semantic.outputs.version != steps.semantic.outputs.previous_version }}
+        if: ${{ steps.semantic.outputs.version_tag != steps.tag.outputs.tag }}
         uses: actions/create-release@latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -47,5 +50,5 @@ jobs:
         with:
           go-version: "1.22.2"
       - name: Publish
-        if: ${{ steps.semantic.outputs.version != steps.semantic.outputs.previous_version }}
+        if: ${{ steps.semantic.outputs.version_tag != steps.tag.outputs.tag }}
         run: GOPROXY=proxy.golang.org go list -m github.com/JacobPotter/go-zendesk@${{ steps.semantic.outputs.version_tag }}

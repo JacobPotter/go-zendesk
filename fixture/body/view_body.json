@@ -1,0 +1,41 @@
+{
+	"view": {
+		"title": "Kelly's tickets",
+		"raw_title": "{{dc.tickets_assigned_to_kelly}}",
+		"description": "Tickets that are assigned to Kelly",
+		"active": true,
+		"position": 3,
+		"restriction": {
+			"type": "User",
+			"id": "213977756"
+		},
+		"all": [
+			{
+				"field": "status",
+				"operator": "less_than",
+				"value": "solved"
+			},
+			{
+				"field": "group_id",
+				"operator": "is",
+				"value": "24000932"
+			},
+			{
+				"field": "custom_fields_360011872073",
+				"operator": "is",
+				"value": "Canada"
+			}
+		],
+		"output": {
+			"columns": [
+				"status",
+				"requester",
+				"assignee"
+			],
+			"group_by": "assignee",
+			"group_order": "desc",
+			"sort_by": "status",
+			"sort_order": "desc"
+		}
+	}
+}

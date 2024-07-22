@@ -2,7 +2,7 @@ package zendesk
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -23,7 +23,7 @@ func fixture(filename string) string {
 }
 
 func readFixture(filename string) []byte {
-	bytes, err := ioutil.ReadFile(fixture(filename))
+	bytes, err := os.ReadFile(fixture(filename))
 	if err != nil {
 		fmt.Printf("Failed to read fixture. Check the path: %s", err)
 		os.Exit(1)
@@ -33,14 +33,20 @@ func readFixture(filename string) []byte {
 
 func newMockAPI(method string, filename string) *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Write(readFixture(filepath.Join(method, filename)))
+		_, err := w.Write(readFixture(filepath.Join(method, filename)))
+		if err != nil {
+			fmt.Printf("Error: %s", err.Error())
+		}
 	}))
 }
 
 func newMockAPIWithStatus(method string, filename string, status int) *httptest.Server {
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(status)
-		w.Write(readFixture(filepath.Join(method, filename)))
+		_, err := w.Write(readFixture(filepath.Join(method, filename)))
+		if err != nil {
+			fmt.Printf("Error: %s", err.Error())
+		}
 	}))
 }
 
@@ -49,7 +55,10 @@ func newTestClient(mockAPI *httptest.Server) *Client {
 		httpClient: http.DefaultClient,
 		credential: NewAPITokenCredential("", ""),
 	}
-	c.SetEndpointURL(mockAPI.URL)
+	err := c.SetEndpointURL(mockAPI.URL)
+	if err != nil {
+		fmt.Printf("Error: %s\n", err.Error())
+	}
 	return c
 }
 
@@ -119,7 +128,10 @@ func TestBearerAuthCredential(t *testing.T) {
 			t.Fatalf("unexpected auth header: " + auth)
 		}
 	}))
-	client.SetEndpointURL(server.URL)
+	err := client.SetEndpointURL(server.URL)
+	if err != nil {
+		t.Logf("Error: %s", err.Error())
+	}
 	defer server.Close()
 
 	// trigger request, assert in the server code
@@ -198,7 +210,7 @@ func TestGetFailureCanReadErrorBody(t *testing.T) {
 	}
 
 	body := clientErr.Body()
-	_, err = ioutil.ReadAll(body)
+	_, err = io.ReadAll(body)
 	if err != nil {
 		t.Fatal("Client received error while reading client body")
 	}
@@ -272,7 +284,10 @@ func TestPutFailure(t *testing.T) {
 func TestDelete(t *testing.T) {
 	mockAPI := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNoContent)
-		w.Write(nil)
+		_, err := w.Write(nil)
+		if err != nil {
+			t.Logf("Error: %s", err.Error())
+		}
 	}))
 
 	c := newTestClient(mockAPI)
@@ -285,7 +300,10 @@ func TestDelete(t *testing.T) {
 func TestDeleteFailure(t *testing.T) {
 	mockAPI := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(nil)
+		_, err := w.Write(nil)
+		if err != nil {
+			t.Logf("Error: %s", err.Error())
+		}
 	}))
 
 	c := newTestClient(mockAPI)

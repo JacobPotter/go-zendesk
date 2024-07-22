@@ -10,8 +10,8 @@ package zendesk
 
 import "context"
 
-func (z *Client) GetViewsIterator(ctx context.Context, opts *PaginationOptions) *Iterator[View] {
-	return &Iterator[View]{
+func (z *Client) GetViewsIterator(ctx context.Context, opts *PaginationOptions) *Iterator[ViewRead] {
+	return &Iterator[ViewRead]{
 		CommonOptions: opts.CommonOptions,
 		pageSize:      opts.PageSize,
 		hasMore:       true,
@@ -24,9 +24,9 @@ func (z *Client) GetViewsIterator(ctx context.Context, opts *PaginationOptions) 
 	}
 }
 
-func (z *Client) GetViewsOBP(ctx context.Context, opts *OBPOptions) ([]View, Page, error) {
+func (z *Client) GetViewsOBP(ctx context.Context, opts *OBPOptions) ([]ViewRead, Page, error) {
 	var data struct {
-		Views []View `json:"views"`
+		Views []ViewRead `json:"views"`
 		Page
 	}
 
@@ -48,9 +48,9 @@ func (z *Client) GetViewsOBP(ctx context.Context, opts *OBPOptions) ([]View, Pag
 	return data.Views, data.Page, nil
 }
 
-func (z *Client) GetViewsCBP(ctx context.Context, opts *CBPOptions) ([]View, CursorPaginationMeta, error) {
+func (z *Client) GetViewsCBP(ctx context.Context, opts *CBPOptions) ([]ViewRead, CursorPaginationMeta, error) {
 	var data struct {
-		Views []View `json:"views"`
+		Views []ViewRead `json:"views"`
 		Meta    CursorPaginationMeta `json:"meta"`
 	}
 

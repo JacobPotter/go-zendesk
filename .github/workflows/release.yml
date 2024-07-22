@@ -1,5 +1,5 @@
 # Terraform Provider release workflow.
-name: Versioning
+name: Release
 
 # This GitHub action creates a release when a tag that matches the pattern
 # "v*" (e.g. v0.1.0) is created.
@@ -14,7 +14,7 @@ permissions:
   contents: write
 
 jobs:
-  versioning:
+  release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

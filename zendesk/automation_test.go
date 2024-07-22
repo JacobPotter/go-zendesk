@@ -66,7 +66,10 @@ func TestGetAutomation(t *testing.T) {
 func TestGetAutomationFailure(t *testing.T) {
 	mockAPI := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(nil)
+		_, err := w.Write(nil)
+		if err != nil {
+			t.Logf("Error: %s", err.Error())
+		}
 	}))
 
 	c := newTestClient(mockAPI)
@@ -95,7 +98,10 @@ func TestUpdateAutomation(t *testing.T) {
 func TestUpdateAutomationFailure(t *testing.T) {
 	mockAPI := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(nil)
+		_, err := w.Write(nil)
+		if err != nil {
+			t.Logf("Error: %s", err.Error())
+		}
 	}))
 
 	c := newTestClient(mockAPI)
@@ -108,7 +114,10 @@ func TestUpdateAutomationFailure(t *testing.T) {
 func TestDeleteAutomation(t *testing.T) {
 	mockAPI := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNoContent)
-		w.Write(nil)
+		_, err := w.Write(nil)
+		if err != nil {
+			t.Logf("Error: %s", err.Error())
+		}
 	}))
 
 	c := newTestClient(mockAPI)
@@ -121,7 +130,10 @@ func TestDeleteAutomation(t *testing.T) {
 func TestDeleteAutomationFailure(t *testing.T) {
 	mockAPI := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write(nil)
+		_, err := w.Write(nil)
+		if err != nil {
+			t.Logf("Error: %s", err.Error())
+		}
 	}))
 
 	c := newTestClient(mockAPI)

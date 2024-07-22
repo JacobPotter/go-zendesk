@@ -1,9 +1,25 @@
 package zendesk
 
-import "testing"
+import (
+	"regexp"
+	"testing"
 
-func TestConditionFieldText(t *testing.T) {
-	if cond := ConditionFieldText(ConditionFieldGroupID); cond != "group_id" {
-		t.Fatal(`expected "group_id", but got ` + cond)
+	"golang.org/x/exp/maps"
+)
+
+func TestRegexConditionFields(t *testing.T) {
+	keys := maps.Keys(ConditionMap)
+
+	for _, k := range keys {
+
+		values := ConditionMap[k]
+
+		for _, v := range values.ValuesRegex {
+			_, err := regexp.Compile(v)
+
+			if err != nil {
+				t.Fatalf("Error converting regex: %s", err.Error())
+			}
+		}
 	}
 }

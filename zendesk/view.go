@@ -47,7 +47,7 @@ type (
 		RawTitle    string          `json:"raw_title,omitempty"`
 		Description string          `json:"description,omitempty"`
 		Active      bool            `json:"active,omitempty"`
-		Position    int             `json:"position,omitempty"`
+		Position    int64           `json:"position,omitempty"`
 		Restriction ViewRestriction `json:"restriction,omitempty"`
 		All         []ViewCondition `json:"all,omitempty"`
 		Any         []ViewCondition `json:"any,omitempty"`

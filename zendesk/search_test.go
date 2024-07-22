@@ -117,7 +117,10 @@ func TestSearchQueryParam(t *testing.T) {
 		if queryString != expected {
 			t.Fatalf(`Did not get the expect query string: "%s". Was: "%s"`, expected, queryString)
 		}
-		w.Write(readFixture(filepath.Join(http.MethodGet, "search_user.json")))
+		_, err := w.Write(readFixture(filepath.Join(http.MethodGet, "search_user.json")))
+		if err != nil {
+			t.Logf("Error: %s", err.Error())
+		}
 	}))
 
 	client := newTestClient(mockAPI)

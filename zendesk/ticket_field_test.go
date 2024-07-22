@@ -67,7 +67,10 @@ func TestUpdateTicketField(t *testing.T) {
 func TestDeleteTicketField(t *testing.T) {
 	mockAPI := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNoContent)
-		w.Write(nil)
+		_, err := w.Write(nil)
+		if err != nil {
+			t.Logf("Error: %s", err.Error())
+		}
 	}))
 
 	c := newTestClient(mockAPI)

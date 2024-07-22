@@ -90,6 +90,9 @@ func (z *Client) ListCustomObjectRecords(
 	}
 	url := fmt.Sprintf("/custom_objects/%s/records", customObjectKey)
 	urlWithOptions, err := addOptions(url, tmp)
+	if err != nil {
+		return nil, Page{}, err
+	}
 	body, err := z.get(ctx, urlWithOptions)
 
 	if err != nil {
@@ -117,6 +120,11 @@ func (z *Client) AutocompleteSearchCustomObjectRecords(
 	}
 	url := fmt.Sprintf("/custom_objects/%s/records/autocomplete", customObjectKey)
 	urlWithOptions, err := addOptions(url, tmp)
+
+	if err != nil {
+		return nil, Page{}, err
+	}
+
 	body, err := z.get(ctx, urlWithOptions)
 
 	if err != nil {
@@ -155,6 +163,11 @@ func (z *Client) SearchCustomObjectRecords(
 	}
 	url := fmt.Sprintf("/custom_objects/%s/records/search", customObjectKey)
 	urlWithOptions, err := addOptions(url, tmp)
+
+	if err != nil {
+		return nil, Page{}, err
+	}
+
 	body, err := z.get(ctx, urlWithOptions)
 
 	if err != nil {

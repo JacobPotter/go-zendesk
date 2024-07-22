@@ -3,7 +3,6 @@ package zendesk
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -244,7 +243,7 @@ func TestGetTicket(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(ticket.Via, expectedVia) {
-		t.Fatal(fmt.Sprintf("Expected ticket via object to be %v but got %v", expectedVia, ticket.Via))
+		t.Fatalf("Expected ticket via object to be %v but got %v", expectedVia, ticket.Via)
 	}
 }
 
@@ -395,7 +394,10 @@ func TestUpdateTicketFailure(t *testing.T) {
 func TestDeleteTicket(t *testing.T) {
 	mockAPI := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNoContent)
-		w.Write(nil)
+		_, err := w.Write(nil)
+		if err != nil {
+			t.Logf("Error: %s", err.Error())
+		}
 	}))
 
 	c := newTestClient(mockAPI)

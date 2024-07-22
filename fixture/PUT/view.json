@@ -1,0 +1,83 @@
+{
+	"view": {
+		"url": "https://terraform-provider-zendesk.zendesk.com/api/v2/views/360002440594.json",
+		"id": 360002440594,
+		"title": "Kelly's tickets",
+		"active": true,
+		"created_at": "2018-11-23T16:05:12Z",
+		"updated_at": "2018-11-23T16:05:15Z",
+		"position": 0,
+		"description": "Tickets that are assigned to Kelly",
+		"execution": {
+			"group_by": "status",
+			"group_order": "asc",
+			"sort_by": "nice_id",
+			"sort_order": "desc",
+			"group": {
+				"id": "assignee",
+				"title": "Assignee",
+				"order": "desc"
+			},
+			"sort": {
+				"id": "status",
+				"title": "Status",
+				"order": "desc"
+			},
+			"columns": [
+				{
+					"id": "subject",
+					"title": "Subject"
+				},
+				{
+					"id": "requester",
+					"title": "Requester"
+				},
+				{
+					"id": "assignee",
+					"title": "Assignee"
+				}
+			],
+			"fields": [
+				{
+					"id": "subject",
+					"title": "Subject"
+				},
+				{
+					"id": "requester",
+					"title": "Requester"
+				},
+				{
+					"id": "assignee",
+					"title": "Assignee"
+				}
+			],
+			"custom_fields": []
+		},
+		"conditions": {
+			"all": [
+				{
+					"field": "status",
+					"operator": "less_than",
+					"value": "solved"
+				},
+				{
+					"field": "group_id",
+					"operator": "is",
+					"value": "24000932"
+				},
+				{
+					"field": "custom_fields_360011872073",
+					"operator": "is",
+					"value": "Canada"
+				}
+			],
+			"any": []
+		},
+		"restriction": {
+			"type": "User",
+			"id": "213977756"
+		},
+		"watchable": true,
+		"raw_title": "{{dc.tickets_assigned_to_kelly}}"
+	}
+}

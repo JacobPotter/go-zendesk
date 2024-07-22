@@ -9,24 +9,16 @@ import (
 
 // Macro is information about zendesk macro
 type Macro struct {
-	Actions     []MacroAction `json:"actions"`
-	Active      bool          `json:"active"`
-	CreatedAt   time.Time     `json:"created_at,omitempty"`
-	Description string        `json:"description,omitempty"`
-	ID          int64         `json:"id,omitempty"`
-	Position    int           `json:"position,omitempty"`
-	Restriction interface{}   `json:"restriction,omitempty"`
-	Title       string        `json:"title"`
-	UpdatedAt   time.Time     `json:"updated_at,omitempty"`
-	URL         string        `json:"url,omitempty"`
-}
-
-// MacroAction is definition of what the macro does to the ticket
-//
-// ref: https://develop.zendesk.com/hc/en-us/articles/360056760874-Support-API-Actions-reference
-type MacroAction struct {
-	Field string `json:"field"`
-	Value string `json:"value"`
+	Actions     []Action    `json:"actions"`
+	Active      bool        `json:"active"`
+	CreatedAt   time.Time   `json:"created_at,omitempty"`
+	Description string      `json:"description,omitempty"`
+	ID          int64       `json:"id,omitempty"`
+	Position    int         `json:"position,omitempty"`
+	Restriction interface{} `json:"restriction,omitempty"`
+	Title       string      `json:"title"`
+	UpdatedAt   time.Time   `json:"updated_at,omitempty"`
+	URL         string      `json:"url,omitempty"`
 }
 
 // MacroRestriction is definition of group restriction for the macro

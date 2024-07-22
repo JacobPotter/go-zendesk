@@ -21,10 +21,16 @@ func TestWrite(t *testing.T) {
 	var attachmentSum []byte
 	mockAPI := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		h := sha1.New()
-		io.Copy(h, r.Body)
+		_, err := io.Copy(h, r.Body)
+		if err != nil {
+			t.Logf("Error: %s", err.Error())
+		}
 		attachmentSum = h.Sum(nil)
 		w.WriteHeader(http.StatusCreated)
-		w.Write(file)
+		_, err = w.Write(file)
+		if err != nil {
+			t.Logf("Error: %s", err.Error())
+		}
 	}))
 
 	c := newTestClient(mockAPI)
@@ -77,7 +83,10 @@ func TestWriteCancelledContext(t *testing.T) {
 func TestDeleteUpload(t *testing.T) {
 	mockAPI := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNoContent)
-		w.Write(nil)
+		_, err := w.Write(nil)
+		if err != nil {
+			t.Logf("Error: %s", err.Error())
+		}
 	}))
 
 	c := newTestClient(mockAPI)
@@ -90,7 +99,10 @@ func TestDeleteUpload(t *testing.T) {
 func TestDeleteUploadCanceledContext(t *testing.T) {
 	mockAPI := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNoContent)
-		w.Write(nil)
+		_, err := w.Write(nil)
+		if err != nil {
+			t.Logf("Error: %s", err.Error())
+		}
 	}))
 
 	c := newTestClient(mockAPI)

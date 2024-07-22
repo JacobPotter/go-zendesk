@@ -1,74 +1,77 @@
 package zendesk
 
+// Action is definition of what the macro does to the ticket
+//
+// ref: https://develop.zendesk.com/hc/en-us/articles/360056760874-Support-API-Actions-reference
+type Action struct {
+	Field string      `json:"field"`
+	Value interface{} `json:"value"`
+}
+
+// action field types which defined by system
+// https://developer.zendesk.com/rest_api/docs/core/triggers#actions-reference
+type ActionField string
+
+func NewActionField(key string) ActionField {
+
+	a := ActionField(key)
+
+	return a
+}
+
 // action field types which defined by system
 // https://developer.zendesk.com/rest_api/docs/core/triggers#actions-reference
 const (
 	// ActionFieldStatus status
-	ActionFieldStatus = iota
+	ActionFieldStatus ActionField = "status"
 	// ActionFieldType type
-	ActionFieldType
+	ActionFieldType ActionField = "type"
 	// ActionFieldPriority priority
-	ActionFieldPriority
+	ActionFieldPriority ActionField = "priority"
 	// ActionFieldGroupID group_id
-	ActionFieldGroupID
+	ActionFieldGroupID ActionField = "group_id"
 	// ActionFieldAssigneeID assignee_id
-	ActionFieldAssigneeID
+	ActionFieldAssigneeID ActionField = "assignee_id"
 	// ActionFieldSetTags set_tags
-	ActionFieldSetTags
+	ActionFieldSetTags ActionField = "set_tags"
 	// ActionFieldCurrentTags current_tags
-	ActionFieldCurrentTags
+	ActionFieldCurrentTags ActionField = "current_tags"
 	// ActionFieldRemoveTags remove_tags
-	ActionFieldRemoveTags
+	ActionFieldRemoveTags ActionField = "remove_tags"
 	// ActionFieldSatisfactionScore satisfaction_score
-	ActionFieldSatisfactionScore
+	ActionFieldSatisfactionScore ActionField = "satisfaction_score"
 	// ActionFieldNotificationUser notification_user
-	ActionFieldNotificationUser
+	ActionFieldNotificationUser ActionField = "notification_user"
 	// ActionFieldNotificationGroup notification_group
-	ActionFieldNotificationGroup
+	ActionFieldNotificationGroup ActionField = "notification_group"
 	// ActionFieldNotificationTarget notification_target
-	ActionFieldNotificationTarget
+	ActionFieldNotificationTarget ActionField = "notification_target"
 	// ActionFieldTweetRequester tweet_requester
-	ActionFieldTweetRequester
+	ActionFieldTweetRequester ActionField = "tweet_requester"
 	// ActionFieldCC cc
-	ActionFieldCC
+	ActionFieldCC ActionField = "cc"
 	// ActionFieldLocaleID locale_id
-	ActionFieldLocaleID
+	ActionFieldLocaleID ActionField = "locale_id"
 	// ActionFieldSubject subject
-	ActionFieldSubject
+	ActionFieldSubject ActionField = "subject"
 	// ActionFieldCommentValue comment_value
-	ActionFieldCommentValue
+	ActionFieldCommentValue ActionField = "comment_value"
 	// ActionFieldCommentValueHTML comment_value_html
-	ActionFieldCommentValueHTML
+	ActionFieldCommentValueHTML ActionField = "comment_value_html"
 	// ActionFieldCommentModeIsPublic comment_mode_is_public
-	ActionFieldCommentModeIsPublic
+	ActionFieldCommentModeIsPublic ActionField = "comment_mode_is_public"
 	// ActionFieldTicketFormID ticket_form_id
-	ActionFieldTicketFormID
+	ActionFieldTicketFormID ActionField = "ticket_form_id"
 )
 
-var actionFieldText = map[int]string{
-	ActionFieldStatus:              "status",
-	ActionFieldType:                "type",
-	ActionFieldPriority:            "priority",
-	ActionFieldGroupID:             "group_id",
-	ActionFieldAssigneeID:          "assignee_id",
-	ActionFieldSetTags:             "set_tags",
-	ActionFieldCurrentTags:         "current_tags",
-	ActionFieldRemoveTags:          "remove_tags",
-	ActionFieldSatisfactionScore:   "satisfaction_score",
-	ActionFieldNotificationUser:    "notification_user",
-	ActionFieldNotificationGroup:   "notification_group",
-	ActionFieldNotificationTarget:  "notification_target",
-	ActionFieldTweetRequester:      "tweet_requester",
-	ActionFieldCC:                  "cc",
-	ActionFieldLocaleID:            "locale_id",
-	ActionFieldSubject:             "subject",
-	ActionFieldCommentValue:        "comment_value",
-	ActionFieldCommentValueHTML:    "comment_value_html",
-	ActionFieldCommentModeIsPublic: "comment_mode_is_public",
-	ActionFieldTicketFormID:        "ticket_form_id",
-}
-
-// ActionFieldText takes field type and returns field name string
-func ActionFieldText(fieldType int) string {
-	return actionFieldText[fieldType]
+// Map of action fields to possible values
+var ActionMap = map[ActionField][]string{
+	ActionFieldStatus:      {"(new|open|pending|hold|solved|closed)"},
+	ActionFieldType:        {"(question|incident|problem|task)"},
+	ActionFieldPriority:    {"(low|normal|high|urgent)"},
+	ActionFieldGroupID:     {"^[0-9]*$"},
+	ActionFieldAssigneeID:  {"^[0-9]*$"},
+	ActionFieldSetTags:     {"^[\\w]+(?:\\s[\\w]+)*$"},
+	ActionFieldCurrentTags: {"^[\\w]+(?:\\s[\\w]+)*$"},
+	ActionFieldRemoveTags:  {"^[\\w]+(?:\\s[\\w]+)*$"},
 }

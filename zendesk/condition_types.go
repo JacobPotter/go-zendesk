@@ -106,3 +106,16 @@ var ConditionMap = map[ConditionField]struct {
 	Operator    ConditionOperator
 	ValuesRegex []string
 }{}
+
+// Condition zendesk automation condition
+//
+// ref: https://developer.zendesk.com/rest_api/docs/core/automations#conditions-reference
+type Condition struct {
+	Field    string `json:"field"`
+	Operator string `json:"operator"`
+	Value    string `json:"value"`
+}
+type Conditions struct {
+	All []Condition `json:"all"`
+	Any []Condition `json:"any"`
+}

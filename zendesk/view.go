@@ -27,31 +27,31 @@ type (
 	// ViewRead is struct for group membership payload
 	// https://developer.zendesk.com/api-reference/ticketing/business-rules/views/
 	ViewRead struct {
-		URL         string         `json:"url"`
-		ID          int64          `json:"id"`
-		Title       string         `json:"title"`
-		Active      bool           `json:"active"`
-		UpdatedAt   string         `json:"updated_at"`
-		CreatedAt   string         `json:"created_at"`
-		Default     bool           `json:"default"`
-		Position    int64          `json:"position"`
-		Description string         `json:"description"`
-		Execution   ViewExecution  `json:"execution"`
-		Conditions  ViewConditions `json:"conditions"`
-		Restriction interface{}    `json:"restriction,omitempty"`
-		RawTitle    string         `json:"raw_title"`
+		URL         string        `json:"url"`
+		ID          int64         `json:"id"`
+		Title       string        `json:"title"`
+		Active      bool          `json:"active"`
+		UpdatedAt   string        `json:"updated_at"`
+		CreatedAt   string        `json:"created_at"`
+		Default     bool          `json:"default"`
+		Position    int64         `json:"position"`
+		Description string        `json:"description"`
+		Execution   ViewExecution `json:"execution"`
+		Conditions  Conditions    `json:"conditions"`
+		Restriction interface{}   `json:"restriction,omitempty"`
+		RawTitle    string        `json:"raw_title"`
 	}
 
 	ViewCreateUpdate struct {
-		Title       string          `json:"title,omitempty"`
-		RawTitle    string          `json:"raw_title,omitempty"`
-		Description string          `json:"description,omitempty"`
-		Active      bool            `json:"active,omitempty"`
-		Position    int64           `json:"position,omitempty"`
-		Restriction interface{}     `json:"restriction,omitempty"`
-		All         []ViewCondition `json:"all,omitempty"`
-		Any         []ViewCondition `json:"any,omitempty"`
-		Output      ViewOutput      `json:"output,omitempty"`
+		Title       string      `json:"title,omitempty"`
+		RawTitle    string      `json:"raw_title,omitempty"`
+		Description string      `json:"description,omitempty"`
+		Active      bool        `json:"active,omitempty"`
+		Position    int64       `json:"position,omitempty"`
+		Restriction interface{} `json:"restriction,omitempty"`
+		All         []Condition `json:"all,omitempty"`
+		Any         []Condition `json:"any,omitempty"`
+		Output      ViewOutput  `json:"output,omitempty"`
 	}
 
 	ViewOutput struct {
@@ -99,23 +99,6 @@ type (
 		Filterable bool       `json:"filterable"`
 		Sortable   bool       `json:"sortable"`
 		Order      *ViewOrder `json:"order,omitempty"`
-	}
-
-	ViewRestriction struct {
-		Type string   `json:"type"`
-		ID   string   `json:"id"`
-		IDS  []string `json:"ids"`
-	}
-
-	ViewConditions struct {
-		All []ViewCondition `json:"all"`
-		Any []ViewCondition `json:"any"`
-	}
-
-	ViewCondition struct {
-		Field    string `json:"field"`
-		Operator string `json:"operator"`
-		Value    string `json:"value"`
 	}
 
 	ViewCount struct {

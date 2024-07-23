@@ -7,43 +7,21 @@ import (
 	"time"
 )
 
-// AutomationCondition zendesk automation condition
-//
-// ref: https://developer.zendesk.com/rest_api/docs/core/automations#conditions-reference
-type AutomationCondition struct {
-	Field    string `json:"field"`
-	Operator string `json:"operator"`
-	Value    string `json:"value"`
-}
-
-// AutomationAction is zendesk automation action
-//
-// ref: https://developer.zendesk.com/rest_api/docs/core/automations#actions
-type AutomationAction struct {
-	Field string      `json:"field"`
-	Value interface{} `json:"value"`
-}
-
-type AutomationConditions struct {
-	All []AutomationCondition `json:"all"`
-	Any []AutomationCondition `json:"any"`
-}
-
 // Automation is zendesk automation JSON payload format
 //
 // ref: https://developer.zendesk.com/rest_api/docs/core/automations#json-format
 type Automation struct {
-	ID          int64                `json:"id,omitempty"`
-	Title       string               `json:"title"`
-	Description string               `json:"description"`
-	Active      bool                 `json:"active,omitempty"`
-	Position    int64                `json:"position,omitempty"`
-	Conditions  AutomationConditions `json:"conditions"`
-	Actions     []AutomationAction   `json:"actions"`
-	RawTitle    string               `json:"raw_title,omitempty"`
-	CreatedAt   *time.Time           `json:"created_at,omitempty"`
-	UpdatedAt   *time.Time           `json:"updated_at,omitempty"`
-	URL         string               `json:"url,omitempty"`
+	ID          int64      `json:"id,omitempty"`
+	Title       string     `json:"title"`
+	Description string     `json:"description"`
+	Active      bool       `json:"active,omitempty"`
+	Position    int64      `json:"position,omitempty"`
+	Conditions  Conditions `json:"conditions"`
+	Actions     []Action   `json:"actions"`
+	RawTitle    string     `json:"raw_title,omitempty"`
+	CreatedAt   *time.Time `json:"created_at,omitempty"`
+	UpdatedAt   *time.Time `json:"updated_at,omitempty"`
+	URL         string     `json:"url,omitempty"`
 }
 
 // AutomationListOptions is options for GetAutomations

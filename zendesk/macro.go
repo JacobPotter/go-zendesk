@@ -21,12 +21,6 @@ type Macro struct {
 	URL         string      `json:"url,omitempty"`
 }
 
-// MacroRestriction is definition of group restriction for the macro
-type MacroRestriction struct {
-	Type string  `json:"type,omitempty"`
-	IDS  []int64 `json:"ids,omitempty"`
-}
-
 // MacroListOptions is parameters used of GetMacros
 type MacroListOptions struct {
 	Access       string `json:"access"`

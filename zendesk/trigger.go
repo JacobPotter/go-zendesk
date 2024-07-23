@@ -7,43 +7,21 @@ import (
 	"time"
 )
 
-// TriggerCondition zendesk trigger condition
-//
-// ref: https://developer.zendesk.com/rest_api/docs/core/triggers#conditions-reference
-type TriggerCondition struct {
-	Field    string      `json:"field"`
-	Operator string      `json:"operator"`
-	Value    interface{} `json:"value"`
-}
-
-// TriggerAction is zendesk trigger action
-//
-// ref: https://developer.zendesk.com/rest_api/docs/core/triggers#actions
-type TriggerAction struct {
-	Field string      `json:"field"`
-	Value interface{} `json:"value"`
-}
-
-type TriggerConditions struct {
-	All []TriggerCondition `json:"all"`
-	Any []TriggerCondition `json:"any"`
-}
-
 // Trigger is zendesk trigger JSON payload format
 //
 // ref: https://developer.zendesk.com/rest_api/docs/core/triggers#json-format
 type Trigger struct {
-	ID          int64             `json:"id,omitempty"`
-	Title       string            `json:"title"`
-	Active      bool              `json:"active,omitempty"`
-	Position    int64             `json:"position,omitempty"`
-	Conditions  TriggerConditions `json:"conditions"`
-	Actions     []TriggerAction   `json:"actions"`
-	Description string            `json:"description,omitempty"`
-	CategoryID  string            `json:"category_id,omitempty"`
-	CreatedAt   *time.Time        `json:"created_at,omitempty"`
-	UpdatedAt   *time.Time        `json:"updated_at,omitempty"`
-	URL         string            `json:"url,omitempty"`
+	ID          int64      `json:"id,omitempty"`
+	Title       string     `json:"title"`
+	Active      bool       `json:"active,omitempty"`
+	Position    int64      `json:"position,omitempty"`
+	Conditions  Conditions `json:"conditions"`
+	Actions     []Action   `json:"actions"`
+	Description string     `json:"description,omitempty"`
+	CategoryID  string     `json:"category_id,omitempty"`
+	CreatedAt   *time.Time `json:"created_at,omitempty"`
+	UpdatedAt   *time.Time `json:"updated_at,omitempty"`
+	URL         string     `json:"url,omitempty"`
 }
 
 // TriggerListOptions is options for GetTriggers

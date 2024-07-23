@@ -7,15 +7,6 @@ import (
 	"time"
 )
 
-// SLAPolicyFilter zendesk slaPolicy condition
-//
-// ref: https://developer.zendesk.com/rest_api/docs/core/slas/policies#conditions-reference
-type SLAPolicyFilter struct {
-	Field    string `json:"field"`
-	Operator string `json:"operator"`
-	Value    string `json:"value"`
-}
-
 // SLA Policy metric values
 //
 // ref: https://developer.zendesk.com/rest_api/docs/support/sla_policies#metrics
@@ -45,8 +36,8 @@ type SLAPolicy struct {
 	Position    int64  `json:"position,omitempty"`
 	Active      bool   `json:"active,omitempty"`
 	Filter      struct {
-		All []SLAPolicyFilter `json:"all"`
-		Any []SLAPolicyFilter `json:"any"`
+		All []Condition `json:"all"`
+		Any []Condition `json:"any"`
 	} `json:"filter"`
 	PolicyMetrics []SLAPolicyMetric `json:"policy_metrics,omitempty"`
 	CreatedAt     *time.Time        `json:"created_at,omitempty"`

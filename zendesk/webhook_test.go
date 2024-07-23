@@ -1,40 +1,44 @@
 package zendesk
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
-// func TestCreateWebhook(t *testing.T) {
-// 	mockAPI := newMockAPI(http.MethodPost, "webhooks.json")
-// 	client := newTestClient(mockAPI)
-// 	defer mockAPI.Close()
+func TestCreateWebhook(t *testing.T) {
+	mockAPI := newMockAPI(http.MethodPost, "webhooks.json")
+	client := newTestClient(mockAPI)
+	defer mockAPI.Close()
 
-// 	hook, err := client.CreateWebhook(context.Background(), &Webhook{
-// 		Authentication: &WebhookAuthentication{
-// 			AddPosition: "header",
-// 			Data: map[string]string{
-// 				"password": "hello_123",
-// 				"username": "john_smith",
-// 			},
-// 			Type: "basic_auth",
-// 		},
-// 		Endpoint:      "https://example.com/status/200",
-// 		HTTPMethod:    http.MethodGet,
-// 		Name:          "Example Webhook",
-// 		RequestFormat: "json",
-// 		Status:        "active",
-// 		Subscriptions: []string{"conditional_ticket_events"},
-// 	})
-// 	if err != nil {
-// 		t.Fatalf("Failed to create webhook: %v", err)
-// 	}
+	hook, err := client.CreateWebhook(context.Background(), &Webhook{
+		Authentication: &WebhookAuthentication{
+			AddPosition: "header",
+			Data: &WebhookCredentials{
+				HeaderName:  "Authentication",
+				HeaderValue: "",
+				Username:    "john_smith",
+				Password:    "hello_123",
+				Token:       "",
+			},
+			Type: "basic_auth",
+		},
+		Endpoint:      "https://example.com/status/200",
+		HTTPMethod:    http.MethodGet,
+		Name:          "Example Webhook",
+		RequestFormat: "json",
+		Status:        "active",
+		Subscriptions: []string{"conditional_ticket_events"},
+	})
+	if err != nil {
+		t.Fatalf("Failed to create webhook: %v", err)
+	}
 
-// 	if len(hook.Subscriptions) != 1 || hook.Authentication.AddPosition != "header" {
-// 		t.Fatalf("Invalid response of webhook: %v", hook)
-// 	}
-// }
+	if len(hook.Subscriptions) != 1 || hook.Authentication.AddPosition != "header" {
+		t.Fatalf("Invalid response of webhook: %v", hook)
+	}
+}
 
 func TestGetWebhook(t *testing.T) {
 	mockAPI := newMockAPI(http.MethodGet, "webhook.json")

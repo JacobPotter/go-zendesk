@@ -21,7 +21,7 @@ type (
 		Position    int64         `json:"position,omitempty"`
 		Description string        `json:"description,omitempty"`
 		Execution   ViewExecution `json:"execution,omitempty"`
-		Conditions  Conditions    `json:"conditions,omitempty"`
+		Conditions  interface{}   `json:"conditions,omitempty"`
 		Restriction interface{}   `json:"restriction,omitempty"`
 		RawTitle    string        `json:"raw_title,omitempty"`
 		All         []Condition   `json:"all,omitempty"`

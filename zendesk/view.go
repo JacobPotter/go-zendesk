@@ -38,15 +38,15 @@ type (
 	}
 
 	ViewExecution struct {
-		GroupBy      string                `json:"group_by"`
-		GroupOrder   string                `json:"group_order"`
-		SortBy       string                `json:"sort_by"`
-		SortOrder    string                `json:"sort_order"`
-		Group        ViewExecColumn        `json:"group"`
-		Sort         ViewExecField         `json:"sort"`
-		Columns      []ViewExecColumn      `json:"columns"`
-		Fields       []ViewExecField       `json:"fields"`
-		CustomFields []CustomFieldViewExec `json:"custom_fields"`
+		GroupBy      string                `json:"group_by,omitempty"`
+		GroupOrder   string                `json:"group_order,omitempty"`
+		SortBy       string                `json:"sort_by,omitempty"`
+		SortOrder    string                `json:"sort_order,omitempty"`
+		Group        ViewExecColumn        `json:"group,omitempty"`
+		Sort         ViewExecField         `json:"sort,omitempty"`
+		Columns      []ViewExecColumn      `json:"columns,omitempty"`
+		Fields       []ViewExecField       `json:"fields,omitempty"`
+		CustomFields []CustomFieldViewExec `json:"custom_fields,omitempty"`
 	}
 
 	ViewExecColumn struct {

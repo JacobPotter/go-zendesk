@@ -7,22 +7,6 @@ import (
 	"strings"
 )
 
-type ViewOrder string
-
-const (
-	Asc  ViewOrder = "asc"
-	Desc ViewOrder = "desc"
-)
-
-type ColumnType string
-
-const (
-	Checkbox ColumnType = "checkbox"
-	Integer  ColumnType = "integer"
-	Tagger   ColumnType = "tagger"
-	Textarea ColumnType = "textarea"
-)
-
 type (
 	// View is struct for group membership payload
 	// https://developer.zendesk.com/api-reference/ticketing/business-rules/views/
@@ -55,9 +39,9 @@ type (
 
 	ViewExecution struct {
 		GroupBy      string                `json:"group_by"`
-		GroupOrder   ViewOrder             `json:"group_order"`
+		GroupOrder   string                `json:"group_order"`
 		SortBy       string                `json:"sort_by"`
-		SortOrder    ViewOrder             `json:"sort_order"`
+		SortOrder    string                `json:"sort_order"`
 		Group        ViewExecColumn        `json:"group"`
 		Sort         ViewExecField         `json:"sort"`
 		Columns      []ViewExecColumn      `json:"columns"`
@@ -66,30 +50,30 @@ type (
 	}
 
 	ViewExecColumn struct {
-		ID         string      `json:"id"`
-		Title      *string     `json:"title,omitempty"`
-		Filterable *bool       `json:"filterable,omitempty"`
-		Sortable   *bool       `json:"sortable,omitempty"`
-		Type       *ColumnType `json:"type,omitempty"`
-		URL        *string     `json:"url,omitempty"`
-		Order      *ViewOrder  `json:"order,omitempty"`
+		ID         string  `json:"id"`
+		Title      *string `json:"title,omitempty"`
+		Filterable *bool   `json:"filterable,omitempty"`
+		Sortable   *bool   `json:"sortable,omitempty"`
+		Type       string  `json:"type,omitempty"`
+		URL        *string `json:"url,omitempty"`
+		Order      string  `json:"order,omitempty"`
 	}
 
 	CustomFieldViewExec struct {
-		ID         int64      `json:"id"`
-		Title      string     `json:"title"`
-		Type       ColumnType `json:"type"`
-		URL        string     `json:"url"`
-		Filterable bool       `json:"filterable"`
-		Sortable   bool       `json:"sortable"`
+		ID         int64  `json:"id"`
+		Title      string `json:"title"`
+		Type       string `json:"type"`
+		URL        string `json:"url"`
+		Filterable bool   `json:"filterable"`
+		Sortable   bool   `json:"sortable"`
 	}
 
 	ViewExecField struct {
-		ID         string     `json:"id"`
-		Title      string     `json:"title"`
-		Filterable bool       `json:"filterable"`
-		Sortable   bool       `json:"sortable"`
-		Order      *ViewOrder `json:"order,omitempty"`
+		ID         string `json:"id"`
+		Title      string `json:"title"`
+		Filterable bool   `json:"filterable"`
+		Sortable   bool   `json:"sortable"`
+		Order      string `json:"order,omitempty"`
 	}
 
 	ViewCount struct {

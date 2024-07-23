@@ -27,19 +27,19 @@ type (
 	// ViewRead is struct for group membership payload
 	// https://developer.zendesk.com/api-reference/ticketing/business-rules/views/
 	ViewRead struct {
-		URL         string          `json:"url"`
-		ID          int64           `json:"id"`
-		Title       string          `json:"title"`
-		Active      bool            `json:"active"`
-		UpdatedAt   string          `json:"updated_at"`
-		CreatedAt   string          `json:"created_at"`
-		Default     bool            `json:"default"`
-		Position    int64           `json:"position"`
-		Description *string         `json:"description"`
-		Execution   ViewExecution   `json:"execution"`
-		Conditions  ViewConditions  `json:"conditions"`
-		Restriction ViewRestriction `json:"restriction"`
-		RawTitle    string          `json:"raw_title"`
+		URL         string         `json:"url"`
+		ID          int64          `json:"id"`
+		Title       string         `json:"title"`
+		Active      bool           `json:"active"`
+		UpdatedAt   string         `json:"updated_at"`
+		CreatedAt   string         `json:"created_at"`
+		Default     bool           `json:"default"`
+		Position    int64          `json:"position"`
+		Description string         `json:"description"`
+		Execution   ViewExecution  `json:"execution"`
+		Conditions  ViewConditions `json:"conditions"`
+		Restriction interface{}    `json:"restriction,omitempty"`
+		RawTitle    string         `json:"raw_title"`
 	}
 
 	ViewCreateUpdate struct {
@@ -48,7 +48,7 @@ type (
 		Description string          `json:"description,omitempty"`
 		Active      bool            `json:"active,omitempty"`
 		Position    int64           `json:"position,omitempty"`
-		Restriction ViewRestriction `json:"restriction,omitempty"`
+		Restriction interface{}     `json:"restriction,omitempty"`
 		All         []ViewCondition `json:"all,omitempty"`
 		Any         []ViewCondition `json:"any,omitempty"`
 		Output      ViewOutput      `json:"output,omitempty"`

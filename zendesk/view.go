@@ -63,12 +63,12 @@ type (
 	}
 
 	ViewExecution struct {
-		GroupBy      *string               `json:"group_by"`
+		GroupBy      string                `json:"group_by"`
 		GroupOrder   ViewOrder             `json:"group_order"`
-		SortBy       *string               `json:"sort_by"`
+		SortBy       string                `json:"sort_by"`
 		SortOrder    ViewOrder             `json:"sort_order"`
-		Group        *ViewExecColumn       `json:"group"`
-		Sort         *ViewExecField        `json:"sort"`
+		Group        ViewExecColumn        `json:"group"`
+		Sort         ViewExecField         `json:"sort"`
 		Columns      []ViewExecColumn      `json:"columns"`
 		Fields       []ViewExecField       `json:"fields"`
 		CustomFields []CustomFieldViewExec `json:"custom_fields"`

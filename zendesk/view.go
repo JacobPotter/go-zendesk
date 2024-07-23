@@ -24,34 +24,25 @@ const (
 )
 
 type (
-	// ViewRead is struct for group membership payload
+	// View is struct for group membership payload
 	// https://developer.zendesk.com/api-reference/ticketing/business-rules/views/
-	ViewRead struct {
-		URL         string        `json:"url"`
-		ID          int64         `json:"id"`
-		Title       string        `json:"title"`
-		Active      bool          `json:"active"`
-		UpdatedAt   string        `json:"updated_at"`
-		CreatedAt   string        `json:"created_at"`
-		Default     bool          `json:"default"`
-		Position    int64         `json:"position"`
-		Description string        `json:"description"`
-		Execution   ViewExecution `json:"execution"`
-		Conditions  Conditions    `json:"conditions"`
+	View struct {
+		URL         string        `json:"url,omitempty"`
+		ID          int64         `json:"id,omitempty"`
+		Title       string        `json:"title,omitempty"`
+		Active      bool          `json:"active,omitempty"`
+		UpdatedAt   string        `json:"updated_at,omitempty"`
+		CreatedAt   string        `json:"created_at,omitempty"`
+		Default     bool          `json:"default,omitempty"`
+		Position    int64         `json:"position,omitempty"`
+		Description string        `json:"description,omitempty"`
+		Execution   ViewExecution `json:"execution,omitempty"`
+		Conditions  Conditions    `json:"conditions,omitempty"`
 		Restriction interface{}   `json:"restriction,omitempty"`
-		RawTitle    string        `json:"raw_title"`
-	}
-
-	ViewCreateUpdate struct {
-		Title       string      `json:"title,omitempty"`
-		RawTitle    string      `json:"raw_title,omitempty"`
-		Description string      `json:"description,omitempty"`
-		Active      bool        `json:"active,omitempty"`
-		Position    int64       `json:"position,omitempty"`
-		Restriction interface{} `json:"restriction,omitempty"`
-		All         []Condition `json:"all,omitempty"`
-		Any         []Condition `json:"any,omitempty"`
-		Output      ViewOutput  `json:"output,omitempty"`
+		RawTitle    string        `json:"raw_title,omitempty"`
+		All         []Condition   `json:"all,omitempty"`
+		Any         []Condition   `json:"any,omitempty"`
+		Output      ViewOutput    `json:"output,omitempty"`
 	}
 
 	ViewOutput struct {
@@ -111,38 +102,38 @@ type (
 
 	// ViewAPI encapsulates methods on view
 	ViewAPI interface {
-		GetView(context.Context, int64) (ViewRead, error)
-		GetViews(context.Context) ([]ViewRead, Page, error)
-		CreateView(ctx context.Context, newView ViewCreateUpdate) (ViewRead, error)
-		UpdateView(ctx context.Context, updatedId int64, udpatedView ViewCreateUpdate) (ViewRead, error)
+		GetView(context.Context, int64) (View, error)
+		GetViews(context.Context) ([]View, Page, error)
+		CreateView(ctx context.Context, newView View) (View, error)
+		UpdateView(ctx context.Context, updatedId int64, udpatedView View) (View, error)
 		DeleteView(context.Context, int64) error
 		GetTicketsFromView(context.Context, int64, *TicketListOptions) ([]Ticket, Page, error)
 		GetCountTicketsInViews(ctx context.Context, ids []string) ([]ViewCount, error)
 		GetTicketsFromViewIterator(ctx context.Context, opts *PaginationOptions) *Iterator[Ticket]
 		GetTicketsFromViewOBP(ctx context.Context, opts *OBPOptions) ([]Ticket, Page, error)
 		GetTicketsFromViewCBP(ctx context.Context, opts *CBPOptions) ([]Ticket, CursorPaginationMeta, error)
-		GetViewsIterator(ctx context.Context, opts *PaginationOptions) *Iterator[ViewRead]
-		GetViewsOBP(ctx context.Context, opts *OBPOptions) ([]ViewRead, Page, error)
-		GetViewsCBP(ctx context.Context, opts *CBPOptions) ([]ViewRead, CursorPaginationMeta, error)
+		GetViewsIterator(ctx context.Context, opts *PaginationOptions) *Iterator[View]
+		GetViewsOBP(ctx context.Context, opts *OBPOptions) ([]View, Page, error)
+		GetViewsCBP(ctx context.Context, opts *CBPOptions) ([]View, CursorPaginationMeta, error)
 	}
 )
 
 // GetViews gets all views
 // ref: https://developer.zendesk.com/api-reference/ticketing/business-rules/views/#list-views
-func (z *Client) GetViews(ctx context.Context) ([]ViewRead, Page, error) {
+func (z *Client) GetViews(ctx context.Context) ([]View, Page, error) {
 	var result struct {
-		Views []ViewRead `json:"views"`
+		Views []View `json:"views"`
 		Page
 	}
 
 	body, err := z.get(ctx, "/views.json")
 
 	if err != nil {
-		return []ViewRead{}, Page{}, err
+		return []View{}, Page{}, err
 	}
 
 	if err := json.Unmarshal(body, &result); err != nil {
-		return []ViewRead{}, Page{}, err
+		return []View{}, Page{}, err
 	}
 
 	return result.Views, result.Page, nil
@@ -150,55 +141,55 @@ func (z *Client) GetViews(ctx context.Context) ([]ViewRead, Page, error) {
 
 // GetView gets a given view
 // ref: https://developer.zendesk.com/api-reference/ticketing/business-rules/views/#show-view
-func (z *Client) GetView(ctx context.Context, viewID int64) (ViewRead, error) {
+func (z *Client) GetView(ctx context.Context, viewID int64) (View, error) {
 	var result struct {
-		View ViewRead `json:"view"`
+		View View `json:"view"`
 	}
 
 	body, err := z.get(ctx, fmt.Sprintf("/views/%d.json", viewID))
 
 	if err != nil {
-		return ViewRead{}, err
+		return View{}, err
 	}
 
 	if err := json.Unmarshal(body, &result); err != nil {
-		return ViewRead{}, err
+		return View{}, err
 	}
 
 	return result.View, nil
 }
 
-func (z *Client) CreateView(ctx context.Context, newView ViewCreateUpdate) (ViewRead, error) {
+func (z *Client) CreateView(ctx context.Context, newView View) (View, error) {
 	var result struct {
-		View ViewRead `json:"view"`
+		View View `json:"view"`
 	}
 
 	body, err := z.post(ctx, "/views.json", newView)
 
 	if err != nil {
-		return ViewRead{}, err
+		return View{}, err
 	}
 
 	if err := json.Unmarshal(body, &result); err != nil {
-		return ViewRead{}, err
+		return View{}, err
 	}
 
 	return result.View, nil
 
 }
-func (z *Client) UpdateView(ctx context.Context, updatedViewId int64, updatedView ViewCreateUpdate) (ViewRead, error) {
+func (z *Client) UpdateView(ctx context.Context, updatedViewId int64, updatedView View) (View, error) {
 	var result struct {
-		View ViewRead `json:"view"`
+		View View `json:"view"`
 	}
 
 	body, err := z.put(ctx, fmt.Sprintf("/views/%d.json", updatedViewId), updatedView)
 
 	if err != nil {
-		return ViewRead{}, err
+		return View{}, err
 	}
 
 	if err := json.Unmarshal(body, &result); err != nil {
-		return ViewRead{}, err
+		return View{}, err
 	}
 
 	return result.View, nil

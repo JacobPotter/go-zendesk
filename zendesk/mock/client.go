@@ -402,10 +402,10 @@ func (mr *ClientMockRecorder) CreateUserField(ctx, userField any) *gomock.Call {
 }
 
 // CreateView mocks base method.
-func (m *Client) CreateView(ctx context.Context, newView zendesk.ViewCreateUpdate) (zendesk.ViewRead, error) {
+func (m *Client) CreateView(ctx context.Context, newView zendesk.View) (zendesk.View, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateView", ctx, newView)
-	ret0, _ := ret[0].(zendesk.ViewRead)
+	ret0, _ := ret[0].(zendesk.View)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -2395,10 +2395,10 @@ func (mr *ClientMockRecorder) GetUsersOBP(ctx, opts any) *gomock.Call {
 }
 
 // GetView mocks base method.
-func (m *Client) GetView(arg0 context.Context, arg1 int64) (zendesk.ViewRead, error) {
+func (m *Client) GetView(arg0 context.Context, arg1 int64) (zendesk.View, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetView", arg0, arg1)
-	ret0, _ := ret[0].(zendesk.ViewRead)
+	ret0, _ := ret[0].(zendesk.View)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -2410,10 +2410,10 @@ func (mr *ClientMockRecorder) GetView(arg0, arg1 any) *gomock.Call {
 }
 
 // GetViews mocks base method.
-func (m *Client) GetViews(arg0 context.Context) ([]zendesk.ViewRead, zendesk.Page, error) {
+func (m *Client) GetViews(arg0 context.Context) ([]zendesk.View, zendesk.Page, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetViews", arg0)
-	ret0, _ := ret[0].([]zendesk.ViewRead)
+	ret0, _ := ret[0].([]zendesk.View)
 	ret1, _ := ret[1].(zendesk.Page)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
@@ -2426,10 +2426,10 @@ func (mr *ClientMockRecorder) GetViews(arg0 any) *gomock.Call {
 }
 
 // GetViewsCBP mocks base method.
-func (m *Client) GetViewsCBP(ctx context.Context, opts *zendesk.CBPOptions) ([]zendesk.ViewRead, zendesk.CursorPaginationMeta, error) {
+func (m *Client) GetViewsCBP(ctx context.Context, opts *zendesk.CBPOptions) ([]zendesk.View, zendesk.CursorPaginationMeta, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetViewsCBP", ctx, opts)
-	ret0, _ := ret[0].([]zendesk.ViewRead)
+	ret0, _ := ret[0].([]zendesk.View)
 	ret1, _ := ret[1].(zendesk.CursorPaginationMeta)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
@@ -2442,10 +2442,10 @@ func (mr *ClientMockRecorder) GetViewsCBP(ctx, opts any) *gomock.Call {
 }
 
 // GetViewsIterator mocks base method.
-func (m *Client) GetViewsIterator(ctx context.Context, opts *zendesk.PaginationOptions) *zendesk.Iterator[zendesk.ViewRead] {
+func (m *Client) GetViewsIterator(ctx context.Context, opts *zendesk.PaginationOptions) *zendesk.Iterator[zendesk.View] {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetViewsIterator", ctx, opts)
-	ret0, _ := ret[0].(*zendesk.Iterator[zendesk.ViewRead])
+	ret0, _ := ret[0].(*zendesk.Iterator[zendesk.View])
 	return ret0
 }
 
@@ -2456,10 +2456,10 @@ func (mr *ClientMockRecorder) GetViewsIterator(ctx, opts any) *gomock.Call {
 }
 
 // GetViewsOBP mocks base method.
-func (m *Client) GetViewsOBP(ctx context.Context, opts *zendesk.OBPOptions) ([]zendesk.ViewRead, zendesk.Page, error) {
+func (m *Client) GetViewsOBP(ctx context.Context, opts *zendesk.OBPOptions) ([]zendesk.View, zendesk.Page, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetViewsOBP", ctx, opts)
-	ret0, _ := ret[0].([]zendesk.ViewRead)
+	ret0, _ := ret[0].([]zendesk.View)
 	ret1, _ := ret[1].(zendesk.Page)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
@@ -2910,10 +2910,10 @@ func (mr *ClientMockRecorder) UpdateUser(ctx, userID, user any) *gomock.Call {
 }
 
 // UpdateView mocks base method.
-func (m *Client) UpdateView(ctx context.Context, updatedId int64, udpatedView zendesk.ViewCreateUpdate) (zendesk.ViewRead, error) {
+func (m *Client) UpdateView(ctx context.Context, updatedId int64, udpatedView zendesk.View) (zendesk.View, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateView", ctx, updatedId, udpatedView)
-	ret0, _ := ret[0].(zendesk.ViewRead)
+	ret0, _ := ret[0].(zendesk.View)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

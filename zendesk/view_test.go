@@ -40,7 +40,7 @@ func TestCreateView(t *testing.T) {
 	byteValue := openJsonFile(t, filePathAbs, fileName)
 
 	var viewResp struct {
-		View ViewCreateUpdate `json:"view"`
+		View View `json:"view"`
 	}
 
 	err = json.Unmarshal(byteValue, &viewResp)
@@ -76,7 +76,7 @@ func TestUpdateView(t *testing.T) {
 	byteValue := openJsonFile(t, filePathAbs, fileName)
 
 	var viewResp struct {
-		View ViewCreateUpdate `json:"view"`
+		View View `json:"view"`
 	}
 
 	err = json.Unmarshal(byteValue, &viewResp)

@@ -219,7 +219,7 @@ var funcData []FuncTemplateData = []FuncTemplateData{
 	},
 	{
 		FuncName:    "Views",
-		ObjectName:  "ViewRead",
+		ObjectName:  "View",
 		ApiEndpoint: "/views.json",
 		JsonName:    "views",
 		FileName:    "view",

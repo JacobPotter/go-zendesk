@@ -144,9 +144,11 @@ func (z *Client) GetView(ctx context.Context, viewID int64) (View, error) {
 }
 
 func (z *Client) CreateView(ctx context.Context, newView View) (View, error) {
-	var result struct {
+	var data, result struct {
 		View View `json:"view"`
 	}
+
+	data.View = newView
 
 	body, err := z.post(ctx, "/views.json", newView)
 
@@ -162,11 +164,12 @@ func (z *Client) CreateView(ctx context.Context, newView View) (View, error) {
 
 }
 func (z *Client) UpdateView(ctx context.Context, updatedViewId int64, updatedView View) (View, error) {
-	var result struct {
+	var data, result struct {
 		View View `json:"view"`
 	}
 
-	body, err := z.put(ctx, fmt.Sprintf("/views/%d.json", updatedViewId), updatedView)
+	data.View = updatedView
+	body, err := z.put(ctx, fmt.Sprintf("/views/%d.json", updatedViewId), data)
 
 	if err != nil {
 		return View{}, err

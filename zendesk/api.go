@@ -1,9 +1,9 @@
 package zendesk
 
 //nolint
-//go:generate mockgen -source=api.go -destination=mock/client.go -package=mock -mock_names=API=Client github.com/JacobPotter/go-zendesk/zendesk API
+//go:generate mockgen -source=api.go -destination=mock/client.go -package=mock -mock_names=API=Client -aux_files github.com/JacobPotter/go-zendesk/zendesk=app.go,github.com/JacobPotter/go-zendesk/zendesk=attachment.go API
 
-// API an interface containing all of the zendesk client methods
+// API an interface containing all the zendesk client methods
 type API interface {
 	AppAPI
 	AttachmentAPI

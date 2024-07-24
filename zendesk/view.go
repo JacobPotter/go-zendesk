@@ -84,6 +84,8 @@ type (
 		Fresh  bool   `json:"fresh"`
 	}
 
+	ViewColumn string
+
 	// ViewAPI encapsulates methods on view
 	ViewAPI interface {
 		GetView(context.Context, int64) (View, error)
@@ -101,6 +103,58 @@ type (
 		GetViewsCBP(ctx context.Context, opts *CBPOptions) ([]View, CursorPaginationMeta, error)
 	}
 )
+
+const (
+	AssignedColumn          ViewColumn = "assigned"
+	AssigneeColumn          ViewColumn = "assignee"
+	DueDateColumn           ViewColumn = "due_date"
+	GroupColumn             ViewColumn = "group"
+	IDColumn                ViewColumn = "nice_id"
+	UpdatedColumn           ViewColumn = "updated"
+	UpdatedAssigneeColumn   ViewColumn = "updated_assignee"
+	UpdatedRequesterColumn  ViewColumn = "updated_requester"
+	UpdatedByTypeColumn     ViewColumn = "updated_by_type"
+	OrganizationColumn      ViewColumn = "organization"
+	PriorityColumn          ViewColumn = "priority"
+	CreatedColumn           ViewColumn = "created"
+	RequesterColumn         ViewColumn = "requester"
+	LocaleIdColumn          ViewColumn = "locale_id"
+	SatisfactionScoreColumn ViewColumn = "satisfaction_score"
+	SolvedColumn            ViewColumn = "solved"
+	StatusColumn            ViewColumn = "status"
+	DescriptionColumn       ViewColumn = "description"
+	SubmitterColumn         ViewColumn = "submitter"
+	TicketFormColumn        ViewColumn = "ticket_form"
+	TypeColumn              ViewColumn = "type"
+	BrandColumn             ViewColumn = "brand"
+	TicketStatusColumn      ViewColumn = "custom_status_id"
+)
+
+var ValidViewColumns = []ViewColumn{
+	AssignedColumn,
+	AssigneeColumn,
+	DueDateColumn,
+	GroupColumn,
+	IDColumn,
+	UpdatedColumn,
+	UpdatedAssigneeColumn,
+	UpdatedRequesterColumn,
+	UpdatedByTypeColumn,
+	OrganizationColumn,
+	PriorityColumn,
+	CreatedColumn,
+	RequesterColumn,
+	LocaleIdColumn,
+	SatisfactionScoreColumn,
+	SolvedColumn,
+	StatusColumn,
+	DescriptionColumn,
+	SubmitterColumn,
+	TicketFormColumn,
+	TypeColumn,
+	BrandColumn,
+	TicketStatusColumn,
+}
 
 // GetViews gets all views
 // ref: https://developer.zendesk.com/api-reference/ticketing/business-rules/views/#list-views

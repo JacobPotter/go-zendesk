@@ -130,7 +130,21 @@ const (
 	TicketStatusColumn      ViewColumn = "custom_status_id"
 )
 
-var ValidViewColumns = []ViewColumn{
+func (c ViewColumn) String() string {
+	return string(c)
+}
+
+type ViewColumns []ViewColumn
+
+func (c ViewColumns) StringsSlice() []string {
+	stringSlice := make([]string, len(c))
+	for i, column := range c {
+		stringSlice[i] = column.String()
+	}
+	return stringSlice
+}
+
+var ValidViewColumns ViewColumns = []ViewColumn{
 	AssignedColumn,
 	AssigneeColumn,
 	DueDateColumn,

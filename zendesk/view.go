@@ -218,7 +218,7 @@ func (z *Client) CreateView(ctx context.Context, newView View) (View, error) {
 
 	data.View = newView
 
-	body, err := z.post(ctx, "/views.json", newView)
+	body, err := z.post(ctx, "/views.json", data)
 
 	if err != nil {
 		return View{}, err

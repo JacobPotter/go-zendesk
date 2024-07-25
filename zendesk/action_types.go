@@ -186,6 +186,10 @@ func (a ActionValueValidator) ValidateFieldId(key ActionField) error {
 	return nil
 }
 
+func (a ActionValueValidator) ValidKeys() []ActionField {
+	return maps.Keys(a)
+}
+
 // ValidActionValuesMap Map of action fields to possible values, based on valid values from [Actions Reference]
 //
 // [Actions Reference]: https://developer.zendesk.com/documentation/ticketing/reference-guides/actions-reference/

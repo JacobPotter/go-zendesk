@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"slices"
 	"time"
 )
 
@@ -46,7 +47,52 @@ type TicketField struct {
 	AgentDescription    string                         `json:"agent_description,omitempty"`
 }
 
-// TicketFieldAPI an interface containing all of the ticket field related zendesk methods
+func (f TicketField) Validate() error {
+	if !slices.Contains(ValidTicketFieldsTypes, TicketFieldType(f.Type)) {
+		return fmt.Errorf("ticket field type must be one of: %s", ValidTicketFieldsTypes)
+	}
+
+	if (f.Type == Multiselect.String() || f.Type == Tagger.String()) && len(f.CustomFieldOptions) < 1 {
+		return fmt.Errorf("when ticket field is type tagger or multiselect, there must be at least one custom option")
+	}
+	
+	return nil
+}
+
+type TicketFieldType string
+
+func (t TicketFieldType) String() string {
+	return string(t)
+}
+
+const (
+	Text              TicketFieldType = "text"
+	TextArea          TicketFieldType = "text_area"
+	Checkbox          TicketFieldType = "checkbox"
+	Date              TicketFieldType = "date"
+	Integer           TicketFieldType = "integer"
+	Decimal           TicketFieldType = "decimal"
+	Regexp            TicketFieldType = "regexp"
+	PartialCreditCard TicketFieldType = "partial_credit_card"
+	Multiselect       TicketFieldType = "multiselect"
+	Tagger            TicketFieldType = "tagger"
+)
+
+// ValidTicketFieldsTypes is a slice containing all valid ticket field names.
+var ValidTicketFieldsTypes = []TicketFieldType{
+	Text,
+	TextArea,
+	Checkbox,
+	Date,
+	Integer,
+	Decimal,
+	Regexp,
+	PartialCreditCard,
+	Multiselect,
+	Tagger,
+}
+
+// TicketFieldAPI an interface containing all the ticket field related zendesk methods
 type TicketFieldAPI interface {
 	GetTicketFields(ctx context.Context) ([]TicketField, Page, error)
 	CreateTicketField(ctx context.Context, ticketField TicketField) (TicketField, error)

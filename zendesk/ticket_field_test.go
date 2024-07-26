@@ -4,7 +4,118 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 )
+
+func TestTicketField_Validate(t *testing.T) {
+	cases := []struct {
+		testName    string
+		ticketField TicketField
+		shouldPass  bool
+	}{
+		{
+			testName: "should validate ticket field",
+			ticketField: TicketField{
+				ID:                  0,
+				URL:                 "",
+				Type:                string(Text),
+				Title:               "",
+				RawTitle:            "",
+				Description:         "",
+				RawDescription:      "",
+				Position:            0,
+				Active:              false,
+				Required:            false,
+				CollapsedForAgents:  false,
+				RegexpForValidation: "",
+				TitleInPortal:       "",
+				RawTitleInPortal:    "",
+				VisibleInPortal:     false,
+				EditableInPortal:    false,
+				RequiredInPortal:    false,
+				Tag:                 "",
+				CreatedAt:           &time.Time{},
+				UpdatedAt:           &time.Time{},
+				SystemFieldOptions:  nil,
+				CustomFieldOptions:  nil,
+				SubTypeID:           0,
+				Removable:           false,
+				AgentDescription:    "",
+			},
+			shouldPass: true,
+		},
+		{
+			testName: "should not validate ticket field when missing custom options",
+			ticketField: TicketField{
+				ID:                  0,
+				URL:                 "",
+				Type:                string(Tagger),
+				Title:               "",
+				RawTitle:            "",
+				Description:         "",
+				RawDescription:      "",
+				Position:            0,
+				Active:              false,
+				Required:            false,
+				CollapsedForAgents:  false,
+				RegexpForValidation: "",
+				TitleInPortal:       "",
+				RawTitleInPortal:    "",
+				VisibleInPortal:     false,
+				EditableInPortal:    false,
+				RequiredInPortal:    false,
+				Tag:                 "",
+				CreatedAt:           &time.Time{},
+				UpdatedAt:           &time.Time{},
+				SystemFieldOptions:  nil,
+				CustomFieldOptions:  nil,
+				SubTypeID:           0,
+				Removable:           false,
+				AgentDescription:    "",
+			},
+			shouldPass: false,
+		},
+		{
+			testName: "should not validate ticket field with invalid field type",
+			ticketField: TicketField{
+				ID:                  0,
+				URL:                 "",
+				Type:                "blah",
+				Title:               "",
+				RawTitle:            "",
+				Description:         "",
+				RawDescription:      "",
+				Position:            0,
+				Active:              false,
+				Required:            false,
+				CollapsedForAgents:  false,
+				RegexpForValidation: "",
+				TitleInPortal:       "",
+				RawTitleInPortal:    "",
+				VisibleInPortal:     false,
+				EditableInPortal:    false,
+				RequiredInPortal:    false,
+				Tag:                 "",
+				CreatedAt:           &time.Time{},
+				UpdatedAt:           &time.Time{},
+				SystemFieldOptions:  nil,
+				CustomFieldOptions:  nil,
+				SubTypeID:           0,
+				Removable:           false,
+				AgentDescription:    "",
+			},
+			shouldPass: false,
+		},
+	}
+
+	for _, c := range cases {
+		t.Run(c.testName, func(t *testing.T) {
+			if err := c.ticketField.Validate(); err != nil && c.shouldPass {
+				t.Fatalf("error validating ticket field: %s", err)
+			}
+		})
+	}
+}
 
 func TestGetTicketFields(t *testing.T) {
 	mockAPI := newMockAPI(http.MethodGet, "ticket_fields.json")

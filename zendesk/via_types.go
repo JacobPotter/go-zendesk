@@ -1,62 +1,65 @@
 package zendesk
 
 // https://developer.zendesk.com/rest_api/docs/support/triggers#via-types
+
+type ViaType int
+
 const (
 	// ViaWebForm : Web form
-	ViaWebForm = 0
+	ViaWebForm ViaType = 0
 	// ViaMail : Email
-	ViaMail = 4
+	ViaMail ViaType = 4
 	// ViaChat : Chat
-	ViaChat = 29
+	ViaChat ViaType = 29
 	// ViaTwitter : Twitter
-	ViaTwitter = 30
+	ViaTwitter ViaType = 30
 	// ViaTwitterDM : Twitter DM
-	ViaTwitterDM = 26
-	// TwitterFavorite : Twitter like
-	ViaTwitterFavorite = 23
+	ViaTwitterDM ViaType = 26
+	// ViaTwitterFavorite : Twitter like
+	ViaTwitterFavorite ViaType = 23
 	// ViaVoicemail : Voicemail
-	ViaVoicemail = 33
+	ViaVoicemail ViaType = 33
 	// ViaPhoneCallInbound : Phone call (incoming)
-	ViaPhoneCallInbound = 34
+	ViaPhoneCallInbound ViaType = 34
 	// ViaPhoneCallOutbound : Phone call (outbound)
-	ViaPhoneCallOutbound = 35
+	ViaPhoneCallOutbound ViaType = 35
 	// ViaAPIVoicemail : CTI voicemail
-	ViaAPIVoicemail = 44
+	ViaAPIVoicemail ViaType = 44
 	// ViaAPIPhoneCallInbound : CTI phone call (inbound)
-	ViaAPIPhoneCallInbound = 45
+	ViaAPIPhoneCallInbound ViaType = 45
 	// ViaAPIPhoneCallOutbound : CTI phone call (outbound)
-	ViaAPIPhoneCallOutbound = 46
+	ViaAPIPhoneCallOutbound ViaType = 46
 	// ViaSMS : SMS
-	ViaSMS = 57
+	ViaSMS ViaType = 57
 	// ViaGetSatisfaction : Get Satisfaction
-	ViaGetSatisfaction = 16
+	ViaGetSatisfaction ViaType = 16
 	// ViaWebWidget : Web Widget
-	ViaWebWidget = 48
+	ViaWebWidget ViaType = 48
 	// ViaMobileSDK : Mobile SDK
-	ViaMobileSDK = 49
+	ViaMobileSDK ViaType = 49
 	// ViaMobile : Mobile
-	ViaMobile = 56
+	ViaMobile ViaType = 56
 	// ViaHelpCenter : Help Center post
-	ViaHelpCenter = 50
+	ViaHelpCenter ViaType = 50
 	// ViaWebService : Web service (API)
-	ViaWebService = 5
+	ViaWebService ViaType = 5
 	// ViaRule : Trigger, automation
-	ViaRule = 8
+	ViaRule ViaType = 8
 	// ViaClosedTicket : Closed ticket
-	ViaClosedTicket = 27
+	ViaClosedTicket ViaType = 27
 	// ViaTicketSharing : Ticket Sharing
-	ViaTicketSharing = 31
+	ViaTicketSharing ViaType = 31
 	// ViaFacebookPost : Facebook post
-	ViaFacebookPost = 38
+	ViaFacebookPost ViaType = 38
 	// ViaFacebookMessage : Facebook private message
-	ViaFacebookMessage = 41
+	ViaFacebookMessage ViaType = 41
 	// ViaSatisfactionPrediction : Satisfaction prediction
-	ViaSatisfactionPrediction = 54
+	ViaSatisfactionPrediction ViaType = 54
 	// ViaAnyChannel : Channel framework
-	ViaAnyChannel = 55
+	ViaAnyChannel ViaType = 55
 )
 
-var viaTypeText = map[int]string{
+var viaTypeMapText = map[ViaType]string{
 	ViaWebForm:                "web_form",
 	ViaMail:                   "mail",
 	ViaChat:                   "chat",
@@ -85,7 +88,36 @@ var viaTypeText = map[int]string{
 	ViaAnyChannel:             "any_channel",
 }
 
+var ViaTypeMap = map[string]ViaType{
+	"web_form":                ViaWebForm,
+	"mail":                    ViaMail,
+	"chat":                    ViaChat,
+	"twitter":                 ViaTwitter,
+	"twitter_dm":              ViaTwitterDM,
+	"twitter_favorite":        ViaTwitterFavorite,
+	"voicemail":               ViaVoicemail,
+	"phone_call_inbound":      ViaPhoneCallInbound,
+	"phone_call_outbound":     ViaPhoneCallOutbound,
+	"api_voicemail":           ViaAPIVoicemail,
+	"api_phone_call_inbound":  ViaAPIPhoneCallInbound,
+	"api_phone_call_outbound": ViaAPIPhoneCallOutbound,
+	"sms":                     ViaSMS,
+	"get_satisfaction":        ViaGetSatisfaction,
+	"web_widget":              ViaWebWidget,
+	"mobile_sdk":              ViaMobileSDK,
+	"mobile":                  ViaMobile,
+	"helpcenter":              ViaHelpCenter,
+	"web_service":             ViaWebService,
+	"rule":                    ViaRule,
+	"closed_ticket":           ViaClosedTicket,
+	"ticket_sharing":          ViaTicketSharing,
+	"facebook_post":           ViaFacebookPost,
+	"facebook_message":        ViaFacebookMessage,
+	"satisfaction_prediction": ViaSatisfactionPrediction,
+	"any_channel":             ViaAnyChannel,
+}
+
 // ViaTypeText takes via_id and returns via_type
-func ViaTypeText(viaID int) string {
-	return viaTypeText[viaID]
+func ViaTypeText(viaID ViaType) string {
+	return viaTypeMapText[viaID]
 }

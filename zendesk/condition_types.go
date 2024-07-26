@@ -1,121 +1,758 @@
 package zendesk
 
-type ConditionField string
-
-// condition field types which are defined by system
-// https://developer.zendesk.com/rest_api/docs/core/triggers#conditions-reference
-const (
-	// ConditionFieldGroupID group_id
-	ConditionFieldGroupID ConditionField = "group_id"
-	// ConditionFieldAssigneeID assignee_id
-	ConditionFieldAssigneeID ConditionField = "assignee_id"
-	// ConditionFieldRequesterID requester_id
-	ConditionFieldRequesterID ConditionField = "requester_id"
-	// ConditionFieldOrganizationID organization_id
-	ConditionFieldOrganizationID ConditionField = "organization_id"
-	// ConditionFieldCurrentTags current_tags
-	ConditionFieldCurrentTags ConditionField = "current_tags"
-	// ConditionFieldViaID via_id
-	ConditionFieldViaID ConditionField = "via_id"
-	// ConditionFieldRecipient recipient
-	ConditionFieldRecipient ConditionField = "recipient"
-	// ConditionFieldType type
-	ConditionFieldType ConditionField = "type"
-	// ConditionFieldStatus status
-	ConditionFieldStatus ConditionField = "status"
-	// ConditionFieldPriority priority
-	ConditionFieldPriority ConditionField = "priority"
-	// ConditionFieldDescriptionIncludesWord description_includes_word
-	ConditionFieldDescriptionIncludesWord ConditionField = "description_includes_word"
-	// ConditionFieldLocaleID locale_id
-	ConditionFieldLocaleID ConditionField = "locale_id"
-	// ConditionFieldSatisfactionScore satisfaction_score
-	ConditionFieldSatisfactionScore ConditionField = "satisfaction_score"
-	// ConditionFieldSubjectIncludesWord subject_includes_word
-	ConditionFieldSubjectIncludesWord ConditionField = "subject_includes_word"
-	// ConditionFieldCommentIncludesWord comment_includes_word
-	ConditionFieldCommentIncludesWord ConditionField = "comment_includes_word"
-	// ConditionFieldCurrentViaID current_via_id
-	ConditionFieldCurrentViaID ConditionField = "current_via_id"
-	// ConditionFieldUpdateType update_type
-	ConditionFieldUpdateType ConditionField = "update_type"
-	// ConditionFieldCommentIsPublic comment_is_public
-	ConditionFieldCommentIsPublic ConditionField = "comment_is_public"
-	// ConditionFieldTicketIsPublic ticket_is_public
-	ConditionFieldTicketIsPublic ConditionField = "ticket_is_public"
-	// ConditionFieldReopens reopens
-	ConditionFieldReopens ConditionField = "reopens"
-	// ConditionFieldReplies
-	ConditionFieldReplies ConditionField = ""
-	// ConditionFieldAgentStations agent_stations
-	ConditionFieldAgentStations ConditionField = "agent_stations"
-	// ConditionFieldGroupStations group_stations
-	ConditionFieldGroupStations ConditionField = "group_stations"
-	// ConditionFieldInBusinessHours in_business_hours
-	ConditionFieldInBusinessHours ConditionField = "in_business_hours"
-	// ConditionFieldRequesterTwitterFollowersCount requester_twitter_followers_count
-	ConditionFieldRequesterTwitterFollowersCount ConditionField = "requester_twitter_followers_count"
-	// ConditionFieldRequesterTwitterStatusesCount requester_twitter_statuses_count
-	ConditionFieldRequesterTwitterStatusesCount ConditionField = "requester_twitter_statuses_count"
-	// ConditionFieldRequesterTwitterVerified requester_twitter_verified
-	ConditionFieldRequesterTwitterVerified ConditionField = "requester_twitter_verified"
-	// ConditionFieldTicketTypeID ticket_type_id
-	ConditionFieldTicketTypeID ConditionField = "ticket_type_id"
-	// ConditionFieldExactCreatedAt exact_created_at
-	ConditionFieldExactCreatedAt ConditionField = "exact_created_at"
-	// ConditionFieldNew NEW
-	ConditionFieldNew ConditionField = "NEW"
-	// ConditionFieldOpen OPEN
-	ConditionFieldOpen ConditionField = "OPEN"
-	// ConditionFieldPending PENDING
-	ConditionFieldPending ConditionField = "PENDING"
-	// ConditionFieldSolved SOLVED
-	ConditionFieldSolved ConditionField = "SOLVED"
-	// ConditionFieldClosed CLOSED
-	ConditionFieldClosed ConditionField = "CLOSED"
-	// ConditionFieldAssignedAt assigned_at
-	ConditionFieldAssignedAt ConditionField = "assigned_at"
-	// ConditionFieldUpdatedAt updated_at
-	ConditionFieldUpdatedAt ConditionField = "updated_at"
-	// ConditionFieldRequesterUpdatedAt requester_updated_at
-	ConditionFieldRequesterUpdatedAt ConditionField = "requester_updated_at"
-	// ConditionFieldAssigneeUpdatedAt
-	ConditionFieldAssigneeUpdatedAt ConditionField = "assignee_updated_at"
-	// ConditionFieldDueDate due_date
-	ConditionFieldDueDate ConditionField = "due_date"
-	// ConditionFieldUntilDueDate until_due_date
-	ConditionFieldUntilDueDate ConditionField = "until_due_date"
+import (
+	"fmt"
+	"golang.org/x/exp/maps"
+	"regexp"
+	"slices"
+	"strings"
 )
 
-type ConditionOperator string
-
-const (
-	GreaterThan           ConditionOperator = "greater_than"
-	Includes              ConditionOperator = "includes"
-	Is                    ConditionOperator = "is"
-	IsNot                 ConditionOperator = "is_not"
-	LessThan              ConditionOperator = "less_than"
-	LessThanBusinessHours ConditionOperator = "less_than_business_hours"
-	NotIncludes           ConditionOperator = "not_includes"
-	NotPresent            ConditionOperator = "not_present"
-	Present               ConditionOperator = "present"
-	WithinPreviousNDays   ConditionOperator = "within_previous_n_days"
-)
-
-var ConditionMap = map[ConditionField]struct {
-	Operator    ConditionOperator
-	ValuesRegex []string
-}{}
-
-// Condition zendesk automation condition
+// Condition zendesk condition, see [Zendesk Conditions Reference]
 //
-// ref: https://developer.zendesk.com/rest_api/docs/core/automations#conditions-reference
+// [Zendesk Conditions Reference]: https://developer.zendesk.com/documentation/ticketing/reference-guides/conditions-Reference/
 type Condition struct {
 	Field    string `json:"field"`
 	Operator string `json:"operator,omitempty"`
 	Value    string `json:"value,omitempty"`
 }
+
+func (c Condition) Validate(resourceType ResourceType[ConditionResourceType]) error {
+	if err := resourceType.ValidateResourceType(); err != nil {
+		return err
+	}
+
+	if err := ValidConditionOperatorValues.ValidateValue(
+		ConditionField(c.Field),
+		c.Value,
+		Operator(c.Operator),
+		resourceType,
+	); err != nil {
+		return err
+	}
+	return nil
+
+}
+
+var _ ValidateValue[ConditionResourceType] = &Condition{}
+
 type Conditions struct {
 	All []Condition `json:"all,omitempty"`
 	Any []Condition `json:"any,omitempty"`
+}
+
+type ConditionField string
+
+func (c ConditionField) String() string {
+	return string(c)
+}
+
+// condition field types which are defined by system
+// https://developer.zendesk.com/rest_api/docs/core/triggers#conditions-reference
+const (
+	// ConditionFieldGroupID is alias for group_id
+	ConditionFieldGroupID ConditionField = "group_id"
+	// ConditionFieldAssigneeID is alias for assignee_id
+	ConditionFieldAssigneeID ConditionField = "assignee_id"
+	// ConditionFieldRequesterID is alias for requester_id
+	ConditionFieldRequesterID ConditionField = "requester_id"
+	// ConditionFieldOrganizationID is alias for organization_id
+	ConditionFieldOrganizationID ConditionField = "organization_id"
+	// ConditionFieldCurrentTags is alias for current_tags
+	ConditionFieldCurrentTags ConditionField = "current_tags"
+	// ConditionFieldViaID is alias for via_id
+	ConditionFieldViaID ConditionField = "via_id"
+	// ConditionFieldRecipient is alias for recipient
+	ConditionFieldRecipient ConditionField = "recipient"
+	// ConditionFieldCustomField is alias for custom_field_ prefix
+	ConditionFieldCustomField ConditionField = "custom_field_"
+	// ConditionFieldType is alias for type
+	ConditionFieldType ConditionField = "type"
+	// ConditionFieldStatus is alias for status
+	ConditionFieldStatus ConditionField = "status"
+	// ConditionFieldPriority is alias for priority
+	ConditionFieldPriority ConditionField = "priority"
+	// ConditionFieldDescriptionIncludesWord is alias for description_includes_word
+	ConditionFieldDescriptionIncludesWord ConditionField = "description_includes_word"
+	// ConditionFieldLocaleID is alias for locale_id
+	ConditionFieldLocaleID ConditionField = "locale_id"
+	// ConditionFieldSatisfactionScore is alias for satisfaction_score
+	ConditionFieldSatisfactionScore ConditionField = "satisfaction_score"
+	// ConditionFieldSubjectIncludesWord is alias for subject_includes_word
+	ConditionFieldSubjectIncludesWord ConditionField = "subject_includes_word"
+	// ConditionFieldCommentIncludesWord is alias for comment_includes_word
+	ConditionFieldCommentIncludesWord ConditionField = "comment_includes_word"
+	// ConditionFieldCurrentViaID is alias for current_via_id
+	ConditionFieldCurrentViaID ConditionField = "current_via_id"
+	// ConditionFieldUpdateType is alias for update_type
+	ConditionFieldUpdateType ConditionField = "update_type"
+	// ConditionFieldCommentIsPublic is alias for comment_is_public
+	ConditionFieldCommentIsPublic ConditionField = "comment_is_public"
+	// ConditionFieldTicketIsPublic is alias for ticket_is_public
+	ConditionFieldTicketIsPublic ConditionField = "ticket_is_public"
+	// ConditionFieldReopens is alias for reopens
+	ConditionFieldReopens ConditionField = "reopens"
+	// ConditionFieldReplies is alias for reopens
+	ConditionFieldReplies ConditionField = "replies"
+	// ConditionFieldAgentStations is alias for agent_stations
+	ConditionFieldAgentStations ConditionField = "agent_stations"
+	// ConditionFieldGroupStations is alias for group_stations
+	ConditionFieldGroupStations ConditionField = "group_stations"
+	// ConditionFieldInBusinessHours is alias for in_business_hours
+	ConditionFieldInBusinessHours ConditionField = "in_business_hours"
+	// ConditionFieldRequesterTwitterFollowersCount is alias for requester_twitter_followers_count
+	ConditionFieldRequesterTwitterFollowersCount ConditionField = "requester_twitter_followers_count"
+	// ConditionFieldRequesterTwitterStatusesCount is alias for requester_twitter_statuses_count
+	ConditionFieldRequesterTwitterStatusesCount ConditionField = "requester_twitter_statuses_count"
+	// ConditionFieldRequesterTwitterVerified is alias for requester_twitter_verified
+	ConditionFieldRequesterTwitterVerified ConditionField = "requester_twitter_verified"
+	// ConditionFieldExactCreatedAt is alias for exact_created_at
+	ConditionFieldExactCreatedAt ConditionField = "exact_created_at"
+	// ConditionFieldNew is alias for NEW
+	ConditionFieldNew ConditionField = "NEW"
+	// ConditionFieldOpen is alias for OPEN
+	ConditionFieldOpen ConditionField = "OPEN"
+	// ConditionFieldPending is alias for PENDING
+	ConditionFieldPending ConditionField = "PENDING"
+	// ConditionFieldHold is alias for HOLD
+	ConditionFieldHold ConditionField = "HOLD"
+	// ConditionFieldSolved is alias for SOLVED
+	ConditionFieldSolved ConditionField = "SOLVED"
+	// ConditionFieldClosed is alias for CLOSED
+	ConditionFieldClosed ConditionField = "CLOSED"
+	// ConditionFieldAssignedAt is alias for assigned_at
+	ConditionFieldAssignedAt ConditionField = "assigned_at"
+	// ConditionFieldUpdatedAt is alias for updated_at
+	ConditionFieldUpdatedAt ConditionField = "updated_at"
+	// ConditionFieldRequesterUpdatedAt is alias for requester_updated_at
+	ConditionFieldRequesterUpdatedAt ConditionField = "requester_updated_at"
+	// ConditionFieldAssigneeUpdatedAt is alias for assignee_updated_at
+	ConditionFieldAssigneeUpdatedAt ConditionField = "assignee_updated_at"
+	// ConditionFieldDueDate is alias for due_date
+	ConditionFieldDueDate ConditionField = "due_date"
+	// ConditionFieldUntilDueDate is alias for until_due_date
+	ConditionFieldUntilDueDate ConditionField = "until_due_date"
+	// ConditionFieldBrandId is alias for brand_id
+	ConditionFieldBrandId ConditionField = "brand_id"
+	// ConditionFieldTicketFormId is alias for ticket_form_id
+	ConditionFieldTicketFormId ConditionField = "ticket_form_id"
+	// ConditionFieldUserCustomKey is a prefix alias for user.custom_fields.{key} where key is replaced with a key value
+	ConditionFieldUserCustomKey ConditionField = "user.custom_fields."
+	// ConditionFieldOrganizationCustomKey is a prefix alias for organization.custom_fields.{key} where key is replaced with a key value
+	ConditionFieldOrganizationCustomKey ConditionField = "organization.custom_fields."
+	// ConditionFieldIsBusinessHours is an alias for is_business_hours
+	ConditionFieldIsBusinessHours ConditionField = "is_business_hours"
+	// ConditionFieldRequesterRole is alias for requester_role
+	ConditionFieldRequesterRole ConditionField = "requester_role"
+	// ConditionFieldAttachment is alias for attachment
+	ConditionFieldAttachment ConditionField = "attachment"
+	// ConditionFieldCC is an alias for cc
+	ConditionFieldCC ConditionField = "cc"
+	// ConditionFieldCustomStatusId  is an alias for custom_status_id
+	ConditionFieldCustomStatusId ConditionField = "custom_status_id"
+	// ConditionFieldTicketTypeId is an alias for ticket_type_id
+	ConditionFieldTicketTypeId ConditionField = "ticket_type_id"
+)
+
+type ConditionResourceType string
+
+var _ ResourceType[ConditionResourceType] = ConditionResourceType("")
+
+const (
+	TriggerConditionResource    ConditionResourceType = "trigger"
+	AutomationConditionResource ConditionResourceType = "automation"
+	ViewConditionResource       ConditionResourceType = "view"
+	SlaConditionResource        ConditionResourceType = "sla"
+)
+
+var sharedConditionTypes = ResourceTypes[ConditionResourceType]{
+	TriggerConditionResource,
+	AutomationConditionResource,
+	ViewConditionResource,
+	SlaConditionResource,
+}
+
+var triggerAutomationViewConditionTypes = ResourceTypes[ConditionResourceType]{
+	TriggerConditionResource,
+	AutomationConditionResource,
+	ViewConditionResource,
+}
+
+var triggerAutomationConditionTypes = ResourceTypes[ConditionResourceType]{
+	TriggerConditionResource,
+	AutomationConditionResource,
+}
+
+var slaConditionTypes = ResourceTypes[ConditionResourceType]{SlaConditionResource}
+
+var timeBasedViewAutomationConditionTypes = ResourceTypes[ConditionResourceType]{
+	ViewConditionResource,
+	AutomationConditionResource,
+}
+var triggerConditionTypes = ResourceTypes[ConditionResourceType]{TriggerConditionResource}
+
+func (c ConditionResourceType) ValidateResourceType() error {
+	if !slices.Contains(sharedConditionTypes.Elements(), c) {
+		return fmt.Errorf("invalid condition resource type: %s", c)
+	}
+	return nil
+}
+
+func (c ConditionResourceType) ToValue() ConditionResourceType {
+	return c
+}
+
+type ConditionValueValidator ValueValidator[ConditionResourceType]
+
+type ConditionsValueValidator map[ConditionField]ConditionValueValidator
+
+func (c ConditionsValueValidator) ValidateValue(key ConditionField, value string, operator Operator, resourceType ResourceType[ConditionResourceType]) error {
+	if v, ok := c[key]; ok {
+
+		keys := c.ValidKeys()
+
+		if !slices.Contains(keys, key) && !strings.HasPrefix(string(key), string(ConditionFieldCustomField)) {
+			return fmt.Errorf("invalid action field %s", key)
+		}
+
+		if !slices.Contains(v.ResourceTypes.Elements(), resourceType.ToValue()) {
+			return fmt.Errorf("invalid resource type for condition key: %s", key)
+		}
+
+		if len(v.ValidOperators) > 0 && !slices.Contains(v.ValidOperators, operator) {
+			return fmt.Errorf("invalid operator for condition key: %s", key)
+		}
+
+		var result []byte
+
+		if strings.HasPrefix(string(key), string(ConditionFieldCustomField)) {
+			after, _ := strings.CutPrefix(string(key), string(ConditionFieldCustomField))
+			result = v.ValidationRegex.Find([]byte(after))
+		} else {
+			result = v.ValidationRegex.Find([]byte(value))
+
+		}
+		if result == nil {
+			return fmt.Errorf(
+				"invalid action value %s. does not match regex: %s",
+				string(result),
+				v.ValidationRegex.String(),
+			)
+		}
+
+		return nil
+	}
+
+	return fmt.Errorf("invalid action field %s", key)
+
+}
+
+func (c ConditionsValueValidator) ValidKeys() []ConditionField {
+	return maps.Keys(c)
+}
+
+var _ Validator[ConditionField, ConditionResourceType] = ConditionsValueValidator{}
+
+var ValidConditionOperatorValues = ConditionsValueValidator{
+	ConditionFieldGroupID: {
+		ValidationRegex: regexp.MustCompile(`(^$|^\d+)`),
+		ResourceTypes:   sharedConditionTypes,
+		ValidOperators: []Operator{
+			Is,
+			IsNot,
+			Changed,
+			NotChanged,
+			Value,
+			ValuePrevious,
+			NotValue,
+			NotValuePrevious,
+		},
+	},
+	ConditionFieldAssigneeID: {
+		ValidationRegex: regexp.MustCompile(`(^$|current_user|^\d+)`),
+		ResourceTypes:   sharedConditionTypes,
+		ValidOperators: []Operator{
+			Is,
+			IsNot,
+			Changed,
+			NotChanged,
+			Value,
+			ValuePrevious,
+			NotValue,
+			NotValuePrevious,
+		},
+	},
+	ConditionFieldRequesterID: {
+		ValidationRegex: regexp.MustCompile(`(^$|current_user|^\d+)`),
+		ResourceTypes:   sharedConditionTypes,
+		ValidOperators: []Operator{
+			Is,
+			IsNot,
+			Changed,
+			NotChanged,
+			Value,
+			ValuePrevious,
+			NotValue,
+			NotValuePrevious,
+		},
+	},
+	ConditionFieldOrganizationID: {
+		ValidationRegex: regexp.MustCompile(`(^$|^\d+$)`),
+		ResourceTypes:   sharedConditionTypes,
+		ValidOperators: []Operator{
+			Is,
+			IsNot,
+			Changed,
+			NotChanged,
+			Value,
+			ValuePrevious,
+			NotValue,
+			NotValuePrevious,
+		},
+	},
+	ConditionFieldCurrentTags: {
+		ValidationRegex: regexp.MustCompile(`^\w+(?:\s\w+)*$`),
+		ResourceTypes:   sharedConditionTypes,
+		ValidOperators:  []Operator{Includes, NotIncludes},
+	},
+	ConditionFieldViaID: {
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
+		ResourceTypes:   sharedConditionTypes,
+		ValidOperators:  []Operator{Is, IsNot},
+	},
+	ConditionFieldRecipient: {
+		ValidationRegex: regexp.MustCompile(`.*`),
+		ResourceTypes:   sharedConditionTypes,
+		ValidOperators:  []Operator{EmptyOperator},
+	},
+	ConditionFieldCustomField: {
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
+		ResourceTypes:   sharedConditionTypes,
+		ValidOperators:  []Operator{Is, IsNot},
+	},
+	ConditionFieldType: {
+		ValidationRegex: regexp.MustCompile(`(question|incident|problem|task)`),
+		ResourceTypes:   triggerAutomationViewConditionTypes,
+		ValidOperators:  []Operator{Is, IsNot},
+	},
+	ConditionFieldStatus: {
+		ValidationRegex: regexp.MustCompile(`(new|open|pending|hold|solved|closed)`),
+		ResourceTypes:   triggerAutomationViewConditionTypes,
+		ValidOperators: []Operator{
+			Is,
+			IsNot,
+			LessThan,
+			GreaterThan,
+			Changed,
+			NotChanged,
+			Value,
+			ValuePrevious,
+			NotValue,
+			NotValuePrevious,
+		},
+	},
+	ConditionFieldPriority: {
+		ValidationRegex: regexp.MustCompile(`(^$|low|normal|high|urgent)`),
+		ResourceTypes:   triggerAutomationViewConditionTypes,
+		ValidOperators: []Operator{
+			Is,
+			IsNot,
+			LessThan,
+			GreaterThan,
+			Changed,
+			NotChanged,
+			Value,
+			ValuePrevious,
+			NotValue,
+			NotValuePrevious,
+		},
+	},
+	ConditionFieldLocaleID: {
+		ValidationRegex: regexp.MustCompile("^[A-Za-z]{2,4}([_-][A-Za-z]{4})?([_-]([A-Za-z]{2}|[0-9]{3}))?$"),
+		ResourceTypes:   triggerAutomationViewConditionTypes,
+		ValidOperators:  []Operator{Is, IsNot},
+	},
+	ConditionFieldSatisfactionScore: {
+		ValidationRegex: regexp.MustCompile(`(good_with_comment|good|bad_with_comment|bad|false|true)`),
+		ResourceTypes:   triggerAutomationViewConditionTypes,
+		ValidOperators: []Operator{
+			Is,
+			LessThan,
+			GreaterThan,
+			Changed,
+			ChangedTo,
+			ChangedFrom,
+			NotChanged,
+			NotChangedFrom,
+			NotChangedTo,
+			Value,
+			ValuePrevious,
+			NotValue,
+			NotValuePrevious,
+		},
+	},
+	ConditionFieldBrandId: {
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
+		ResourceTypes:   triggerAutomationViewConditionTypes,
+		ValidOperators: []Operator{
+			Is,
+			LessThan,
+			GreaterThan,
+			Changed,
+			ChangedTo,
+			ChangedFrom,
+			NotChanged,
+			NotChangedFrom,
+			NotChangedTo,
+		},
+	},
+	ConditionFieldTicketFormId: {
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
+		ResourceTypes:   triggerAutomationViewConditionTypes,
+		ValidOperators: []Operator{
+			Is,
+			LessThan,
+			GreaterThan,
+			Changed,
+			ChangedTo,
+			ChangedFrom,
+			NotChanged,
+			NotChangedFrom,
+			NotChangedTo,
+		},
+	},
+	ConditionFieldUserCustomKey: {
+		ValidationRegex: regexp.MustCompile(`^\w+$`),
+		ResourceTypes:   triggerAutomationConditionTypes,
+		ValidOperators: []Operator{
+			Is,
+			IsNot,
+			Present,
+			NotPresent,
+			Includes,
+			NotIncludes,
+			IncludesString,
+			NotIncludesString,
+		},
+	},
+	ConditionFieldOrganizationCustomKey: {
+		ValidationRegex: regexp.MustCompile(`^\w+$`),
+		ResourceTypes:   triggerAutomationConditionTypes,
+		ValidOperators: []Operator{
+			Is,
+			IsNot,
+			Present,
+			NotPresent,
+			Includes,
+			NotIncludes,
+			IncludesString,
+			NotIncludesString,
+		},
+	},
+	ConditionFieldSubjectIncludesWord: {
+		ValidationRegex: regexp.MustCompile(`^\w+$`),
+		ResourceTypes:   triggerConditionTypes,
+		ValidOperators: []Operator{
+			Includes,
+			NotIncludes,
+			Is,
+			IsNot,
+		},
+	}, ConditionFieldCommentIncludesWord: {
+		ValidationRegex: regexp.MustCompile(`^\w+$`),
+		ResourceTypes:   triggerConditionTypes,
+		ValidOperators: []Operator{
+			Includes,
+			NotIncludes,
+			Is,
+			IsNot,
+		},
+	},
+	ConditionFieldCurrentViaID: {
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
+		ResourceTypes:   sharedConditionTypes,
+		ValidOperators: []Operator{
+			Is,
+			IsNot,
+		},
+	},
+	ConditionFieldUpdateType: {
+		ValidationRegex: regexp.MustCompile(`(Create|Change)`),
+		ResourceTypes:   triggerConditionTypes,
+		ValidOperators:  []Operator{EmptyOperator},
+	},
+	ConditionFieldCommentIsPublic: {
+		ValidationRegex: regexp.MustCompile(`(true|false|not_relevant|requester_can_see_comment)`),
+		ResourceTypes:   triggerConditionTypes,
+		ValidOperators:  []Operator{EmptyOperator},
+	},
+	ConditionFieldTicketIsPublic: {
+		ValidationRegex: regexp.MustCompile(`(public|private)`),
+		ResourceTypes:   triggerConditionTypes,
+		ValidOperators:  []Operator{EmptyOperator},
+	},
+	ConditionFieldReopens: {
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
+		ResourceTypes:   triggerConditionTypes,
+		ValidOperators: []Operator{
+			GreaterThan,
+			LessThan,
+			Is,
+		},
+	},
+	ConditionFieldReplies: {
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
+		ResourceTypes:   triggerConditionTypes,
+		ValidOperators: []Operator{
+			GreaterThan,
+			LessThan,
+			Is,
+		},
+	},
+	ConditionFieldAgentStations: {
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
+		ResourceTypes:   triggerConditionTypes,
+		ValidOperators: []Operator{
+			GreaterThan,
+			LessThan,
+			Is,
+		},
+	}, ConditionFieldGroupStations: {
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
+		ResourceTypes:   triggerConditionTypes,
+		ValidOperators: []Operator{
+			GreaterThan,
+			LessThan,
+			Is,
+		},
+	},
+	ConditionFieldInBusinessHours: {
+		ValidationRegex: regexp.MustCompile(`(true|false)`),
+		ResourceTypes:   triggerConditionTypes,
+		ValidOperators:  []Operator{EmptyOperator},
+	},
+	ConditionFieldRequesterTwitterFollowersCount: {
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
+		ResourceTypes:   triggerConditionTypes,
+		ValidOperators: []Operator{
+			GreaterThan,
+			LessThan,
+			Is,
+		},
+	},
+	ConditionFieldRequesterTwitterStatusesCount: {
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
+		ResourceTypes:   triggerConditionTypes,
+		ValidOperators: []Operator{
+			GreaterThan,
+			LessThan,
+			Is,
+		},
+	},
+	ConditionFieldRequesterTwitterVerified: {
+		ValidationRegex: regexp.MustCompile(`^$`),
+		ResourceTypes:   triggerConditionTypes,
+		ValidOperators:  []Operator{EmptyOperator},
+	},
+	ConditionFieldRequesterRole: {
+		ValidationRegex: regexp.MustCompile(`(agent|admin|end-user|light-agent)`),
+		ResourceTypes:   triggerConditionTypes,
+		ValidOperators: []Operator{
+			Is,
+			IsNot,
+		},
+	},
+	ConditionFieldAttachment: {
+		ValidationRegex: regexp.MustCompile(`^$`),
+		ResourceTypes:   triggerConditionTypes,
+		ValidOperators:  []Operator{EmptyOperator},
+	},
+	ConditionFieldCC: {
+		ValidationRegex: regexp.MustCompile(`^$`),
+		ResourceTypes:   triggerConditionTypes,
+		ValidOperators:  []Operator{EmptyOperator},
+	},
+	ConditionFieldCustomStatusId: {
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
+		ResourceTypes:   sharedConditionTypes,
+		ValidOperators: []Operator{
+			Includes,
+			NotIncludes,
+			Is,
+			IsNot,
+			Changed,
+			Value,
+			ValuePrevious,
+			NotChanged,
+			NotValue,
+			NotValuePrevious,
+		},
+	},
+	ConditionFieldTicketTypeId: {
+		ValidationRegex: regexp.MustCompile(`^([1234])$`),
+		ResourceTypes:   slaConditionTypes,
+		ValidOperators: []Operator{
+			Is,
+			IsNot,
+		},
+	},
+	ConditionFieldExactCreatedAt: {
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
+		ResourceTypes:   slaConditionTypes,
+		ValidOperators: []Operator{
+			LessThan,
+			LessThanEqual,
+			GreaterThan,
+			GreaterThanEqual,
+		},
+	},
+	ConditionFieldNew: {
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
+		ResourceTypes:   timeBasedViewAutomationConditionTypes,
+		ValidOperators: []Operator{
+			Is,
+			IsBusinessHours,
+			LessThan,
+			LessThanBusinessHours,
+			GreaterThan,
+			GreaterThanBusinessHours,
+		},
+	},
+	ConditionFieldOpen: {
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
+		ResourceTypes:   timeBasedViewAutomationConditionTypes,
+		ValidOperators: []Operator{
+			Is,
+			IsBusinessHours,
+			LessThan,
+			LessThanBusinessHours,
+			GreaterThan,
+			GreaterThanBusinessHours,
+		},
+	},
+	ConditionFieldPending: {
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
+		ResourceTypes:   timeBasedViewAutomationConditionTypes,
+		ValidOperators: []Operator{
+			Is,
+			IsBusinessHours,
+			LessThan,
+			LessThanBusinessHours,
+			GreaterThan,
+			GreaterThanBusinessHours,
+		},
+	},
+	ConditionFieldHold: {
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
+		ResourceTypes:   timeBasedViewAutomationConditionTypes,
+		ValidOperators: []Operator{
+			Is,
+			IsBusinessHours,
+			LessThan,
+			LessThanBusinessHours,
+			GreaterThan,
+			GreaterThanBusinessHours,
+		},
+	},
+	ConditionFieldSolved: {
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
+		ResourceTypes:   timeBasedViewAutomationConditionTypes,
+		ValidOperators: []Operator{
+			Is,
+			IsBusinessHours,
+			LessThan,
+			LessThanBusinessHours,
+			GreaterThan,
+			GreaterThanBusinessHours,
+		},
+	},
+	ConditionFieldClosed: {
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
+		ResourceTypes:   timeBasedViewAutomationConditionTypes,
+		ValidOperators: []Operator{
+			Is,
+			IsBusinessHours,
+			LessThan,
+			LessThanBusinessHours,
+			GreaterThan,
+			GreaterThanBusinessHours,
+		},
+	},
+	ConditionFieldAssignedAt: {
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
+		ResourceTypes:   timeBasedViewAutomationConditionTypes,
+		ValidOperators: []Operator{
+			Is,
+			IsBusinessHours,
+			LessThan,
+			LessThanBusinessHours,
+			GreaterThan,
+			GreaterThanBusinessHours,
+		},
+	},
+	ConditionFieldUpdatedAt: {
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
+		ResourceTypes:   timeBasedViewAutomationConditionTypes,
+		ValidOperators: []Operator{
+			Is,
+			IsBusinessHours,
+			LessThan,
+			LessThanBusinessHours,
+			GreaterThan,
+			GreaterThanBusinessHours,
+		},
+	},
+	ConditionFieldRequesterUpdatedAt: {
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
+		ResourceTypes:   timeBasedViewAutomationConditionTypes,
+		ValidOperators: []Operator{
+			Is,
+			IsBusinessHours,
+			LessThan,
+			LessThanBusinessHours,
+			GreaterThan,
+			GreaterThanBusinessHours,
+		},
+	},
+	ConditionFieldAssigneeUpdatedAt: {
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
+		ResourceTypes:   timeBasedViewAutomationConditionTypes,
+		ValidOperators: []Operator{
+			Is,
+			IsBusinessHours,
+			LessThan,
+			LessThanBusinessHours,
+			GreaterThan,
+			GreaterThanBusinessHours,
+		},
+	},
+	ConditionFieldDueDate: {
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
+		ResourceTypes:   timeBasedViewAutomationConditionTypes,
+		ValidOperators: []Operator{
+			Is,
+			IsBusinessHours,
+			LessThan,
+			LessThanBusinessHours,
+			GreaterThan,
+			GreaterThanBusinessHours,
+		},
+	},
+	ConditionFieldUntilDueDate: {
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
+		ResourceTypes:   timeBasedViewAutomationConditionTypes,
+		ValidOperators: []Operator{
+			Is,
+			IsBusinessHours,
+			LessThan,
+			LessThanBusinessHours,
+			GreaterThan,
+			GreaterThanBusinessHours,
+		},
+	},
+	ConditionFieldDescriptionIncludesWord: {
+		ValidationRegex: regexp.MustCompile(`^\w+$`),
+		ResourceTypes:   timeBasedViewAutomationConditionTypes,
+		ValidOperators:  []Operator{EmptyOperator},
+	},
 }

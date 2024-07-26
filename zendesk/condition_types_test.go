@@ -1,25 +1,32 @@
 package zendesk
 
-import (
-	"regexp"
-	"testing"
+import "testing"
 
-	"golang.org/x/exp/maps"
-)
+func TestCondition_Validate(t *testing.T) {
+	cases := []struct {
+		testName     string
+		condition    Condition
+		resourceType ConditionResourceType
+		shouldPass   bool
+	}{
+		{
+			testName: "should validate condition object for resource type",
+			condition: Condition{
+				Field:    string(ConditionFieldStatus),
+				Operator: string(Is),
+				Value:    "open",
+			},
+			resourceType: TriggerConditionResource,
+			shouldPass:   true,
+		},
+	}
 
-func TestRegexConditionFields(t *testing.T) {
-	keys := maps.Keys(ConditionMap)
+	for _, c := range cases {
+		t.Run(c.testName, func(t *testing.T) {
+			if err := c.condition.Validate(c.resourceType); err != nil && c.shouldPass {
+				t.Fatalf("condition validation returned unexpected error: %s", err)
 
-	for _, k := range keys {
-
-		values := ConditionMap[k]
-
-		for _, v := range values.ValuesRegex {
-			_, err := regexp.Compile(v)
-
-			if err != nil {
-				t.Fatalf("Error converting regex: %s", err.Error())
 			}
-		}
+		})
 	}
 }

@@ -154,6 +154,20 @@ const (
 	ConditionFieldTicketTypeId ConditionField = "ticket_type_id"
 )
 
+var TimeBasedConditions = []ConditionField{
+	ConditionFieldNew,
+	ConditionFieldOpen,
+	ConditionFieldPending,
+	ConditionFieldSolved,
+	ConditionFieldClosed,
+	ConditionFieldAssignedAt,
+	ConditionFieldUpdatedAt,
+	ConditionFieldAssigneeUpdatedAt,
+	ConditionFieldRequesterUpdatedAt,
+	ConditionFieldDueDate,
+	ConditionFieldUntilDueDate,
+}
+
 type ConditionResourceType string
 
 var _ ResourceType[ConditionResourceType] = ConditionResourceType("")

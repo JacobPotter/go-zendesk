@@ -55,7 +55,7 @@ func (f TicketField) Validate() error {
 	if (f.Type == Multiselect.String() || f.Type == Tagger.String()) && len(f.CustomFieldOptions) < 1 {
 		return fmt.Errorf("when ticket field is type tagger or multiselect, there must be at least one custom option")
 	}
-	
+
 	return nil
 }
 
@@ -79,7 +79,19 @@ const (
 )
 
 // ValidTicketFieldsTypes is a slice containing all valid ticket field names.
-var ValidTicketFieldsTypes = []TicketFieldType{
+type TicketFieldsTypes []TicketFieldType
+
+func (t TicketFieldsTypes) StringSlice() []string {
+	strings := make([]string, len(t))
+
+	for i, fieldType := range t {
+		strings[i] = fieldType.String()
+	}
+
+	return strings
+}
+
+var ValidTicketFieldsTypes = TicketFieldsTypes{
 	Text,
 	TextArea,
 	Checkbox,

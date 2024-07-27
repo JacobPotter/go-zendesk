@@ -179,7 +179,7 @@ func (a ActionsValueValidator) ValidateValue(
 	if v, ok := a[key]; ok {
 		keys := a.ValidKeys()
 
-		if !slices.Contains(keys, key) && !strings.HasPrefix(
+		if !slices.Contains(keys, string(key)) && !strings.HasPrefix(
 			string(key),
 			string(ActionFieldCustomField),
 		) {
@@ -214,8 +214,17 @@ func (a ActionsValueValidator) ValidateValue(
 
 }
 
-func (a ActionsValueValidator) ValidKeys() []ActionField {
-	return maps.Keys(a)
+func (a ActionsValueValidator) ValidKeys() []string {
+
+	keys := maps.Keys(a)
+
+	strings := make([]string, len(keys))
+
+	for i, key := range keys {
+		strings[i] = string(key)
+	}
+
+	return strings
 }
 
 // ValidActionValuesMap Map of action fields to possible values, based on valid values from [Actions Reference]

@@ -56,7 +56,7 @@ type ValidateValue[T any] interface {
 
 type Validator[F any, T any] interface {
 	ValidateValue(key F, value string, operator Operator, resourceType ResourceType[T]) error
-	ValidKeys() []F
+	ValidKeys() []string
 }
 
 type ValueValidator[T any] struct {

@@ -154,7 +154,9 @@ const (
 	ConditionFieldTicketTypeId ConditionField = "ticket_type_id"
 )
 
-var TimeBasedConditions = []ConditionField{
+type ConditionFields []ConditionField
+
+var TimeBasedConditions = ConditionFields{
 	ConditionFieldNew,
 	ConditionFieldOpen,
 	ConditionFieldPending,
@@ -225,7 +227,7 @@ func (c ConditionsValueValidator) ValidateValue(key ConditionField, value string
 
 		keys := c.ValidKeys()
 
-		if !slices.Contains(keys, key) && !strings.HasPrefix(string(key), string(ConditionFieldCustomField)) {
+		if !slices.Contains(keys, string(key)) && !strings.HasPrefix(string(key), string(ConditionFieldCustomField)) {
 			return fmt.Errorf("invalid action field %s", key)
 		}
 
@@ -261,8 +263,15 @@ func (c ConditionsValueValidator) ValidateValue(key ConditionField, value string
 
 }
 
-func (c ConditionsValueValidator) ValidKeys() []ConditionField {
-	return maps.Keys(c)
+func (c ConditionsValueValidator) ValidKeys() []string {
+	keys := maps.Keys(c)
+	strings := make([]string, len(c.ValidKeys()))
+
+	for i, field := range keys {
+		strings[i] = string(field)
+	}
+
+	return strings
 }
 
 var _ Validator[ConditionField, ConditionResourceType] = ConditionsValueValidator{}

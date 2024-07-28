@@ -187,7 +187,7 @@ func (a ActionsValueValidator) ValidateValue(
 			return fmt.Errorf("invalid action field %s", key)
 		}
 
-		if !slices.Contains(v.ResourceTypes.Elements(), resourceType.ToValue()) {
+		if !slices.Contains(v.ResourceTypes.Elements(), resourceType.ToValue()) && !isCustomField {
 			return fmt.Errorf("invalid resource type for action key: %s", resourceType)
 		}
 

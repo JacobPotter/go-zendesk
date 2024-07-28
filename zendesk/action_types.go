@@ -176,13 +176,14 @@ func (a ActionsValueValidator) ValidateValue(
 	resourceType ResourceType[ActionResourceType],
 ) error {
 
-	if v, ok := a[key]; ok {
+	isCustomField := strings.HasPrefix(
+		string(key),
+		string(ActionFieldCustomField),
+	)
+	if v, ok := a[key]; ok || isCustomField {
 		keys := a.ValidKeys()
 
-		if !slices.Contains(keys, string(key)) && !strings.HasPrefix(
-			string(key),
-			string(ActionFieldCustomField),
-		) {
+		if !slices.Contains(keys, string(key)) && !isCustomField {
 			return fmt.Errorf("invalid action field %s", key)
 		}
 
@@ -192,7 +193,7 @@ func (a ActionsValueValidator) ValidateValue(
 
 		var result []byte
 
-		if strings.HasPrefix(string(key), string(ActionFieldCustomField)) {
+		if isCustomField {
 			after, _ := strings.CutPrefix(string(key), string(ActionFieldCustomField))
 			result = v.ValidationRegex.Find([]byte(after))
 		} else {
@@ -218,13 +219,13 @@ func (a ActionsValueValidator) ValidKeys() []string {
 
 	keys := maps.Keys(a)
 
-	strings := make([]string, len(keys))
+	stringSlice := make([]string, len(keys))
 
 	for i, key := range keys {
-		strings[i] = string(key)
+		stringSlice[i] = string(key)
 	}
 
-	return strings
+	return stringSlice
 }
 
 // ValidActionValuesMap Map of action fields to possible values, based on valid values from [Actions Reference]

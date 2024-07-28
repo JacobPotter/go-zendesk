@@ -223,11 +223,12 @@ type ConditionValueValidator ValueValidator[ConditionResourceType]
 type ConditionsValueValidator map[ConditionField]ConditionValueValidator
 
 func (c ConditionsValueValidator) ValidateValue(key ConditionField, value string, operator Operator, resourceType ResourceType[ConditionResourceType]) error {
-	if v, ok := c[key]; ok {
+	isCustomField := strings.HasPrefix(string(key), string(ConditionFieldCustomField))
+	if v, ok := c[key]; ok || isCustomField {
 
 		keys := c.ValidKeys()
 
-		if !slices.Contains(keys, string(key)) && !strings.HasPrefix(string(key), string(ConditionFieldCustomField)) {
+		if !slices.Contains(keys, string(key)) && !isCustomField {
 			return fmt.Errorf("invalid action field %s", key)
 		}
 
@@ -241,7 +242,7 @@ func (c ConditionsValueValidator) ValidateValue(key ConditionField, value string
 
 		var result []byte
 
-		if strings.HasPrefix(string(key), string(ConditionFieldCustomField)) {
+		if isCustomField {
 			after, _ := strings.CutPrefix(string(key), string(ConditionFieldCustomField))
 			result = v.ValidationRegex.Find([]byte(after))
 		} else {

@@ -65,7 +65,7 @@ const (
 	// ConditionFieldRecipient is alias for recipient
 	ConditionFieldRecipient ConditionField = "recipient"
 	// ConditionFieldCustomField is alias for custom_field_ prefix
-	ConditionFieldCustomField ConditionField = "custom_field_"
+	ConditionFieldCustomField ConditionField = "custom_fields_"
 	// ConditionFieldType is alias for type
 	ConditionFieldType ConditionField = "type"
 	// ConditionFieldStatus is alias for status

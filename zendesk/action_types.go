@@ -123,7 +123,7 @@ const (
 	// ActionFieldRemoveSkills remove_skills
 	ActionFieldRemoveSkills ActionField = "remove_skills"
 	// ActionFieldCustomField custom_field_ prefix
-	ActionFieldCustomField ActionField = "custom_field_"
+	ActionFieldCustomField ActionField = "custom_fields_"
 )
 
 // ActionResourceType String type of resource the action belongs to. Valid

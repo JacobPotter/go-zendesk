@@ -591,6 +591,11 @@ var ValidConditionOperatorValues = ConditionsValueValidator{
 		ResourceTypes:   triggerConditionTypes,
 		ValidOperators:  []Operator{EmptyOperator},
 	},
+	ConditionFieldIsBusinessHours: {
+		ValidationRegex: regexp.MustCompile(`(true|false)`),
+		ResourceTypes:   triggerConditionTypes,
+		ValidOperators:  []Operator{EmptyOperator},
+	},
 	ConditionFieldCC: {
 		ValidationRegex: regexp.MustCompile(`^$`),
 		ResourceTypes:   triggerConditionTypes,

@@ -180,14 +180,21 @@ func (a ActionsValueValidator) ValidateValue(
 		string(key),
 		string(ActionFieldCustomField),
 	)
-	if v, ok := a[key]; ok || isCustomField {
+
+	var newKey = key
+
+	if isCustomField {
+		newKey = ActionFieldCustomField
+	}
+
+	if v, ok := a[newKey]; ok {
 		keys := a.ValidKeys()
 
-		if !slices.Contains(keys, string(key)) && !isCustomField {
-			return fmt.Errorf("invalid action field %s", key)
+		if !slices.Contains(keys, string(newKey)) {
+			return fmt.Errorf("invalid action field %s", newKey)
 		}
 
-		if !slices.Contains(v.ResourceTypes.Elements(), resourceType.ToValue()) && !isCustomField {
+		if !slices.Contains(v.ResourceTypes.Elements(), resourceType.ToValue()) {
 			return fmt.Errorf("invalid resource type for action key: %s", resourceType)
 		}
 
@@ -211,7 +218,7 @@ func (a ActionsValueValidator) ValidateValue(
 		return nil
 	}
 
-	return fmt.Errorf("invalid action field %s", key)
+	return fmt.Errorf("invalid action field %s", newKey)
 
 }
 

@@ -224,20 +224,27 @@ type ConditionsValueValidator map[ConditionField]ConditionValueValidator
 
 func (c ConditionsValueValidator) ValidateValue(key ConditionField, value string, operator Operator, resourceType ResourceType[ConditionResourceType]) error {
 	isCustomField := strings.HasPrefix(string(key), string(ConditionFieldCustomField))
-	if v, ok := c[key]; ok || isCustomField {
+
+	var newKey = key
+
+	if isCustomField {
+		newKey = ConditionFieldCustomField
+	}
+
+	if v, ok := c[newKey]; ok || isCustomField {
 
 		keys := c.ValidKeys()
 
-		if !slices.Contains(keys, string(key)) && !isCustomField {
-			return fmt.Errorf("invalid action field %s", key)
+		if !slices.Contains(keys, string(newKey)) {
+			return fmt.Errorf("invalid action field %s", newKey)
 		}
 
-		if !slices.Contains(v.ResourceTypes.Elements(), resourceType.ToValue()) && !isCustomField {
-			return fmt.Errorf("invalid resource type for condition key: %s", key)
+		if !slices.Contains(v.ResourceTypes.Elements(), resourceType.ToValue()) {
+			return fmt.Errorf("invalid resource type for condition key: %s", newKey)
 		}
 
 		if len(v.ValidOperators) > 0 && !slices.Contains(v.ValidOperators, operator) {
-			return fmt.Errorf("invalid operator for condition key: %s", key)
+			return fmt.Errorf("invalid operator for condition key: %s", newKey)
 		}
 
 		var result []byte
@@ -260,7 +267,7 @@ func (c ConditionsValueValidator) ValidateValue(key ConditionField, value string
 		return nil
 	}
 
-	return fmt.Errorf("invalid action field %s", key)
+	return fmt.Errorf("invalid action field %s", newKey)
 
 }
 

@@ -232,6 +232,8 @@ func (a ActionsValueValidator) ValidKeys() []string {
 		stringSlice[i] = string(key)
 	}
 
+	slices.Sort(stringSlice)
+
 	return stringSlice
 }
 

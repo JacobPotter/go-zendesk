@@ -273,13 +273,15 @@ func (c ConditionsValueValidator) ValidateValue(key ConditionField, value string
 
 func (c ConditionsValueValidator) ValidKeys() []string {
 	keys := maps.Keys(c)
-	stringsSlice := make([]string, len(keys))
+	stringSlice := make([]string, len(keys))
 
 	for i, field := range keys {
-		stringsSlice[i] = field.String()
+		stringSlice[i] = field.String()
 	}
 
-	return stringsSlice
+	slices.Sort(stringSlice)
+
+	return stringSlice
 }
 
 var _ Validator[ConditionField, ConditionResourceType] = ConditionsValueValidator{}

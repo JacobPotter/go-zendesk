@@ -12,7 +12,7 @@ func TestCreateWebhook(t *testing.T) {
 	client := newTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	hook, err := client.CreateWebhook(context.Background(), &Webhook{
+	hook, err := client.CreateWebhook(context.Background(), Webhook{
 		Authentication: WebhookAuthentication{
 			AddPosition: "header",
 			Data: WebhookCredentials{
@@ -67,7 +67,7 @@ func TestUpdateWebhook(t *testing.T) {
 	client := newTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	err := client.UpdateWebhook(ctx, "01EJFTSCC78X5V07NPY2MHR00M", &Webhook{})
+	err := client.UpdateWebhook(ctx, "01EJFTSCC78X5V07NPY2MHR00M", Webhook{})
 	if err != nil {
 		t.Fatalf("Failed to send request to create webhook: %s", err)
 	}

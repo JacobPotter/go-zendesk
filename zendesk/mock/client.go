@@ -417,10 +417,10 @@ func (mr *ClientMockRecorder) CreateView(ctx, newView any) *gomock.Call {
 }
 
 // CreateWebhook mocks base method.
-func (m *Client) CreateWebhook(ctx context.Context, hook *zendesk.Webhook) (*zendesk.Webhook, error) {
+func (m *Client) CreateWebhook(ctx context.Context, hook zendesk.Webhook) (zendesk.Webhook, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateWebhook", ctx, hook)
-	ret0, _ := ret[0].(*zendesk.Webhook)
+	ret0, _ := ret[0].(zendesk.Webhook)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -2472,10 +2472,10 @@ func (mr *ClientMockRecorder) GetViewsOBP(ctx, opts any) *gomock.Call {
 }
 
 // GetWebhook mocks base method.
-func (m *Client) GetWebhook(ctx context.Context, webhookID string) (*zendesk.Webhook, error) {
+func (m *Client) GetWebhook(ctx context.Context, webhookID string) (zendesk.Webhook, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetWebhook", ctx, webhookID)
-	ret0, _ := ret[0].(*zendesk.Webhook)
+	ret0, _ := ret[0].(zendesk.Webhook)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -2487,10 +2487,10 @@ func (mr *ClientMockRecorder) GetWebhook(ctx, webhookID any) *gomock.Call {
 }
 
 // GetWebhookSigningSecret mocks base method.
-func (m *Client) GetWebhookSigningSecret(ctx context.Context, webhookID string) (*zendesk.WebhookSigningSecret, error) {
+func (m *Client) GetWebhookSigningSecret(ctx context.Context, webhookID string) (zendesk.WebhookSigningSecret, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetWebhookSigningSecret", ctx, webhookID)
-	ret0, _ := ret[0].(*zendesk.WebhookSigningSecret)
+	ret0, _ := ret[0].(zendesk.WebhookSigningSecret)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -2925,7 +2925,7 @@ func (mr *ClientMockRecorder) UpdateView(ctx, updatedId, udpatedView any) *gomoc
 }
 
 // UpdateWebhook mocks base method.
-func (m *Client) UpdateWebhook(ctx context.Context, webhookID string, hook *zendesk.Webhook) error {
+func (m *Client) UpdateWebhook(ctx context.Context, webhookID string, hook zendesk.Webhook) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateWebhook", ctx, webhookID, hook)
 	ret0, _ := ret[0].(error)

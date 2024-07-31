@@ -48,30 +48,30 @@ type WebhookSigningSecret struct {
 }
 
 type WebhookAPI interface {
-	CreateWebhook(ctx context.Context, hook *Webhook) (*Webhook, error)
-	GetWebhook(ctx context.Context, webhookID string) (*Webhook, error)
-	UpdateWebhook(ctx context.Context, webhookID string, hook *Webhook) error
+	CreateWebhook(ctx context.Context, hook Webhook) (Webhook, error)
+	GetWebhook(ctx context.Context, webhookID string) (Webhook, error)
+	UpdateWebhook(ctx context.Context, webhookID string, hook Webhook) error
 	DeleteWebhook(ctx context.Context, webhookID string) error
-	GetWebhookSigningSecret(ctx context.Context, webhookID string) (*WebhookSigningSecret, error)
+	GetWebhookSigningSecret(ctx context.Context, webhookID string) (WebhookSigningSecret, error)
 }
 
 // CreateWebhook creates new webhook.
 //
 // https://developer.zendesk.com/api-reference/event-connectors/webhooks/webhooks/#create-or-clone-webhook
-func (z *Client) CreateWebhook(ctx context.Context, hook *Webhook) (*Webhook, error) {
+func (z *Client) CreateWebhook(ctx context.Context, hook Webhook) (Webhook, error) {
 	var data, result struct {
-		Webhook *Webhook `json:"webhook"`
+		Webhook Webhook `json:"webhook"`
 	}
 	data.Webhook = hook
 
 	body, err := z.post(ctx, "/webhooks", data)
 	if err != nil {
-		return nil, err
+		return Webhook{}, err
 	}
 
 	err = json.Unmarshal(body, &result)
 	if err != nil {
-		return nil, err
+		return Webhook{}, err
 	}
 	return result.Webhook, nil
 }
@@ -79,19 +79,19 @@ func (z *Client) CreateWebhook(ctx context.Context, hook *Webhook) (*Webhook, er
 // GetWebhook gets a specified webhook.
 //
 // https://developer.zendesk.com/api-reference/event-connectors/webhooks/webhooks/#show-webhook
-func (z *Client) GetWebhook(ctx context.Context, webhookID string) (*Webhook, error) {
+func (z *Client) GetWebhook(ctx context.Context, webhookID string) (Webhook, error) {
 	var result struct {
-		Webhook *Webhook `json:"webhook"`
+		Webhook Webhook `json:"webhook"`
 	}
 
 	body, err := z.get(ctx, fmt.Sprintf("/webhooks/%s", webhookID))
 	if err != nil {
-		return nil, err
+		return Webhook{}, err
 	}
 
 	err = json.Unmarshal(body, &result)
 	if err != nil {
-		return nil, err
+		return Webhook{}, err
 	}
 
 	return result.Webhook, nil
@@ -100,9 +100,9 @@ func (z *Client) GetWebhook(ctx context.Context, webhookID string) (*Webhook, er
 // UpdateWebhook updates a webhook with the specified webhook.
 //
 // https://developer.zendesk.com/api-reference/event-connectors/webhooks/webhooks/#update-webhook
-func (z *Client) UpdateWebhook(ctx context.Context, webhookID string, hook *Webhook) error {
+func (z *Client) UpdateWebhook(ctx context.Context, webhookID string, hook Webhook) error {
 	var data struct {
-		Webhook *Webhook `json:"webhook"`
+		Webhook Webhook `json:"webhook"`
 	}
 	data.Webhook = hook
 
@@ -129,19 +129,19 @@ func (z *Client) DeleteWebhook(ctx context.Context, webhookID string) error {
 // GetWebhookSigningSecret gets the signing secret of specified webhook.
 //
 // https://developer.zendesk.com/api-reference/event-connectors/webhooks/webhooks/#show-webhook-signing-secret
-func (z *Client) GetWebhookSigningSecret(ctx context.Context, webhookID string) (*WebhookSigningSecret, error) {
+func (z *Client) GetWebhookSigningSecret(ctx context.Context, webhookID string) (WebhookSigningSecret, error) {
 	var result struct {
-		SigningSecret *WebhookSigningSecret `json:"signing_secret"`
+		SigningSecret WebhookSigningSecret `json:"signing_secret"`
 	}
 
 	body, err := z.get(ctx, fmt.Sprintf("/webhooks/%s/signing_secret", webhookID))
 	if err != nil {
-		return nil, err
+		return WebhookSigningSecret{}, err
 	}
 
 	err = json.Unmarshal(body, &result)
 	if err != nil {
-		return nil, err
+		return WebhookSigningSecret{}, err
 	}
 
 	return result.SigningSecret, nil

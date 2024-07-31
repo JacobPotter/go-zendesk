@@ -21,7 +21,7 @@ type Webhook struct {
 	ID             string                `json:"id,omitempty"`
 	Name           string                `json:"name"`
 	RequestFormat  string                `json:"request_format"`
-	SigningSecret  WebhookSigningSecret  `json:"signing_secret,omitempty"`
+	SigningSecret  *WebhookSigningSecret `json:"signing_secret,omitempty"`
 	Status         string                `json:"status"`
 	Subscriptions  []string              `json:"subscriptions,omitempty"`
 	UpdatedAt      time.Time             `json:"updated_at,omitempty"`

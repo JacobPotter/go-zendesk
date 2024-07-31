@@ -15,7 +15,7 @@ func TestCreateWebhook(t *testing.T) {
 	hook, err := client.CreateWebhook(context.Background(), &Webhook{
 		Authentication: WebhookAuthentication{
 			AddPosition: "header",
-			Data: &WebhookCredentials{
+			Data: WebhookCredentials{
 				HeaderName:  "Authentication",
 				HeaderValue: "",
 				Username:    "john_smith",

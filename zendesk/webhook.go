@@ -37,9 +37,9 @@ type WebhookCredentials struct {
 }
 
 type WebhookAuthentication struct {
-	Type        string              `json:"type"`
-	Data        *WebhookCredentials `json:"data"`
-	AddPosition string              `json:"add_position"`
+	Type        string             `json:"type"`
+	Data        WebhookCredentials `json:"data"`
+	AddPosition string             `json:"add_position"`
 }
 
 type WebhookSigningSecret struct {

@@ -30,15 +30,12 @@ type SLAPolicyMetric struct {
 //
 // ref: https://developer.zendesk.com/rest_api/docs/core/slas/policies#json-format
 type SLAPolicy struct {
-	ID          int64  `json:"id,omitempty"`
-	Title       string `json:"title"`
-	Description string `json:"description,omitempty"`
-	Position    int64  `json:"position,omitempty"`
-	Active      bool   `json:"active,omitempty"`
-	Filter      struct {
-		All []Condition `json:"all"`
-		Any []Condition `json:"any"`
-	} `json:"filter"`
+	ID            int64             `json:"id,omitempty"`
+	Title         string            `json:"title"`
+	Description   string            `json:"description,omitempty"`
+	Position      int64             `json:"position,omitempty"`
+	Active        bool              `json:"active,omitempty"`
+	Filter        Conditions        `json:"filter"`
 	PolicyMetrics []SLAPolicyMetric `json:"policy_metrics,omitempty"`
 	CreatedAt     *time.Time        `json:"created_at,omitempty"`
 	UpdatedAt     *time.Time        `json:"updated_at,omitempty"`

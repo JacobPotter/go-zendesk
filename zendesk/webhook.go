@@ -10,22 +10,22 @@ import (
 // Webhook is struct for webhook payload.
 // https://developer.zendesk.com/api-reference/event-connectors/webhooks/webhooks/
 type Webhook struct {
-	Authentication *WebhookAuthentication `json:"authentication,omitempty"`
-	CreatedAt      time.Time              `json:"created_at,omitempty"`
-	CreatedBy      string                 `json:"created_by,omitempty"`
-	Description    string                 `json:"description,omitempty"`
-	Endpoint       string                 `json:"endpoint"`
-	CustomHeaders  map[string]string      `json:"custom_headers,omitempty"`
-	ExternalSource interface{}            `json:"external_source,omitempty"`
-	HTTPMethod     string                 `json:"http_method"`
-	ID             string                 `json:"id,omitempty"`
-	Name           string                 `json:"name"`
-	RequestFormat  string                 `json:"request_format"`
-	SigningSecret  *WebhookSigningSecret  `json:"signing_secret,omitempty"`
-	Status         string                 `json:"status"`
-	Subscriptions  []string               `json:"subscriptions,omitempty"`
-	UpdatedAt      time.Time              `json:"updated_at,omitempty"`
-	UpdatedBy      string                 `json:"updated_by,omitempty"`
+	Authentication WebhookAuthentication `json:"authentication,omitempty"`
+	CreatedAt      time.Time             `json:"created_at,omitempty"`
+	CreatedBy      string                `json:"created_by,omitempty"`
+	Description    string                `json:"description,omitempty"`
+	Endpoint       string                `json:"endpoint"`
+	CustomHeaders  map[string]string     `json:"custom_headers,omitempty"`
+	ExternalSource interface{}           `json:"external_source,omitempty"`
+	HTTPMethod     string                `json:"http_method"`
+	ID             string                `json:"id,omitempty"`
+	Name           string                `json:"name"`
+	RequestFormat  string                `json:"request_format"`
+	SigningSecret  WebhookSigningSecret  `json:"signing_secret,omitempty"`
+	Status         string                `json:"status"`
+	Subscriptions  []string              `json:"subscriptions,omitempty"`
+	UpdatedAt      time.Time             `json:"updated_at,omitempty"`
+	UpdatedBy      string                `json:"updated_by,omitempty"`
 }
 
 type WebhookCredentials struct {

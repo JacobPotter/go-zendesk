@@ -13,7 +13,7 @@ func TestCreateWebhook(t *testing.T) {
 	defer mockAPI.Close()
 
 	hook, err := client.CreateWebhook(context.Background(), &Webhook{
-		Authentication: &WebhookAuthentication{
+		Authentication: WebhookAuthentication{
 			AddPosition: "header",
 			Data: &WebhookCredentials{
 				HeaderName:  "Authentication",

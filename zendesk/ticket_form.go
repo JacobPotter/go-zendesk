@@ -17,19 +17,19 @@ import (
 // AgentConditions and EndUserConditions specify which ticket fields to show on the form based on a set of defined conditions
 type TicketForm struct {
 	Active             bool                     `json:"active"`
-	AgentConditions    []ConditionalTicketField `json:"agent_conditions"`
+	AgentConditions    []ConditionalTicketField `json:"agent_conditions,omitempty"`
 	CreatedAt          time.Time                `json:"created_at"`
-	Default            bool                     `json:"default"`
-	DisplayName        string                   `json:"display_name"`
-	EndUserConditions  []ConditionalTicketField `json:"end_user_conditions"`
-	EndUserVisible     bool                     `json:"end_user_visible"`
+	Default            bool                     `json:"default,omitempty"`
+	DisplayName        string                   `json:"display_name,omitempty"`
+	EndUserConditions  []ConditionalTicketField `json:"end_user_conditions,omitempty"`
+	EndUserVisible     bool                     `json:"end_user_visible,omitempty"`
 	ID                 int64                    `json:"id"`
-	InAllBrands        bool                     `json:"in_all_brands"`
+	InAllBrands        bool                     `json:"in_all_brands,omitempty"`
 	Name               string                   `json:"name"`
-	Position           int64                    `json:"position"`
-	RawDisplayName     string                   `json:"raw_display_name"`
-	RawName            string                   `json:"raw_name"`
-	RestrictedBrandIds []int64                  `json:"restricted_brand_ids"`
+	Position           int64                    `json:"position,omitempty"`
+	RawDisplayName     string                   `json:"raw_display_name,omitempty"`
+	RawName            string                   `json:"raw_name,omitempty"`
+	RestrictedBrandIds []int64                  `json:"restricted_brand_ids,omitempty"`
 	TicketFieldIds     []int64                  `json:"ticket_field_ids"`
 	UpdatedAt          time.Time                `json:"updated_at"`
 	Url                string                   `json:"url"`

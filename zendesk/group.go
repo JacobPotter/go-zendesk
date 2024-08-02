@@ -15,6 +15,7 @@ type Group struct {
 	Name        string    `json:"name"`
 	Default     bool      `json:"default,omitempty"`
 	Deleted     bool      `json:"deleted,omitempty"`
+	IsPublic    bool      `json:"is_public,omitempty"`
 	Description string    `json:"description,omitempty"`
 	CreatedAt   time.Time `json:"created_at,omitempty"`
 	UpdatedAt   time.Time `json:"updated_at,omitempty"`

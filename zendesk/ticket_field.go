@@ -66,6 +66,13 @@ func (t TicketFieldType) String() string {
 }
 
 const (
+	Subject           TicketFieldType = "subject"
+	Description       TicketFieldType = "description"
+	Status            TicketFieldType = "status"
+	TicketType        TicketFieldType = "tickettype"
+	Priority          TicketFieldType = "priority"
+	GroupField        TicketFieldType = "group"
+	Assignee          TicketFieldType = "assignee"
 	Text              TicketFieldType = "text"
 	TextArea          TicketFieldType = "text_area"
 	Checkbox          TicketFieldType = "checkbox"
@@ -78,7 +85,7 @@ const (
 	Tagger            TicketFieldType = "tagger"
 )
 
-// ValidTicketFieldsTypes is a slice containing all valid ticket field names.
+// TicketFieldsTypes is a slice containing all valid ticket field names.
 type TicketFieldsTypes []TicketFieldType
 
 func (t TicketFieldsTypes) StringSlice() []string {
@@ -92,6 +99,14 @@ func (t TicketFieldsTypes) StringSlice() []string {
 }
 
 var ValidTicketFieldsTypes = TicketFieldsTypes{
+	Status,
+	Description,
+	Subject,
+	TicketType,
+	Description,
+	Priority,
+	GroupField,
+	Assignee,
 	Text,
 	TextArea,
 	Checkbox,

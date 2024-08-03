@@ -75,7 +75,7 @@ const (
 	Assignee          TicketFieldType = "assignee"
 	CustomStatus      TicketFieldType = "custom_status"
 	Text              TicketFieldType = "text"
-	TextArea          TicketFieldType = "text_area"
+	TextArea          TicketFieldType = "textarea"
 	Checkbox          TicketFieldType = "checkbox"
 	Date              TicketFieldType = "date"
 	Integer           TicketFieldType = "integer"

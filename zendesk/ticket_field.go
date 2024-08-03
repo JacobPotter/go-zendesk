@@ -73,6 +73,7 @@ const (
 	Priority          TicketFieldType = "priority"
 	GroupField        TicketFieldType = "group"
 	Assignee          TicketFieldType = "assignee"
+	CustomStatus      TicketFieldType = "custom_status"
 	Text              TicketFieldType = "text"
 	TextArea          TicketFieldType = "text_area"
 	Checkbox          TicketFieldType = "checkbox"
@@ -103,10 +104,10 @@ var ValidTicketFieldsTypes = TicketFieldsTypes{
 	Description,
 	Subject,
 	TicketType,
-	Description,
 	Priority,
 	GroupField,
 	Assignee,
+	CustomStatus,
 	Text,
 	TextArea,
 	Checkbox,

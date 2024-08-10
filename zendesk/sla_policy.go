@@ -26,19 +26,45 @@ type SLAPolicyMetric struct {
 	BusinessHours bool   `json:"business_hours"`
 }
 
+type FirstReplyTime struct {
+	ActivateOnTicketCreatedForEndUser                      bool `json:"activate_on_ticket_created_for_end_user,omitempty"`
+	ActivateOnAgentTicketCreatedForEndUserWithInternalNote bool `json:"activate_on_agent_ticket_created_for_end_user_with_internal_note,omitempty"`
+	ActivateOnLightAgentOnEmailForwardTicketFromEndUser    bool `json:"activate_on_light_agent_on_email_forward_ticket_from_end_user,omitempty"`
+	ActivateOnAgentCreatedTicketForSelf                    bool `json:"activate_on_agent_created_ticket_for_self,omitempty"`
+	FulfillOnAgentInternalNote                             bool `json:"fulfill_on_agent_internal_note,omitempty"`
+}
+
+type NextReplyTime struct {
+	FulfillOnNonRequestingAgentInternalNoteAfterActivation        bool `json:"fulfill_on_non_requesting_agent_internal_note_after_activation,omitempty"`
+	ActivateOnEndUserAddedInternalNote                            bool `json:"activate_on_end_user_added_internal_note,omitempty"`
+	ActivateOnAgentRequestedTicketWithPublicCommentOrInternalNote bool `json:"activate_on_agent_requested_ticket_with_public_comment_or_internal_note,omitempty"`
+	ActivateOnLightAgentInternalNote                              bool `json:"activate_on_light_agent_internal_note,omitempty"`
+}
+
+type PeriodicUpdateTime struct {
+	ActivateOnAgentInternalNote bool `json:"activate_on_agent_internal_note,omitempty"`
+}
+
+type MetricSettings struct {
+	FirstReplyTime     FirstReplyTime     `json:"first_reply_time,omitempty"`
+	NextReplyTime      NextReplyTime      `json:"next_reply_time,omitempty"`
+	PeriodicUpdateTime PeriodicUpdateTime `json:"periodic_update_time,omitempty"`
+}
+
 // SLAPolicy is zendesk slaPolicy JSON payload format
 //
 // ref: https://developer.zendesk.com/rest_api/docs/core/slas/policies#json-format
 type SLAPolicy struct {
-	ID            int64             `json:"id,omitempty"`
-	Title         string            `json:"title"`
-	Description   string            `json:"description,omitempty"`
-	Position      int64             `json:"position,omitempty"`
-	Active        bool              `json:"active,omitempty"`
-	Filter        Conditions        `json:"filter"`
-	PolicyMetrics []SLAPolicyMetric `json:"policy_metrics,omitempty"`
-	CreatedAt     *time.Time        `json:"created_at,omitempty"`
-	UpdatedAt     *time.Time        `json:"updated_at,omitempty"`
+	ID             int64             `json:"id,omitempty"`
+	Title          string            `json:"title"`
+	Description    string            `json:"description,omitempty"`
+	Position       int64             `json:"position,omitempty"`
+	Active         bool              `json:"active,omitempty"`
+	Filter         Conditions        `json:"filter"`
+	PolicyMetrics  []SLAPolicyMetric `json:"policy_metrics,omitempty"`
+	MetricSettings MetricSettings    `json:"metric_settings,omitempty"`
+	CreatedAt      *time.Time        `json:"created_at,omitempty"`
+	UpdatedAt      *time.Time        `json:"updated_at,omitempty"`
 }
 
 // SLAPolicyListOptions is options for GetSLAPolicies

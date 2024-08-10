@@ -62,7 +62,7 @@ type SLAPolicy struct {
 	Active         bool              `json:"active,omitempty"`
 	Filter         Conditions        `json:"filter"`
 	PolicyMetrics  []SLAPolicyMetric `json:"policy_metrics,omitempty"`
-	MetricSettings *MetricSettings   `json:"metric_settings,omitempty"`
+	MetricSettings MetricSettings    `json:"metric_settings,omitempty"`
 	CreatedAt      *time.Time        `json:"created_at,omitempty"`
 	UpdatedAt      *time.Time        `json:"updated_at,omitempty"`
 }

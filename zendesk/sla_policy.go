@@ -46,9 +46,9 @@ type PeriodicUpdateTime struct {
 }
 
 type MetricSettings struct {
-	FirstReplyTime     *FirstReplyTime     `json:"first_reply_time,omitempty"`
-	NextReplyTime      *NextReplyTime      `json:"next_reply_time,omitempty"`
-	PeriodicUpdateTime *PeriodicUpdateTime `json:"periodic_update_time,omitempty"`
+	FirstReplyTime     FirstReplyTime     `json:"first_reply_time,omitempty"`
+	NextReplyTime      NextReplyTime      `json:"next_reply_time,omitempty"`
+	PeriodicUpdateTime PeriodicUpdateTime `json:"periodic_update_time,omitempty"`
 }
 
 // SLAPolicy is zendesk slaPolicy JSON payload format

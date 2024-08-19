@@ -12,8 +12,8 @@ type OrganizationField struct {
 	URL                    string              `json:"url,omitempty"`
 	Title                  string              `json:"title"`
 	Type                   string              `json:"type"`
-	RelationshipTargetType string              `json:"relationship_target_type"`
-	RelationshipFilter     RelationshipFilter  `json:"relationship_filter"`
+	RelationshipTargetType string              `json:"relationship_target_type,omitempty"`
+	RelationshipFilter     RelationshipFilter  `json:"relationship_filter,omitempty"`
 	Active                 bool                `json:"active,omitempty"`
 	CustomFieldOptions     []CustomFieldOption `json:"custom_field_options,omitempty"`
 	Description            string              `json:"description,omitempty"`

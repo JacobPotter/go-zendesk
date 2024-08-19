@@ -125,7 +125,7 @@ func TestBearerAuthCredential(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		auth := r.Header.Get("Authorization")
 		if auth != "Bearer hello" {
-			t.Fatalf("unexpected auth header: " + auth)
+			t.Fatal("unexpected auth header: " + auth)
 		}
 	}))
 	err := client.SetEndpointURL(server.URL)

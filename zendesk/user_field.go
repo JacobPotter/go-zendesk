@@ -21,11 +21,11 @@ type UserField struct {
 	System                 bool                `json:"system,omitempty"`
 	RegexpForValidation    string              `json:"regexp_for_validation,omitempty"`
 	Tag                    string              `json:"tag,omitempty"`
-	CustomFieldOptions     []CustomFieldOption `json:"custom_field_options"`
+	CustomFieldOptions     []CustomFieldOption `json:"custom_field_options,omitempty"`
 	CreatedAt              time.Time           `json:"created_at,omitempty"`
 	UpdatedAt              time.Time           `json:"updated_at,omitempty"`
-	RelationshipTargetType string              `json:"relationship_target_type"`
-	RelationshipFilter     RelationshipFilter  `json:"relationship_filter"`
+	RelationshipTargetType string              `json:"relationship_target_type,omitempty"`
+	RelationshipFilter     RelationshipFilter  `json:"relationship_filter,omitempty"`
 }
 
 type UserFieldListOptions struct {

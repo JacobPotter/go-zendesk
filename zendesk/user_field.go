@@ -3,6 +3,7 @@ package zendesk
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"time"
 )
 
@@ -35,6 +36,9 @@ type UserFieldListOptions struct {
 type UserFieldAPI interface {
 	GetUserFields(ctx context.Context, opts *UserFieldListOptions) ([]UserField, Page, error)
 	CreateUserField(ctx context.Context, userField UserField) (UserField, error)
+	GetUserField(ctx context.Context, id int64) (UserField, error)
+	UpdateUserField(ctx context.Context, id int64, userField UserField) (UserField, error)
+	DeleteUserField(ctx context.Context, id int64) error
 	GetUserFieldsIterator(ctx context.Context, opts *PaginationOptions) *Iterator[UserField]
 	GetUserFieldsOBP(ctx context.Context, opts *OBPOptions) ([]UserField, Page, error)
 	GetUserFieldsCBP(ctx context.Context, opts *CBPOptions) ([]UserField, CursorPaginationMeta, error)
@@ -89,4 +93,56 @@ func (z *Client) CreateUserField(ctx context.Context, userField UserField) (User
 		return UserField{}, err
 	}
 	return result.UserField, nil
+}
+
+func (z *Client) GetUserField(ctx context.Context, id int64) (UserField, error) {
+	var result struct {
+		UserField UserField `json:"user_field"`
+	}
+
+	body, err := z.get(ctx, fmt.Sprintf("/user_fields/%d.json", id))
+
+	if err != nil {
+		return UserField{}, err
+	}
+
+	err = json.Unmarshal(body, &result)
+
+	if err != nil {
+		return UserField{}, err
+	}
+
+	return result.UserField, nil
+}
+
+func (z *Client) UpdateUserField(ctx context.Context, id int64, userField UserField) (UserField, error) {
+	var result, data struct {
+		UserField UserField `json:"user_field"`
+	}
+
+	data.UserField = userField
+
+	body, err := z.put(ctx, fmt.Sprintf("/user_fields/%d.json", id), data)
+
+	if err != nil {
+		return UserField{}, err
+	}
+
+	err = json.Unmarshal(body, &result)
+
+	if err != nil {
+		return UserField{}, err
+	}
+
+	return result.UserField, nil
+}
+
+func (z *Client) DeleteUserField(ctx context.Context, id int64) error {
+	err := z.delete(ctx, fmt.Sprintf("/user_fields/%d.json", id))
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

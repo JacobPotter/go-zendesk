@@ -529,6 +529,20 @@ func (mr *ClientMockRecorder) DeleteOrganization(ctx, orgID any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteOrganization", reflect.TypeOf((*Client)(nil).DeleteOrganization), ctx, orgID)
 }
 
+// DeleteOrganizationField mocks base method.
+func (m *Client) DeleteOrganizationField(ctx context.Context, id int64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteOrganizationField", ctx, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteOrganizationField indicates an expected call of DeleteOrganizationField.
+func (mr *ClientMockRecorder) DeleteOrganizationField(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteOrganizationField", reflect.TypeOf((*Client)(nil).DeleteOrganizationField), ctx, id)
+}
+
 // DeleteSLAPolicy mocks base method.
 func (m *Client) DeleteSLAPolicy(ctx context.Context, id int64) error {
 	m.ctrl.T.Helper()
@@ -639,6 +653,20 @@ func (m *Client) DeleteUpload(ctx context.Context, token string) error {
 func (mr *ClientMockRecorder) DeleteUpload(ctx, token any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteUpload", reflect.TypeOf((*Client)(nil).DeleteUpload), ctx, token)
+}
+
+// DeleteUserField mocks base method.
+func (m *Client) DeleteUserField(ctx context.Context, id int64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteUserField", ctx, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteUserField indicates an expected call of DeleteUserField.
+func (mr *ClientMockRecorder) DeleteUserField(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteUserField", reflect.TypeOf((*Client)(nil).DeleteUserField), ctx, id)
 }
 
 // DeleteView mocks base method.
@@ -1205,6 +1233,21 @@ func (m *Client) GetOrganizationByExternalID(ctx context.Context, externalID str
 func (mr *ClientMockRecorder) GetOrganizationByExternalID(ctx, externalID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOrganizationByExternalID", reflect.TypeOf((*Client)(nil).GetOrganizationByExternalID), ctx, externalID)
+}
+
+// GetOrganizationField mocks base method.
+func (m *Client) GetOrganizationField(ctx context.Context, id int64) (zendesk.OrganizationField, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetOrganizationField", ctx, id)
+	ret0, _ := ret[0].(zendesk.OrganizationField)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetOrganizationField indicates an expected call of GetOrganizationField.
+func (mr *ClientMockRecorder) GetOrganizationField(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOrganizationField", reflect.TypeOf((*Client)(nil).GetOrganizationField), ctx, id)
 }
 
 // GetOrganizationFields mocks base method.
@@ -2240,6 +2283,21 @@ func (mr *ClientMockRecorder) GetUser(ctx, userID any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUser", reflect.TypeOf((*Client)(nil).GetUser), ctx, userID)
 }
 
+// GetUserField mocks base method.
+func (m *Client) GetUserField(ctx context.Context, id int64) (zendesk.UserField, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserField", ctx, id)
+	ret0, _ := ret[0].(zendesk.UserField)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserField indicates an expected call of GetUserField.
+func (mr *ClientMockRecorder) GetUserField(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserField", reflect.TypeOf((*Client)(nil).GetUserField), ctx, id)
+}
+
 // GetUserFields mocks base method.
 func (m *Client) GetUserFields(ctx context.Context, opts *zendesk.UserFieldListOptions) ([]zendesk.UserField, zendesk.Page, error) {
 	m.ctrl.T.Helper()
@@ -2789,6 +2847,21 @@ func (mr *ClientMockRecorder) UpdateOrganization(ctx, orgID, org any) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateOrganization", reflect.TypeOf((*Client)(nil).UpdateOrganization), ctx, orgID, org)
 }
 
+// UpdateOrganizationField mocks base method.
+func (m *Client) UpdateOrganizationField(ctx context.Context, id int64, orgField zendesk.OrganizationField) (zendesk.OrganizationField, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateOrganizationField", ctx, id, orgField)
+	ret0, _ := ret[0].(zendesk.OrganizationField)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateOrganizationField indicates an expected call of UpdateOrganizationField.
+func (mr *ClientMockRecorder) UpdateOrganizationField(ctx, id, orgField any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateOrganizationField", reflect.TypeOf((*Client)(nil).UpdateOrganizationField), ctx, id, orgField)
+}
+
 // UpdateSLAPolicy mocks base method.
 func (m *Client) UpdateSLAPolicy(ctx context.Context, id int64, slaPolicy zendesk.SLAPolicy) (zendesk.SLAPolicy, error) {
 	m.ctrl.T.Helper()
@@ -2907,6 +2980,21 @@ func (m *Client) UpdateUser(ctx context.Context, userID int64, user zendesk.User
 func (mr *ClientMockRecorder) UpdateUser(ctx, userID, user any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUser", reflect.TypeOf((*Client)(nil).UpdateUser), ctx, userID, user)
+}
+
+// UpdateUserField mocks base method.
+func (m *Client) UpdateUserField(ctx context.Context, id int64, userField zendesk.UserField) (zendesk.UserField, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateUserField", ctx, id, userField)
+	ret0, _ := ret[0].(zendesk.UserField)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateUserField indicates an expected call of UpdateUserField.
+func (mr *ClientMockRecorder) UpdateUserField(ctx, id, userField any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUserField", reflect.TypeOf((*Client)(nil).UpdateUserField), ctx, id, userField)
 }
 
 // UpdateView mocks base method.

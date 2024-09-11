@@ -1,0 +1,17 @@
+{
+  "schedule": {
+    "id": 1,
+    "intervals": [
+      {
+        "end_time": 2460,
+        "start_time": 1980
+      },
+      {
+        "end_time": 3900,
+        "start_time": 3420
+      }
+    ],
+    "name": "North America",
+    "time_zone": "Pacific Time (US & Canada)"
+  }
+}

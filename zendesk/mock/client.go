@@ -266,6 +266,21 @@ func (mr *ClientMockRecorder) CreateSLAPolicy(ctx, slaPolicy any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSLAPolicy", reflect.TypeOf((*Client)(nil).CreateSLAPolicy), ctx, slaPolicy)
 }
 
+// CreateSchedule mocks base method.
+func (m *Client) CreateSchedule(ctx context.Context, schedule zendesk.Schedule) (zendesk.Schedule, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateSchedule", ctx, schedule)
+	ret0, _ := ret[0].(zendesk.Schedule)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateSchedule indicates an expected call of CreateSchedule.
+func (mr *ClientMockRecorder) CreateSchedule(ctx, schedule any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSchedule", reflect.TypeOf((*Client)(nil).CreateSchedule), ctx, schedule)
+}
+
 // CreateTarget mocks base method.
 func (m *Client) CreateTarget(ctx context.Context, ticketField zendesk.Target) (zendesk.Target, error) {
 	m.ctrl.T.Helper()
@@ -555,6 +570,20 @@ func (m *Client) DeleteSLAPolicy(ctx context.Context, id int64) error {
 func (mr *ClientMockRecorder) DeleteSLAPolicy(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSLAPolicy", reflect.TypeOf((*Client)(nil).DeleteSLAPolicy), ctx, id)
+}
+
+// DeleteSchedule mocks base method.
+func (m *Client) DeleteSchedule(ctx context.Context, scheduleId int64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteSchedule", ctx, scheduleId)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteSchedule indicates an expected call of DeleteSchedule.
+func (mr *ClientMockRecorder) DeleteSchedule(ctx, scheduleId any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSchedule", reflect.TypeOf((*Client)(nil).DeleteSchedule), ctx, scheduleId)
 }
 
 // DeleteTarget mocks base method.
@@ -1650,6 +1679,21 @@ func (m *Client) GetSLAPolicy(ctx context.Context, id int64) (zendesk.SLAPolicy,
 func (mr *ClientMockRecorder) GetSLAPolicy(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSLAPolicy", reflect.TypeOf((*Client)(nil).GetSLAPolicy), ctx, id)
+}
+
+// GetSchedule mocks base method.
+func (m *Client) GetSchedule(ctx context.Context, scheduleId int64) (zendesk.Schedule, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSchedule", ctx, scheduleId)
+	ret0, _ := ret[0].(zendesk.Schedule)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetSchedule indicates an expected call of GetSchedule.
+func (mr *ClientMockRecorder) GetSchedule(ctx, scheduleId any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSchedule", reflect.TypeOf((*Client)(nil).GetSchedule), ctx, scheduleId)
 }
 
 // GetSearchCBP mocks base method.
@@ -2875,6 +2919,21 @@ func (m *Client) UpdateSLAPolicy(ctx context.Context, id int64, slaPolicy zendes
 func (mr *ClientMockRecorder) UpdateSLAPolicy(ctx, id, slaPolicy any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateSLAPolicy", reflect.TypeOf((*Client)(nil).UpdateSLAPolicy), ctx, id, slaPolicy)
+}
+
+// UpdateSchedule mocks base method.
+func (m *Client) UpdateSchedule(ctx context.Context, scheduleId int64, schedule zendesk.Schedule) (zendesk.Schedule, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateSchedule", ctx, scheduleId, schedule)
+	ret0, _ := ret[0].(zendesk.Schedule)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateSchedule indicates an expected call of UpdateSchedule.
+func (mr *ClientMockRecorder) UpdateSchedule(ctx, scheduleId, schedule any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateSchedule", reflect.TypeOf((*Client)(nil).UpdateSchedule), ctx, scheduleId, schedule)
 }
 
 // UpdateTarget mocks base method.

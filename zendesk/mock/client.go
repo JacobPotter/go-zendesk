@@ -2936,6 +2936,21 @@ func (mr *ClientMockRecorder) UpdateSchedule(ctx, scheduleId, schedule any) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateSchedule", reflect.TypeOf((*Client)(nil).UpdateSchedule), ctx, scheduleId, schedule)
 }
 
+// UpdateScheduleIntervals mocks base method.
+func (m *Client) UpdateScheduleIntervals(ctx context.Context, scheduleId int64, intervals []zendesk.ScheduleInterval) ([]zendesk.ScheduleInterval, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateScheduleIntervals", ctx, scheduleId, intervals)
+	ret0, _ := ret[0].([]zendesk.ScheduleInterval)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateScheduleIntervals indicates an expected call of UpdateScheduleIntervals.
+func (mr *ClientMockRecorder) UpdateScheduleIntervals(ctx, scheduleId, intervals any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateScheduleIntervals", reflect.TypeOf((*Client)(nil).UpdateScheduleIntervals), ctx, scheduleId, intervals)
+}
+
 // UpdateTarget mocks base method.
 func (m *Client) UpdateTarget(ctx context.Context, ticketID int64, field zendesk.Target) (zendesk.Target, error) {
 	m.ctrl.T.Helper()

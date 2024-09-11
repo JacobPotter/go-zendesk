@@ -26,6 +26,7 @@ type ScheduleAPI interface {
 	GetSchedule(ctx context.Context, scheduleId int64) (Schedule, error)
 	UpdateSchedule(ctx context.Context, scheduleId int64, schedule Schedule) (Schedule, error)
 	DeleteSchedule(ctx context.Context, scheduleId int64) error
+	UpdateScheduleIntervals(ctx context.Context, scheduleId int64, intervals []ScheduleInterval) ([]ScheduleInterval, error)
 }
 
 func (z *Client) CreateSchedule(ctx context.Context, schedule Schedule) (Schedule, error) {
@@ -94,4 +95,26 @@ func (z *Client) DeleteSchedule(ctx context.Context, scheduleId int64) error {
 		return err
 	}
 	return nil
+}
+
+func (z *Client) UpdateScheduleIntervals(ctx context.Context, scheduleId int64, intervals []ScheduleInterval) ([]ScheduleInterval, error) {
+	var data, result struct {
+		WorkWeek struct {
+			Intervals []ScheduleInterval `json:"intervals"`
+		} `json:"work_week"`
+	}
+
+	data.WorkWeek.Intervals = intervals
+
+	body, err := z.put(ctx, fmt.Sprintf("/business_hours/schedules/%d/workweek.json", scheduleId), data)
+
+	if err != nil {
+		return []ScheduleInterval{}, err
+	}
+	err = json.Unmarshal(body, &result)
+	if err != nil {
+		return []ScheduleInterval{}, err
+
+	}
+	return result.WorkWeek.Intervals, nil
 }

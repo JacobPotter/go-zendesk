@@ -35,7 +35,7 @@ func (z *Client) CreateSchedule(ctx context.Context, schedule Schedule) (Schedul
 
 	data.Schedule = schedule
 
-	body, err := z.post(ctx, "/schedules.json", data)
+	body, err := z.post(ctx, "/business_hours/schedules.json", data)
 	if err != nil {
 		return Schedule{}, err
 	}
@@ -54,7 +54,7 @@ func (z *Client) GetSchedule(ctx context.Context, scheduleId int64) (Schedule, e
 		Schedule Schedule `json:"schedule"`
 	}
 
-	body, err := z.get(ctx, fmt.Sprintf("/schedules/%d.json", scheduleId))
+	body, err := z.get(ctx, fmt.Sprintf("/business_hours/schedules/%d.json", scheduleId))
 	if err != nil {
 		return Schedule{}, err
 	}
@@ -75,7 +75,7 @@ func (z *Client) UpdateSchedule(ctx context.Context, scheduleId int64, schedule 
 
 	data.Schedule = schedule
 
-	body, err := z.put(ctx, fmt.Sprintf("/schedules/%d.json", scheduleId), data)
+	body, err := z.put(ctx, fmt.Sprintf("/business_hours/schedules/%d.json", scheduleId), data)
 	if err != nil {
 		return Schedule{}, err
 	}
@@ -89,7 +89,7 @@ func (z *Client) UpdateSchedule(ctx context.Context, scheduleId int64, schedule 
 }
 
 func (z *Client) DeleteSchedule(ctx context.Context, scheduleId int64) error {
-	err := z.delete(ctx, fmt.Sprintf("/schedules/%d.json", scheduleId))
+	err := z.delete(ctx, fmt.Sprintf("/business_hours/schedules/%d.json", scheduleId))
 	if err != nil {
 		return err
 	}

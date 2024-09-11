@@ -13,7 +13,7 @@ type ScheduleInterval struct {
 }
 
 type Schedule struct {
-	Id        int                `json:"id"`
+	Id        int                `json:"id,omitempty"`
 	Intervals []ScheduleInterval `json:"intervals,omitempty"`
 	Name      string             `json:"name"`
 	TimeZone  string             `json:"time_zone"`

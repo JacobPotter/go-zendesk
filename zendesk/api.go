@@ -19,6 +19,7 @@ type API interface {
 	OrganizationAPI
 	OrganizationFieldAPI
 	OrganizationMembershipAPI
+	ScheduleAPI
 	SearchAPI
 	SLAPolicyAPI
 	TagAPI

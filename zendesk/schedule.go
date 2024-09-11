@@ -101,7 +101,7 @@ func (z *Client) UpdateScheduleIntervals(ctx context.Context, scheduleId int64, 
 	var data, result struct {
 		WorkWeek struct {
 			Intervals []ScheduleInterval `json:"intervals"`
-		} `json:"work_week"`
+		} `json:"workweek"`
 	}
 
 	data.WorkWeek.Intervals = intervals

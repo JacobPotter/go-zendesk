@@ -8,7 +8,9 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/google/go-querystring/query"
 )
@@ -133,6 +135,16 @@ func (z *Client) get(ctx context.Context, path string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	if resp.StatusCode == http.StatusTooManyRequests {
+		retry, _ := strconv.ParseInt(resp.Header.Get("Retry-After"), 10, 64)
+		time.Sleep(time.Duration(int64(time.Second) * retry))
+		resp, err = z.httpClient.Do(req)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
@@ -168,6 +180,15 @@ func (z *Client) post(ctx context.Context, path string, data interface{}) ([]byt
 		return nil, err
 	}
 
+	if resp.StatusCode == http.StatusTooManyRequests {
+		retry, _ := strconv.ParseInt(resp.Header.Get("Retry-After"), 10, 64)
+		time.Sleep(time.Duration(int64(time.Second) * retry))
+		resp, err = z.httpClient.Do(req)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -201,6 +222,15 @@ func (z *Client) put(ctx context.Context, path string, data interface{}) ([]byte
 	resp, err := z.httpClient.Do(req)
 	if err != nil {
 		return nil, err
+	}
+
+	if resp.StatusCode == http.StatusTooManyRequests {
+		retry, _ := strconv.ParseInt(resp.Header.Get("Retry-After"), 10, 64)
+		time.Sleep(time.Duration(int64(time.Second) * retry))
+		resp, err = z.httpClient.Do(req)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	defer resp.Body.Close()
@@ -239,6 +269,15 @@ func (z *Client) patch(ctx context.Context, path string, data interface{}) ([]by
 		return nil, err
 	}
 
+	if resp.StatusCode == http.StatusTooManyRequests {
+		retry, _ := strconv.ParseInt(resp.Header.Get("Retry-After"), 10, 64)
+		time.Sleep(time.Duration(int64(time.Second) * retry))
+		resp, err = z.httpClient.Do(req)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -268,6 +307,15 @@ func (z *Client) delete(ctx context.Context, path string) error {
 	resp, err := z.httpClient.Do(req)
 	if err != nil {
 		return err
+	}
+
+	if resp.StatusCode == http.StatusTooManyRequests {
+		retry, _ := strconv.ParseInt(resp.Header.Get("Retry-After"), 10, 64)
+		time.Sleep(time.Duration(int64(time.Second) * retry))
+		resp, err = z.httpClient.Do(req)
+		if err != nil {
+			return err
+		}
 	}
 
 	defer resp.Body.Close()

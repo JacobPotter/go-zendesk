@@ -137,14 +137,8 @@ func (z *Client) get(ctx context.Context, path string) ([]byte, error) {
 	}
 
 	if resp.StatusCode == http.StatusTooManyRequests {
-		err = waitForRetry(resp)
-		if err != nil {
-			return nil, err
-		}
-		resp, err = z.httpClient.Do(req)
-		if err != nil {
-			return nil, err
-		}
+		waitForRetry(resp)
+		return z.get(ctx, path)
 	}
 
 	defer resp.Body.Close()
@@ -163,14 +157,18 @@ func (z *Client) get(ctx context.Context, path string) ([]byte, error) {
 	return body, nil
 }
 
-func waitForRetry(resp *http.Response) error {
+func waitForRetry(resp *http.Response) {
 	var retry int64
-	retry, err := strconv.ParseInt(resp.Header.Get("Retry-After"), 10, 64)
+	retry, err := strconv.ParseInt(resp.Header.Get("retry-after"), 10, 64)
 	if err != nil {
-		return err
+		fmt.Printf("Error getting retry header, trying secondary header")
+		retry, err = strconv.ParseInt(resp.Header.Get("ratelimit-reset"), 10, 64)
+		if err != nil {
+			fmt.Printf("Error getting retry header, setting retry after 60 sec by default")
+			retry = 60
+		}
 	}
 	time.Sleep(time.Duration(int64(time.Second)*retry + 1))
-	return nil
 }
 
 // post send data to API and returns response body as []bytes
@@ -193,14 +191,8 @@ func (z *Client) post(ctx context.Context, path string, data interface{}) ([]byt
 	}
 
 	if resp.StatusCode == http.StatusTooManyRequests {
-		err = waitForRetry(resp)
-		if err != nil {
-			return nil, err
-		}
-		resp, err = z.httpClient.Do(req)
-		if err != nil {
-			return nil, err
-		}
+		waitForRetry(resp)
+		return z.post(ctx, path, data)
 	}
 
 	defer resp.Body.Close()
@@ -239,14 +231,8 @@ func (z *Client) put(ctx context.Context, path string, data interface{}) ([]byte
 	}
 
 	if resp.StatusCode == http.StatusTooManyRequests {
-		err = waitForRetry(resp)
-		if err != nil {
-			return nil, err
-		}
-		resp, err = z.httpClient.Do(req)
-		if err != nil {
-			return nil, err
-		}
+		waitForRetry(resp)
+		return z.put(ctx, path, data)
 	}
 
 	defer resp.Body.Close()
@@ -286,14 +272,8 @@ func (z *Client) patch(ctx context.Context, path string, data interface{}) ([]by
 	}
 
 	if resp.StatusCode == http.StatusTooManyRequests {
-		err = waitForRetry(resp)
-		if err != nil {
-			return nil, err
-		}
-		resp, err = z.httpClient.Do(req)
-		if err != nil {
-			return nil, err
-		}
+		waitForRetry(resp)
+		return z.patch(ctx, path, data)
 	}
 
 	defer resp.Body.Close()
@@ -328,14 +308,8 @@ func (z *Client) delete(ctx context.Context, path string) error {
 	}
 
 	if resp.StatusCode == http.StatusTooManyRequests {
-		err = waitForRetry(resp)
-		if err != nil {
-			return err
-		}
-		resp, err = z.httpClient.Do(req)
-		if err != nil {
-			return err
-		}
+		waitForRetry(resp)
+		return z.delete(ctx, path)
 	}
 
 	defer resp.Body.Close()

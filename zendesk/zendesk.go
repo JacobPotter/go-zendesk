@@ -137,8 +137,10 @@ func (z *Client) get(ctx context.Context, path string) ([]byte, error) {
 	}
 
 	if resp.StatusCode == http.StatusTooManyRequests {
-		retry, _ := strconv.ParseInt(resp.Header.Get("Retry-After"), 10, 64)
-		time.Sleep(time.Duration(int64(time.Second) * retry))
+		err = waitForRetry(resp)
+		if err != nil {
+			return nil, err
+		}
 		resp, err = z.httpClient.Do(req)
 		if err != nil {
 			return nil, err
@@ -161,6 +163,16 @@ func (z *Client) get(ctx context.Context, path string) ([]byte, error) {
 	return body, nil
 }
 
+func waitForRetry(resp *http.Response) error {
+	var retry int64
+	retry, err := strconv.ParseInt(resp.Header.Get("Retry-After"), 10, 64)
+	if err != nil {
+		return err
+	}
+	time.Sleep(time.Duration(int64(time.Second)*retry + 1))
+	return nil
+}
+
 // post send data to API and returns response body as []bytes
 func (z *Client) post(ctx context.Context, path string, data interface{}) ([]byte, error) {
 	bytes, err := json.Marshal(data)
@@ -181,8 +193,10 @@ func (z *Client) post(ctx context.Context, path string, data interface{}) ([]byt
 	}
 
 	if resp.StatusCode == http.StatusTooManyRequests {
-		retry, _ := strconv.ParseInt(resp.Header.Get("Retry-After"), 10, 64)
-		time.Sleep(time.Duration(int64(time.Second) * retry))
+		err = waitForRetry(resp)
+		if err != nil {
+			return nil, err
+		}
 		resp, err = z.httpClient.Do(req)
 		if err != nil {
 			return nil, err
@@ -225,8 +239,10 @@ func (z *Client) put(ctx context.Context, path string, data interface{}) ([]byte
 	}
 
 	if resp.StatusCode == http.StatusTooManyRequests {
-		retry, _ := strconv.ParseInt(resp.Header.Get("Retry-After"), 10, 64)
-		time.Sleep(time.Duration(int64(time.Second) * retry))
+		err = waitForRetry(resp)
+		if err != nil {
+			return nil, err
+		}
 		resp, err = z.httpClient.Do(req)
 		if err != nil {
 			return nil, err
@@ -270,8 +286,10 @@ func (z *Client) patch(ctx context.Context, path string, data interface{}) ([]by
 	}
 
 	if resp.StatusCode == http.StatusTooManyRequests {
-		retry, _ := strconv.ParseInt(resp.Header.Get("Retry-After"), 10, 64)
-		time.Sleep(time.Duration(int64(time.Second) * retry))
+		err = waitForRetry(resp)
+		if err != nil {
+			return nil, err
+		}
 		resp, err = z.httpClient.Do(req)
 		if err != nil {
 			return nil, err
@@ -310,8 +328,10 @@ func (z *Client) delete(ctx context.Context, path string) error {
 	}
 
 	if resp.StatusCode == http.StatusTooManyRequests {
-		retry, _ := strconv.ParseInt(resp.Header.Get("Retry-After"), 10, 64)
-		time.Sleep(time.Duration(int64(time.Second) * retry))
+		err = waitForRetry(resp)
+		if err != nil {
+			return err
+		}
 		resp, err = z.httpClient.Do(req)
 		if err != nil {
 			return err

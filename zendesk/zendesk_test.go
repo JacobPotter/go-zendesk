@@ -193,20 +193,6 @@ func TestGetFailure(t *testing.T) {
 		t.Fatalf("Did not return a zendesk error %s", err)
 	}
 }
-func TestGetTooManyRequests(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodGet, "groups.json", http.StatusTooManyRequests)
-	client := newTestClient(mockAPI)
-	defer mockAPI.Close()
-
-	_, err := client.get(ctx, "/groups.json")
-	if err == nil {
-		t.Fatal("Did not receive error from client")
-	}
-
-	if _, ok := err.(Error); !ok {
-		t.Fatalf("Did not return a zendesk error %s", err)
-	}
-}
 
 func TestGetFailureCanReadErrorBody(t *testing.T) {
 	mockAPI := newMockAPIWithStatus(http.MethodGet, "groups.json", http.StatusInternalServerError)

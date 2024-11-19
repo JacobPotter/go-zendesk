@@ -59,7 +59,7 @@ type SLAPolicy struct {
 	Title          string            `json:"title"`
 	Description    string            `json:"description,omitempty"`
 	Position       int64             `json:"position,omitempty"`
-	Active         bool              `json:"active,omitempty"`
+	Active         bool              `json:"active"`
 	Filter         Conditions        `json:"filter"`
 	PolicyMetrics  []SLAPolicyMetric `json:"policy_metrics,omitempty"`
 	MetricSettings MetricSettings    `json:"metric_settings,omitempty"`

@@ -14,7 +14,7 @@ type Automation struct {
 	ID          int64      `json:"id,omitempty"`
 	Title       string     `json:"title"`
 	Description string     `json:"description"`
-	Active      bool       `json:"active,omitempty"`
+	Active      bool       `json:"active"`
 	Position    int64      `json:"position,omitempty"`
 	Conditions  Conditions `json:"conditions"`
 	Actions     []Action   `json:"actions"`

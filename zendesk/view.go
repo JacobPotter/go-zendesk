@@ -14,7 +14,7 @@ type (
 		URL         string      `json:"url,omitempty"`
 		ID          int64       `json:"id,omitempty"`
 		Title       string      `json:"title,omitempty"`
-		Active      bool        `json:"active,omitempty"`
+		Active      bool        `json:"active"`
 		UpdatedAt   string      `json:"updated_at,omitempty"`
 		CreatedAt   string      `json:"created_at,omitempty"`
 		Default     bool        `json:"default,omitempty"`

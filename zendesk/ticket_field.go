@@ -28,15 +28,15 @@ type TicketField struct {
 	Description         string                         `json:"description,omitempty"`
 	RawDescription      string                         `json:"raw_description,omitempty"`
 	Position            int64                          `json:"position,omitempty"`
-	Active              bool                           `json:"active,omitempty"`
-	Required            bool                           `json:"required,omitempty"`
-	CollapsedForAgents  bool                           `json:"collapsed_for_agents,omitempty"`
+	Active              bool                           `json:"active"`
+	Required            bool                           `json:"required"`
+	CollapsedForAgents  bool                           `json:"collapsed_for_agents"`
 	RegexpForValidation string                         `json:"regexp_for_validation,omitempty"`
 	TitleInPortal       string                         `json:"title_in_portal,omitempty"`
 	RawTitleInPortal    string                         `json:"raw_title_in_portal,omitempty"`
-	VisibleInPortal     bool                           `json:"visible_in_portal,omitempty"`
-	EditableInPortal    bool                           `json:"editable_in_portal,omitempty"`
-	RequiredInPortal    bool                           `json:"required_in_portal,omitempty"`
+	VisibleInPortal     bool                           `json:"visible_in_portal"`
+	EditableInPortal    bool                           `json:"editable_in_portal"`
+	RequiredInPortal    bool                           `json:"required_in_portal"`
 	Tag                 string                         `json:"tag,omitempty"`
 	CreatedAt           *time.Time                     `json:"created_at,omitempty"`
 	UpdatedAt           *time.Time                     `json:"updated_at,omitempty"`

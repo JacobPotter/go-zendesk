@@ -13,7 +13,7 @@ import (
 type Trigger struct {
 	ID          int64      `json:"id,omitempty"`
 	Title       string     `json:"title"`
-	Active      bool       `json:"active,omitempty"`
+	Active      bool       `json:"active"`
 	Position    int64      `json:"position,omitempty"`
 	Conditions  Conditions `json:"conditions"`
 	Actions     []Action   `json:"actions"`

@@ -2846,6 +2846,21 @@ func (mr *ClientMockRecorder) UpdateDynamicContentItem(ctx, id, item any) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateDynamicContentItem", reflect.TypeOf((*Client)(nil).UpdateDynamicContentItem), ctx, id, item)
 }
 
+// UpdateDynamicContentVariants mocks base method.
+func (m *Client) UpdateDynamicContentVariants(ctx context.Context, id int64, variants []zendesk.DynamicContentVariant) ([]zendesk.DynamicContentVariant, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateDynamicContentVariants", ctx, id, variants)
+	ret0, _ := ret[0].([]zendesk.DynamicContentVariant)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateDynamicContentVariants indicates an expected call of UpdateDynamicContentVariants.
+func (mr *ClientMockRecorder) UpdateDynamicContentVariants(ctx, id, variants any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateDynamicContentVariants", reflect.TypeOf((*Client)(nil).UpdateDynamicContentVariants), ctx, id, variants)
+}
+
 // UpdateGroup mocks base method.
 func (m *Client) UpdateGroup(ctx context.Context, groupID int64, group zendesk.Group) (zendesk.Group, error) {
 	m.ctrl.T.Helper()

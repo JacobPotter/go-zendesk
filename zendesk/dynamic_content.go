@@ -13,6 +13,7 @@ type DynamicContentAPI interface {
 	CreateDynamicContentItem(ctx context.Context, item DynamicContentItem) (DynamicContentItem, error)
 	GetDynamicContentItem(ctx context.Context, id int64) (DynamicContentItem, error)
 	UpdateDynamicContentItem(ctx context.Context, id int64, item DynamicContentItem) (DynamicContentItem, error)
+	UpdateDynamicContentVariants(ctx context.Context, id int64, variants []DynamicContentVariant) ([]DynamicContentVariant, error)
 	DeleteDynamicContentItem(ctx context.Context, id int64) error
 	GetDynamicContentItemsIterator(ctx context.Context, opts *PaginationOptions) *Iterator[DynamicContentItem]
 	GetDynamicContentItemsOBP(ctx context.Context, opts *OBPOptions) ([]DynamicContentItem, Page, error)
@@ -142,4 +143,22 @@ func (z *Client) DeleteDynamicContentItem(ctx context.Context, id int64) error {
 	}
 
 	return nil
+}
+
+func (z *Client) UpdateDynamicContentVariants(ctx context.Context, id int64, variants []DynamicContentVariant) ([]DynamicContentVariant, error) {
+	var data, result struct {
+		Variants []DynamicContentVariant `json:"variants"`
+	}
+
+	data.Variants = variants
+
+	body, err := z.put(ctx, fmt.Sprintf("/dynamic_content/items/%d/variants/update_many.json", id), data)
+	if err != nil {
+		return []DynamicContentVariant{}, err
+	}
+	err = json.Unmarshal(body, &result)
+	if err != nil {
+		return []DynamicContentVariant{}, err
+	}
+	return result.Variants, nil
 }

@@ -20,7 +20,7 @@ type TicketForm struct {
 	AgentConditions    []ConditionalTicketField `json:"agent_conditions,omitempty"`
 	CreatedAt          time.Time                `json:"created_at"`
 	Default            bool                     `json:"default,omitempty"`
-	DisplayName        string                   `json:"display_name,omitempty"`
+	DisplayName        string                   `json:"display_name"`
 	EndUserConditions  []ConditionalTicketField `json:"end_user_conditions,omitempty"`
 	EndUserVisible     bool                     `json:"end_user_visible,omitempty"`
 	ID                 int64                    `json:"id"`

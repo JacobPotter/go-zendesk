@@ -378,7 +378,7 @@ var ValidConditionOperatorValues = ConditionsValueValidator{
 	ConditionFieldCustomField: {
 		ValidationRegex: regexp.MustCompile(`^\d+$`),
 		ResourceTypes:   sharedConditionTypes,
-		ValidOperators:  []Operator{Is, IsNot},
+		ValidOperators:  []Operator{Is, IsNot, WithinPreviousNDays},
 	},
 	ConditionFieldType: {
 		ValidationRegex: regexp.MustCompile(`(question|incident|problem|task)`),
@@ -540,7 +540,7 @@ var ValidConditionOperatorValues = ConditionsValueValidator{
 	ConditionFieldTicketIsPublic: {
 		ValidationRegex: regexp.MustCompile(`(public|private)`),
 		ResourceTypes:   triggerAutomationConditionTypes,
-		ValidOperators:  []Operator{EmptyOperator},
+		ValidOperators:  []Operator{Is, IsNot, EmptyOperator},
 	},
 	ConditionFieldReopens: {
 		ValidationRegex: regexp.MustCompile(`^\d+$`),

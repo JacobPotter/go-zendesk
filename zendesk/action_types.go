@@ -290,11 +290,11 @@ var ValidActionValuesMap = ActionsValueValidator{
 		ResourceTypes:   sharedActionTypes,
 	},
 	ActionFieldSatisfactionScore: {
-		ValidationRegex: regexp.MustCompile("^offered$"),
+		ValidationRegex: regexp.MustCompile("(good_with_comment|good|bad_with_comment|bad|false|true|offered|unoffered)"),
 		ResourceTypes:   triggerAutomationActionTypes,
 	},
 	ActionFieldNotificationUser: {
-		ValidationRegex: regexp.MustCompile("(all_agents|requester_id|assignee_id|current_user|^[0-9]*$)"),
+		ValidationRegex: regexp.MustCompile("(all_agents|requester_id|assignee_id|current_user|requester_and_ccs|^[0-9]*$)"),
 		ResourceTypes:   triggerAutomationActionTypes,
 	},
 	ActionFieldNotificationGroup: {
@@ -306,7 +306,7 @@ var ValidActionValuesMap = ActionsValueValidator{
 		ResourceTypes:   triggerAutomationActionTypes,
 	},
 	ActionFieldNotificationWebhook: {
-		ValidationRegex: regexp.MustCompile("^[A-Za-z0-9]*$"),
+		ValidationRegex: regexp.MustCompile("^.*$"),
 		ResourceTypes:   triggerAutomationActionTypes,
 	},
 	ActionFieldCC: {

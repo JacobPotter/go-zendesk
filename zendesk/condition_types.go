@@ -152,6 +152,8 @@ const (
 	ConditionFieldCustomStatusId ConditionField = "custom_status_id"
 	// ConditionFieldTicketTypeId is an alias for ticket_type_id
 	ConditionFieldTicketTypeId ConditionField = "ticket_type_id"
+	// ConditionFieldSlaNextBreachAt is an alias for sla_next_breach_at
+	ConditionFieldSlaNextBreachAt ConditionField = "sla_next_breach_at"
 )
 
 type ConditionFields []ConditionField
@@ -162,12 +164,15 @@ var TimeBasedConditions = ConditionFields{
 	ConditionFieldPending,
 	ConditionFieldSolved,
 	ConditionFieldClosed,
+	ConditionFieldHold,
 	ConditionFieldAssignedAt,
 	ConditionFieldUpdatedAt,
 	ConditionFieldAssigneeUpdatedAt,
 	ConditionFieldRequesterUpdatedAt,
 	ConditionFieldDueDate,
 	ConditionFieldUntilDueDate,
+	ConditionFieldCustomField,
+	ConditionFieldSlaNextBreachAt,
 }
 
 type ConditionResourceType string
@@ -229,6 +234,18 @@ func (c ConditionsValueValidator) ValidateValue(key ConditionField, value string
 
 	if isCustomField {
 		newKey = ConditionFieldCustomField
+	}
+
+	isOrgField := strings.HasPrefix(string(key), string(ConditionFieldOrganizationCustomKey))
+
+	if isOrgField {
+		newKey = ConditionFieldOrganizationCustomKey
+	}
+
+	isUserField := strings.HasPrefix(string(key), string(ConditionFieldUserCustomKey))
+
+	if isUserField {
+		newKey = ConditionFieldUserCustomKey
 	}
 
 	if v, ok := c[newKey]; ok {
@@ -406,7 +423,7 @@ var ValidConditionOperatorValues = ConditionsValueValidator{
 		ValidOperators:  []Operator{Is, IsNot},
 	},
 	ConditionFieldSatisfactionScore: {
-		ValidationRegex: regexp.MustCompile(`(good_with_comment|good|bad_with_comment|bad|false|true)`),
+		ValidationRegex: regexp.MustCompile(`(good_with_comment|good|bad_with_comment|bad|false|true|offered|unoffered)`),
 		ResourceTypes:   triggerAutomationViewConditionTypes,
 		ValidOperators: []Operator{
 			Is,
@@ -444,6 +461,7 @@ var ValidConditionOperatorValues = ConditionsValueValidator{
 		ResourceTypes:   triggerAutomationViewConditionTypes,
 		ValidOperators: []Operator{
 			Is,
+			IsNot,
 			LessThan,
 			GreaterThan,
 			Changed,
@@ -455,7 +473,7 @@ var ValidConditionOperatorValues = ConditionsValueValidator{
 		},
 	},
 	ConditionFieldUserCustomKey: {
-		ValidationRegex: regexp.MustCompile(`^\w+$`),
+		ValidationRegex: regexp.MustCompile(`([\s\S]*)`),
 		ResourceTypes:   triggerAutomationConditionTypes,
 		ValidOperators: []Operator{
 			Is,
@@ -469,7 +487,7 @@ var ValidConditionOperatorValues = ConditionsValueValidator{
 		},
 	},
 	ConditionFieldOrganizationCustomKey: {
-		ValidationRegex: regexp.MustCompile(`^\w+$`),
+		ValidationRegex: regexp.MustCompile(`([\s\S]*)`),
 		ResourceTypes:   triggerAutomationConditionTypes,
 		ValidOperators: []Operator{
 			Is,
@@ -483,7 +501,7 @@ var ValidConditionOperatorValues = ConditionsValueValidator{
 		},
 	},
 	ConditionFieldSubjectIncludesWord: {
-		ValidationRegex: regexp.MustCompile(`^\w+$`),
+		ValidationRegex: regexp.MustCompile(`([\s\S]*)`),
 		ResourceTypes:   triggerConditionTypes,
 		ValidOperators: []Operator{
 			Includes,
@@ -492,7 +510,7 @@ var ValidConditionOperatorValues = ConditionsValueValidator{
 			IsNot,
 		},
 	}, ConditionFieldCommentIncludesWord: {
-		ValidationRegex: regexp.MustCompile(`^\w+$`),
+		ValidationRegex: regexp.MustCompile(`([\s\S]*)`),
 		ResourceTypes:   triggerConditionTypes,
 		ValidOperators: []Operator{
 			Includes,
@@ -521,7 +539,7 @@ var ValidConditionOperatorValues = ConditionsValueValidator{
 	},
 	ConditionFieldTicketIsPublic: {
 		ValidationRegex: regexp.MustCompile(`(public|private)`),
-		ResourceTypes:   triggerConditionTypes,
+		ResourceTypes:   triggerAutomationConditionTypes,
 		ValidOperators:  []Operator{EmptyOperator},
 	},
 	ConditionFieldReopens: {
@@ -789,8 +807,18 @@ var ValidConditionOperatorValues = ConditionsValueValidator{
 		},
 	},
 	ConditionFieldDescriptionIncludesWord: {
-		ValidationRegex: regexp.MustCompile(`^\w+$`),
+		ValidationRegex: regexp.MustCompile(`([\s\S]*)`),
 		ResourceTypes:   timeBasedViewAutomationConditionTypes,
 		ValidOperators:  []Operator{EmptyOperator},
+	},
+	ConditionFieldSlaNextBreachAt: {
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
+		ResourceTypes:   triggerAutomationViewConditionTypes,
+		ValidOperators: []Operator{
+			GreaterThan,
+			LessThan,
+			Is,
+			IsNot,
+		},
 	},
 }

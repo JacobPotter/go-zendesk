@@ -231,12 +231,12 @@ func (c ConditionsValueValidator) ValidateValue(key ConditionField, value string
 		newKey = ConditionFieldCustomField
 	}
 
-	if v, ok := c[newKey]; ok || isCustomField {
+	if v, ok := c[newKey]; ok {
 
 		keys := c.ValidKeys()
 
 		if !slices.Contains(keys, string(newKey)) {
-			return fmt.Errorf("invalid action field %s", newKey)
+			return fmt.Errorf("invalid condition field %s", newKey)
 		}
 
 		if !slices.Contains(v.ResourceTypes.Elements(), resourceType.ToValue()) {
@@ -258,7 +258,7 @@ func (c ConditionsValueValidator) ValidateValue(key ConditionField, value string
 		}
 		if result == nil {
 			return fmt.Errorf(
-				"invalid action value %s. does not match regex: %s",
+				"invalid condition value %s. does not match regex: %s",
 				string(result),
 				v.ValidationRegex.String(),
 			)
@@ -267,7 +267,7 @@ func (c ConditionsValueValidator) ValidateValue(key ConditionField, value string
 		return nil
 	}
 
-	return fmt.Errorf("invalid action field %s", newKey)
+	return fmt.Errorf("invalid condition field %s", newKey)
 
 }
 

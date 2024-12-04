@@ -14,7 +14,7 @@ func TestCondition_Validate(t *testing.T) {
 			condition: Condition{
 				Field:    string(ConditionFieldStatus),
 				Operator: string(Is),
-				Value:    "open",
+				Value:    ParsedValue{"open"},
 			},
 			resourceType: TriggerConditionResource,
 			shouldPass:   true,

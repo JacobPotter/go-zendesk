@@ -64,8 +64,10 @@ const (
 	ConditionFieldViaID ConditionField = "via_id"
 	// ConditionFieldRecipient is alias for recipient
 	ConditionFieldRecipient ConditionField = "recipient"
-	// ConditionFieldCustomField is alias for custom_field_ prefix
+	// ConditionFieldCustomField is alias for custom_fields_ prefix
 	ConditionFieldCustomField ConditionField = "custom_fields_"
+	// ConditionFieldCustomFieldAlt is alias for ticket_fields_ prefix
+	ConditionFieldCustomFieldAlt ConditionField = "ticket_fields_"
 	// ConditionFieldType is alias for type
 	ConditionFieldType ConditionField = "type"
 	// ConditionFieldStatus is alias for status
@@ -230,11 +232,16 @@ type ConditionsValueValidator map[ConditionField]ConditionValueValidator
 func (c ConditionsValueValidator) ValidateValue(key ConditionField, value string, operator Operator, resourceType ResourceType[ConditionResourceType]) error {
 
 	isCustomField := strings.HasPrefix(string(key), string(ConditionFieldCustomField))
+	isCustomFieldAlt := strings.HasPrefix(string(key), string(ConditionFieldCustomFieldAlt))
 
 	var newKey = key
 
 	if isCustomField {
 		newKey = ConditionFieldCustomField
+	}
+
+	if isCustomFieldAlt {
+		newKey = ConditionFieldCustomFieldAlt
 	}
 
 	isOrgField := strings.HasPrefix(string(key), string(ConditionFieldOrganizationCustomKey))
@@ -269,6 +276,9 @@ func (c ConditionsValueValidator) ValidateValue(key ConditionField, value string
 
 		if isCustomField {
 			after, _ := strings.CutPrefix(string(key), string(ConditionFieldCustomField))
+			result = v.ValidationRegex.Find([]byte(after))
+		} else if isCustomFieldAlt {
+			after, _ := strings.CutPrefix(string(key), string(ConditionFieldCustomFieldAlt))
 			result = v.ValidationRegex.Find([]byte(after))
 		} else {
 			result = v.ValidationRegex.Find([]byte(value))
@@ -378,7 +388,12 @@ var ValidConditionOperatorValues = ConditionsValueValidator{
 	},
 	ConditionFieldCustomField: {
 		ValidationRegex: regexp.MustCompile(`^\d+$`),
-		ResourceTypes:   sharedConditionTypes,
+		ResourceTypes:   triggerAutomationViewConditionTypes,
+		ValidOperators:  []Operator{Is, IsNot, WithinPreviousNDays},
+	},
+	ConditionFieldCustomFieldAlt: {
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
+		ResourceTypes:   slaConditionTypes,
 		ValidOperators:  []Operator{Is, IsNot, WithinPreviousNDays},
 	},
 	ConditionFieldType: {

@@ -14,7 +14,7 @@ import (
 type Condition struct {
 	Field    string `json:"field"`
 	Operator string `json:"operator,omitempty"`
-	Value    string `json:"value,omitempty"`
+	Value    any    `json:"value,omitempty"`
 }
 
 func (c Condition) Validate(resourceType ResourceType[ConditionResourceType]) error {
@@ -227,7 +227,14 @@ type ConditionValueValidator ValueValidator[ConditionResourceType]
 
 type ConditionsValueValidator map[ConditionField]ConditionValueValidator
 
-func (c ConditionsValueValidator) ValidateValue(key ConditionField, value string, operator Operator, resourceType ResourceType[ConditionResourceType]) error {
+func (c ConditionsValueValidator) ValidateValue(key ConditionField, valueRaw any, operator Operator, resourceType ResourceType[ConditionResourceType]) error {
+
+	value, err := getStringFromAny(valueRaw)
+
+	if err != nil {
+		return err
+	}
+
 	isCustomField := strings.HasPrefix(string(key), string(ConditionFieldCustomField))
 
 	var newKey = key

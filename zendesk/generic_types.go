@@ -1,6 +1,11 @@
 package zendesk
 
-import "regexp"
+import (
+	"fmt"
+	"regexp"
+	"strconv"
+	"time"
+)
 
 type Operator string
 
@@ -55,7 +60,7 @@ type ValidateValue[T any] interface {
 }
 
 type Validator[F any, T any] interface {
-	ValidateValue(key F, value string, operator Operator, resourceType ResourceType[T]) error
+	ValidateValue(key F, valueRaw any, operator Operator, resourceType ResourceType[T]) error
 	ValidKeys() []string
 }
 
@@ -63,4 +68,29 @@ type ValueValidator[T any] struct {
 	ValidationRegex *regexp.Regexp
 	ResourceTypes   ResourceTypes[T]
 	ValidOperators  []Operator
+}
+
+func getStringFromAny(valueRaw any) (string, error) {
+	var value string
+
+	switch newValue := valueRaw.(type) {
+	case string:
+		value = newValue
+	case int:
+		value = strconv.Itoa(newValue)
+	case int32:
+	case int64:
+		value = strconv.Itoa(int(newValue))
+	case float64:
+		value = strconv.FormatFloat(newValue, 'f', -1, 64)
+	case float32:
+		value = strconv.FormatFloat(float64(newValue), 'f', -1, 32)
+	case bool:
+		value = strconv.FormatBool(newValue)
+	case time.Time:
+		value = newValue.Format(time.RFC3339)
+	default:
+		return "", fmt.Errorf("invalid value type: %T", newValue)
+	}
+	return value, nil
 }

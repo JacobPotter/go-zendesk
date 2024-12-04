@@ -171,10 +171,16 @@ var _ Validator[ActionField, ActionResourceType] = ActionsValueValidator{}
 
 func (a ActionsValueValidator) ValidateValue(
 	key ActionField,
-	value string,
+	valueRaw any,
 	_ Operator,
 	resourceType ResourceType[ActionResourceType],
 ) error {
+
+	value, err := getStringFromAny(valueRaw)
+
+	if err != nil {
+		return err
+	}
 
 	isCustomField := strings.HasPrefix(
 		string(key),

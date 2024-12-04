@@ -1,6 +1,7 @@
 package zendesk
 
 import (
+	"encoding/json"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -60,7 +61,7 @@ type ValidateValue[T any] interface {
 }
 
 type Validator[F any, T any] interface {
-	ValidateValue(key F, valueRaw any, operator Operator, resourceType ResourceType[T]) error
+	ValidateValue(key F, value string, operator Operator, resourceType ResourceType[T]) error
 	ValidKeys() []string
 }
 
@@ -70,7 +71,21 @@ type ValueValidator[T any] struct {
 	ValidOperators  []Operator
 }
 
-func getStringFromAny(valueRaw any) (string, error) {
+type ParsedValue struct {
+	Data string
+}
+
+var _ json.Unmarshaler = &ParsedValue{}
+var _ json.Marshaler = &ParsedValue{}
+
+func (v *ParsedValue) UnmarshalJSON(bytes []byte) error {
+
+	var valueRaw any
+
+	if err := json.Unmarshal(bytes, &valueRaw); err != nil {
+		return err
+	}
+
 	var value string
 
 	switch newValue := valueRaw.(type) {
@@ -89,8 +104,18 @@ func getStringFromAny(valueRaw any) (string, error) {
 		value = strconv.FormatBool(newValue)
 	case time.Time:
 		value = newValue.Format(time.RFC3339)
+	case nil:
+		value = ""
 	default:
-		return "", fmt.Errorf("invalid value type: %T", newValue)
+		return fmt.Errorf("invalid value type: %T", newValue)
 	}
-	return value, nil
+
+	v.Data = value
+
+	return nil
+
+}
+
+func (v *ParsedValue) MarshalJSON() ([]byte, error) {
+	return json.Marshal(v.Data)
 }

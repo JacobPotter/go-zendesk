@@ -12,9 +12,9 @@ import (
 //
 // [Zendesk Conditions Reference]: https://developer.zendesk.com/documentation/ticketing/reference-guides/conditions-Reference/
 type Condition struct {
-	Field    string `json:"field"`
-	Operator string `json:"operator,omitempty"`
-	Value    any    `json:"value,omitempty"`
+	Field    string      `json:"field"`
+	Operator string      `json:"operator,omitempty"`
+	Value    ParsedValue `json:"value,omitempty"`
 }
 
 func (c Condition) Validate(resourceType ResourceType[ConditionResourceType]) error {
@@ -24,7 +24,7 @@ func (c Condition) Validate(resourceType ResourceType[ConditionResourceType]) er
 
 	if err := ValidConditionOperatorValues.ValidateValue(
 		ConditionField(c.Field),
-		c.Value,
+		c.Value.Data,
 		Operator(c.Operator),
 		resourceType,
 	); err != nil {
@@ -227,13 +227,7 @@ type ConditionValueValidator ValueValidator[ConditionResourceType]
 
 type ConditionsValueValidator map[ConditionField]ConditionValueValidator
 
-func (c ConditionsValueValidator) ValidateValue(key ConditionField, valueRaw any, operator Operator, resourceType ResourceType[ConditionResourceType]) error {
-
-	value, err := getStringFromAny(valueRaw)
-
-	if err != nil {
-		return err
-	}
+func (c ConditionsValueValidator) ValidateValue(key ConditionField, value string, operator Operator, resourceType ResourceType[ConditionResourceType]) error {
 
 	isCustomField := strings.HasPrefix(string(key), string(ConditionFieldCustomField))
 

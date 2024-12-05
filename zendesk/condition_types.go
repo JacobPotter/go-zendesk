@@ -474,7 +474,7 @@ var ValidConditionOperatorValues = ConditionsValueValidator{
 	},
 	ConditionFieldTicketFormId: {
 		ValidationRegex: regexp.MustCompile(`^\d+$`),
-		ResourceTypes:   triggerAutomationViewConditionTypes,
+		ResourceTypes:   sharedConditionTypes,
 		ValidOperators: []Operator{
 			Is,
 			IsNot,

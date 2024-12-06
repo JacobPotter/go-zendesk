@@ -126,6 +126,8 @@ const (
 	ActionFieldCustomField       ActionField = "custom_fields_"
 	ActionSideConversationTicket ActionField = "side_conversation_ticket"
 	ActionSideConversationSlack  ActionField = "side_conversation_slack"
+	ActionSetSchedule            ActionField = "set_schedule"
+	ActionNotificationZis        ActionField = "notification_zis"
 )
 
 // ActionResourceType String type of resource the action belongs to. Valid
@@ -362,5 +364,13 @@ var ValidActionValuesMap = ActionsValueValidator{
 	ActionSideConversationSlack: {
 		ValidationRegex: regexp.MustCompile(`([\s\S]*)`),
 		ResourceTypes:   macroActionTypes,
+	},
+	ActionSetSchedule: {
+		ValidationRegex: regexp.MustCompile(`([\s\S]*)`),
+		ResourceTypes:   triggerActionTypes,
+	},
+	ActionNotificationZis: {
+		ValidationRegex: regexp.MustCompile(`([\s\S]*)`),
+		ResourceTypes:   triggerActionTypes,
 	},
 }

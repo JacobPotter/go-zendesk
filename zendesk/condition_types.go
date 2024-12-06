@@ -156,6 +156,8 @@ const (
 	ConditionFieldTicketTypeId ConditionField = "ticket_type_id"
 	// ConditionFieldSlaNextBreachAt is an alias for sla_next_breach_at
 	ConditionFieldSlaNextBreachAt ConditionField = "sla_next_breach_at"
+	ConditionFieldRole            ConditionField = "role"
+	ConditionFieldWithinSchedule  ConditionField = "within_schedule"
 )
 
 type ConditionFields []ConditionField
@@ -372,7 +374,7 @@ var ValidConditionOperatorValues = ConditionsValueValidator{
 		},
 	},
 	ConditionFieldCurrentTags: {
-		ValidationRegex: regexp.MustCompile(`^\w+(?:\s\w+)*$`),
+		ValidationRegex: regexp.MustCompile(`^\S+(?:\s\S+)*$`),
 		ResourceTypes:   sharedConditionTypes,
 		ValidOperators:  []Operator{Includes, NotIncludes},
 	},
@@ -389,7 +391,7 @@ var ValidConditionOperatorValues = ConditionsValueValidator{
 	ConditionFieldCustomField: {
 		ValidationRegex: regexp.MustCompile(`^\d+$`),
 		ResourceTypes:   triggerAutomationViewConditionTypes,
-		ValidOperators:  []Operator{Is, IsNot, WithinPreviousNDays},
+		ValidOperators:  []Operator{Is, IsNot, WithinPreviousNDays, NotPresent, Present},
 	},
 	ConditionFieldCustomFieldAlt: {
 		ValidationRegex: regexp.MustCompile(`^\d+$`),
@@ -546,12 +548,12 @@ var ValidConditionOperatorValues = ConditionsValueValidator{
 	ConditionFieldUpdateType: {
 		ValidationRegex: regexp.MustCompile(`(Create|Change)`),
 		ResourceTypes:   triggerConditionTypes,
-		ValidOperators:  []Operator{EmptyOperator},
+		ValidOperators:  []Operator{EmptyOperator, Is},
 	},
 	ConditionFieldCommentIsPublic: {
 		ValidationRegex: regexp.MustCompile(`(true|false|not_relevant|requester_can_see_comment)`),
 		ResourceTypes:   triggerConditionTypes,
-		ValidOperators:  []Operator{EmptyOperator},
+		ValidOperators:  []Operator{EmptyOperator, Is, IsNot},
 	},
 	ConditionFieldTicketIsPublic: {
 		ValidationRegex: regexp.MustCompile(`(public|private)`),
@@ -833,6 +835,22 @@ var ValidConditionOperatorValues = ConditionsValueValidator{
 		ValidOperators: []Operator{
 			GreaterThan,
 			LessThan,
+			Is,
+			IsNot,
+		},
+	},
+	ConditionFieldRole: {
+		ValidationRegex: regexp.MustCompile(`([\s\S]*)`),
+		ResourceTypes:   triggerConditionTypes,
+		ValidOperators: []Operator{
+			Is,
+			IsNot,
+		},
+	},
+	ConditionFieldWithinSchedule: {
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
+		ResourceTypes:   triggerConditionTypes,
+		ValidOperators: []Operator{
 			Is,
 			IsNot,
 		},

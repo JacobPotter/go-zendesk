@@ -123,7 +123,8 @@ const (
 	// ActionFieldRemoveSkills remove_skills
 	ActionFieldRemoveSkills ActionField = "remove_skills"
 	// ActionFieldCustomField custom_field_ prefix
-	ActionFieldCustomField ActionField = "custom_fields_"
+	ActionFieldCustomField       ActionField = "custom_fields_"
+	ActionSideConversationTicket ActionField = "side_conversation_ticket"
 )
 
 // ActionResourceType String type of resource the action belongs to. Valid
@@ -351,6 +352,10 @@ var ValidActionValuesMap = ActionsValueValidator{
 	},
 	ActionFieldCommentModeIsPublic: {
 		ValidationRegex: regexp.MustCompile("(true|false)"),
+		ResourceTypes:   macroActionTypes,
+	},
+	ActionSideConversationTicket: {
+		ValidationRegex: regexp.MustCompile(`([\s\S]*)`),
 		ResourceTypes:   macroActionTypes,
 	},
 }

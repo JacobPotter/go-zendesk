@@ -125,6 +125,7 @@ const (
 	// ActionFieldCustomField custom_field_ prefix
 	ActionFieldCustomField       ActionField = "custom_fields_"
 	ActionSideConversationTicket ActionField = "side_conversation_ticket"
+	ActionSideConversationSlack  ActionField = "side_conversation_slack"
 )
 
 // ActionResourceType String type of resource the action belongs to. Valid
@@ -255,7 +256,7 @@ var ValidActionValuesMap = ActionsValueValidator{
 		ResourceTypes:   sharedActionTypes,
 	},
 	ActionFieldGroupID: {
-		ValidationRegex: regexp.MustCompile("(^$|^[0-9]*$)"),
+		ValidationRegex: regexp.MustCompile("(^$|current_groups|^[0-9]*$)"),
 		ResourceTypes:   sharedActionTypes,
 	},
 	ActionFieldAssigneeID: {
@@ -263,15 +264,15 @@ var ValidActionValuesMap = ActionsValueValidator{
 		ResourceTypes:   sharedActionTypes,
 	},
 	ActionFieldSetTags: {
-		ValidationRegex: regexp.MustCompile(`^\w+(?:\s\w+)*$`),
+		ValidationRegex: regexp.MustCompile(`^\S+(?:\s\S+)*$`),
 		ResourceTypes:   sharedActionTypes,
 	},
 	ActionFieldCurrentTags: {
-		ValidationRegex: regexp.MustCompile(`^\w+(?:\s\w+)*$`),
+		ValidationRegex: regexp.MustCompile(`^\S+(?:\s\S+)*$`),
 		ResourceTypes:   sharedActionTypes,
 	},
 	ActionFieldRemoveTags: {
-		ValidationRegex: regexp.MustCompile(`^\w+(?:\s\w+)*$`),
+		ValidationRegex: regexp.MustCompile(`^\S+(?:\s\S+)*$`),
 		ResourceTypes:   sharedActionTypes,
 	},
 	ActionFieldCustomStatusId: {
@@ -355,6 +356,10 @@ var ValidActionValuesMap = ActionsValueValidator{
 		ResourceTypes:   macroActionTypes,
 	},
 	ActionSideConversationTicket: {
+		ValidationRegex: regexp.MustCompile(`([\s\S]*)`),
+		ResourceTypes:   macroActionTypes,
+	},
+	ActionSideConversationSlack: {
 		ValidationRegex: regexp.MustCompile(`([\s\S]*)`),
 		ResourceTypes:   macroActionTypes,
 	},

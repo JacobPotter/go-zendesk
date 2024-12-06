@@ -342,11 +342,11 @@ var ValidActionValuesMap = ActionsValueValidator{
 		ResourceTypes:   macroActionTypes,
 	},
 	ActionFieldCommentValue: {
-		ValidationRegex: regexp.MustCompile("(channel:all|channel:web|channel:chat)"),
+		ValidationRegex: regexp.MustCompile(`([\s\S]*)`),
 		ResourceTypes:   macroActionTypes,
 	},
 	ActionFieldCommentValueHTML: {
-		ValidationRegex: regexp.MustCompile("(channel:all|channel:web|channel:chat)"),
+		ValidationRegex: regexp.MustCompile(`([\s\S]*)`),
 		ResourceTypes:   macroActionTypes,
 	},
 	ActionFieldCommentModeIsPublic: {

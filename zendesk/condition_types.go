@@ -139,7 +139,8 @@ const (
 	// ConditionFieldTicketFormId is alias for ticket_form_id
 	ConditionFieldTicketFormId ConditionField = "ticket_form_id"
 	// ConditionFieldUserCustomKey is a prefix alias for user.custom_fields.{key} where key is replaced with a key value
-	ConditionFieldUserCustomKey ConditionField = "user.custom_fields."
+	ConditionFieldUserCustomKey      ConditionField = "user.custom_fields."
+	ConditionFieldRequesterCustomKey ConditionField = "requester.custom_fields."
 	// ConditionFieldOrganizationCustomKey is a prefix alias for organization.custom_fields.{key} where key is replaced with a key value
 	ConditionFieldOrganizationCustomKey ConditionField = "organization.custom_fields."
 	// ConditionFieldIsBusinessHours is an alias for is_business_hours
@@ -258,6 +259,11 @@ func (c ConditionsValueValidator) ValidateValue(key ConditionField, value string
 		newKey = ConditionFieldUserCustomKey
 	}
 
+	isRequesterField := strings.HasPrefix(string(key), string(ConditionFieldRequesterCustomKey))
+	if isRequesterField {
+		newKey = ConditionFieldRequesterCustomKey
+	}
+
 	if v, ok := c[newKey]; ok {
 
 		keys := c.ValidKeys()
@@ -332,7 +338,7 @@ var ValidConditionOperatorValues = ConditionsValueValidator{
 		},
 	},
 	ConditionFieldAssigneeID: {
-		ValidationRegex: regexp.MustCompile(`(^$|current_user|^\d+)`),
+		ValidationRegex: regexp.MustCompile(`(^$|current_user|requester_id|^\d+)`),
 		ResourceTypes:   sharedConditionTypes,
 		ValidOperators: []Operator{
 			Is,
@@ -346,7 +352,7 @@ var ValidConditionOperatorValues = ConditionsValueValidator{
 		},
 	},
 	ConditionFieldRequesterID: {
-		ValidationRegex: regexp.MustCompile(`(^$|current_user|^\d+)`),
+		ValidationRegex: regexp.MustCompile(`(^$|current_user|requester_id|^\d+)`),
 		ResourceTypes:   sharedConditionTypes,
 		ValidOperators: []Operator{
 			Is,
@@ -404,7 +410,7 @@ var ValidConditionOperatorValues = ConditionsValueValidator{
 		ValidOperators:  []Operator{Is, IsNot},
 	},
 	ConditionFieldStatus: {
-		ValidationRegex: regexp.MustCompile(`(new|open|pending|hold|solved|closed)`),
+		ValidationRegex: regexp.MustCompile(`(new|open|pending|hold|solved|closed|^$)`),
 		ResourceTypes:   triggerAutomationViewConditionTypes,
 		ValidOperators: []Operator{
 			Is,
@@ -491,6 +497,20 @@ var ValidConditionOperatorValues = ConditionsValueValidator{
 		},
 	},
 	ConditionFieldUserCustomKey: {
+		ValidationRegex: regexp.MustCompile(`([\s\S]*)`),
+		ResourceTypes:   triggerAutomationConditionTypes,
+		ValidOperators: []Operator{
+			Is,
+			IsNot,
+			Present,
+			NotPresent,
+			Includes,
+			NotIncludes,
+			IncludesString,
+			NotIncludesString,
+		},
+	},
+	ConditionFieldRequesterCustomKey: {
 		ValidationRegex: regexp.MustCompile(`([\s\S]*)`),
 		ResourceTypes:   triggerAutomationConditionTypes,
 		ValidOperators: []Operator{
@@ -624,7 +644,7 @@ var ValidConditionOperatorValues = ConditionsValueValidator{
 		ValidOperators:  []Operator{EmptyOperator},
 	},
 	ConditionFieldRequesterRole: {
-		ValidationRegex: regexp.MustCompile(`(agent|admin|end-user|light-agent)`),
+		ValidationRegex: regexp.MustCompile(`([\s\S]*)`),
 		ResourceTypes:   triggerConditionTypes,
 		ValidOperators: []Operator{
 			Is,

@@ -123,11 +123,12 @@ const (
 	// ActionFieldRemoveSkills remove_skills
 	ActionFieldRemoveSkills ActionField = "remove_skills"
 	// ActionFieldCustomField custom_field_ prefix
-	ActionFieldCustomField       ActionField = "custom_fields_"
-	ActionSideConversationTicket ActionField = "side_conversation_ticket"
-	ActionSideConversationSlack  ActionField = "side_conversation_slack"
-	ActionSetSchedule            ActionField = "set_schedule"
-	ActionNotificationZis        ActionField = "notification_zis"
+	ActionFieldCustomField          ActionField = "custom_fields_"
+	ActionSideConversationTicket    ActionField = "side_conversation_ticket"
+	ActionSideConversationSlack     ActionField = "side_conversation_slack"
+	ActionSetSchedule               ActionField = "set_schedule"
+	ActionNotificationZis           ActionField = "notification_zis"
+	ActionNotificationMessagingCsat ActionField = "notification_messaging_csat"
 )
 
 // ActionResourceType String type of resource the action belongs to. Valid
@@ -359,18 +360,22 @@ var ValidActionValuesMap = ActionsValueValidator{
 	},
 	ActionSideConversationTicket: {
 		ValidationRegex: regexp.MustCompile(`([\s\S]*)`),
-		ResourceTypes:   macroActionTypes,
+		ResourceTypes:   sharedActionTypes,
 	},
 	ActionSideConversationSlack: {
 		ValidationRegex: regexp.MustCompile(`([\s\S]*)`),
-		ResourceTypes:   macroActionTypes,
+		ResourceTypes:   sharedActionTypes,
 	},
 	ActionSetSchedule: {
 		ValidationRegex: regexp.MustCompile(`([\s\S]*)`),
-		ResourceTypes:   triggerActionTypes,
+		ResourceTypes:   sharedActionTypes,
 	},
 	ActionNotificationZis: {
 		ValidationRegex: regexp.MustCompile(`([\s\S]*)`),
-		ResourceTypes:   triggerActionTypes,
+		ResourceTypes:   sharedActionTypes,
+	},
+	ActionNotificationMessagingCsat: {
+		ValidationRegex: regexp.MustCompile(`([\s\S]*)`),
+		ResourceTypes:   sharedActionTypes,
 	},
 }

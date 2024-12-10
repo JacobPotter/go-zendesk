@@ -64,14 +64,14 @@ type Configuration struct {
 // CustomRole is zendesk CustomRole JSON payload format
 // https://developer.zendesk.com/api-reference/ticketing/account-configuration/custom_roles/
 type CustomRole struct {
-	Description     string         `json:"description,omitempty"`
-	ID              int64          `json:"id,omitempty"`
-	TeamMemberCount int64          `json:"team_member_count"`
-	Name            string         `json:"name"`
-	Configuration   *Configuration `json:"configuration,omitempty"`
-	RoleType        int64          `json:"role_type"`
-	CreatedAt       time.Time      `json:"created_at,omitempty"`
-	UpdatedAt       time.Time      `json:"updated_at,omitempty"`
+	Description     string        `json:"description,omitempty"`
+	ID              int64         `json:"id,omitempty"`
+	TeamMemberCount int64         `json:"team_member_count"`
+	Name            string        `json:"name"`
+	Configuration   Configuration `json:"configuration"`
+	RoleType        int64         `json:"role_type"`
+	CreatedAt       time.Time     `json:"created_at,omitempty"`
+	UpdatedAt       time.Time     `json:"updated_at,omitempty"`
 }
 
 // CustomRoleAPI an interface containing all CustomRole related methods

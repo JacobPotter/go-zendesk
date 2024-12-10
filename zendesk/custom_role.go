@@ -7,14 +7,16 @@ import (
 	"time"
 )
 
+type Scopes map[string]struct {
+	Scopes []string `json:"scopes"`
+}
+
 // Configuration is a dictionary of custom configuration fields
 type Configuration struct {
-	AssignTicketsToAnyBrand bool `json:"assign_tickets_to_any_brand"`
-	AssignTicketsToAnyGroup bool `json:"assign_tickets_to_any_group"`
-	ChatAccess              bool `json:"chat_access"`
-	CustomObjects           map[string]struct {
-		Scopes []string `json:"scopes"`
-	} `json:"custom_objects"`
+	AssignTicketsToAnyBrand      bool   `json:"assign_tickets_to_any_brand"`
+	AssignTicketsToAnyGroup      bool   `json:"assign_tickets_to_any_group"`
+	ChatAccess                   bool   `json:"chat_access"`
+	CustomObjects                Scopes `json:"custom_objects"`
 	EndUserListAccess            string `json:"end_user_list_access"`
 	EndUserProfileAccess         string `json:"end_user_profile_access"`
 	ExploreAccess                string `json:"explore_access"`

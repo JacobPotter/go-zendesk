@@ -41,7 +41,7 @@ func (a Action) Validate(resourceType ResourceType[ActionResourceType]) error {
 		}
 		if err := ValidActionValuesMap.ValidateValue(
 			ActionField(a.Field),
-			a.Value.([]string)[0],
+			a.Value.([]string)[1],
 			"",
 			resourceType,
 		); err != nil {

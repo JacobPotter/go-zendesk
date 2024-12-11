@@ -5,6 +5,7 @@ import (
 	"golang.org/x/exp/maps"
 	"regexp"
 	"slices"
+	"strconv"
 	"strings"
 )
 
@@ -24,11 +25,42 @@ func (a Action) Validate(resourceType ResourceType[ActionResourceType]) error {
 		return err
 	}
 
-	switch a.Value.(type) {
+	switch typedValue := a.Value.(type) {
 	case string:
 		if err := ValidActionValuesMap.ValidateValue(
 			ActionField(a.Field),
-			a.Value.(string),
+			typedValue,
+			"",
+			resourceType,
+		); err != nil {
+			return err
+		}
+		return nil
+	case []interface{}:
+		if len(typedValue) == 0 {
+			return fmt.Errorf("no empty for action value for field %s", a.Field)
+		}
+
+		var target string
+		switch targetValue := typedValue[0].(type) {
+		case string:
+			target = targetValue
+		case []string:
+			println(targetValue)
+		case int:
+			target = strconv.Itoa(targetValue)
+		case int64:
+			target = strconv.FormatInt(targetValue, 10)
+		case float64:
+			target = strconv.FormatFloat(targetValue, 'E', -1, 64)
+		case float32:
+			target = strconv.FormatFloat(float64(targetValue), 'E', -1, 32)
+		default:
+			return fmt.Errorf("invalid type for action value type %T for field %s", targetValue, a.Field)
+		}
+		if err := ValidActionValuesMap.ValidateValue(
+			ActionField(a.Field),
+			target,
 			"",
 			resourceType,
 		); err != nil {
@@ -36,19 +68,18 @@ func (a Action) Validate(resourceType ResourceType[ActionResourceType]) error {
 		}
 		return nil
 	case []string:
-		if len(a.Value.([]string)) == 0 {
+		if len(typedValue) == 0 {
 			return fmt.Errorf("no empty for action value for field %s", a.Field)
 		}
 		if err := ValidActionValuesMap.ValidateValue(
 			ActionField(a.Field),
-			a.Value.([]string)[1],
+			typedValue[0],
 			"",
 			resourceType,
 		); err != nil {
 			return err
 		}
 		return nil
-
 	default:
 		return fmt.Errorf("invalid value type %T for field %s", a.Value, a.Field)
 	}
@@ -259,11 +290,11 @@ var ValidActionValuesMap = ActionsValueValidator{
 		ResourceTypes:   sharedActionTypes,
 	},
 	ActionFieldGroupID: {
-		ValidationRegex: regexp.MustCompile(`(^$|current_groups|^[\d+]$)`),
+		ValidationRegex: regexp.MustCompile(`(^$|current_groups|^\d+$)`),
 		ResourceTypes:   sharedActionTypes,
 	},
 	ActionFieldAssigneeID: {
-		ValidationRegex: regexp.MustCompile(`(^$|current_user|^[\d+]$)`),
+		ValidationRegex: regexp.MustCompile(`(^$|current_user|^\d+$)`),
 		ResourceTypes:   sharedActionTypes,
 	},
 	ActionFieldSetTags: {
@@ -279,15 +310,15 @@ var ValidActionValuesMap = ActionsValueValidator{
 		ResourceTypes:   sharedActionTypes,
 	},
 	ActionFieldCustomStatusId: {
-		ValidationRegex: regexp.MustCompile(`^[\d+]$`),
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
 		ResourceTypes:   sharedActionTypes,
 	},
 	ActionFieldTicketFormID: {
-		ValidationRegex: regexp.MustCompile(`^[\d+]$`),
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
 		ResourceTypes:   sharedActionTypes,
 	},
 	ActionFieldFollower: {
-		ValidationRegex: regexp.MustCompile(`(^$|current_user|^[\d+]$)`),
+		ValidationRegex: regexp.MustCompile(`(^$|current_user|^\d+$)`),
 		ResourceTypes:   sharedActionTypes,
 	},
 	ActionFieldCustomField: {
@@ -299,15 +330,15 @@ var ValidActionValuesMap = ActionsValueValidator{
 		ResourceTypes:   triggerAutomationActionTypes,
 	},
 	ActionFieldNotificationUser: {
-		ValidationRegex: regexp.MustCompile(`(all_agents|requester_id|assignee_id|current_user|requester_and_ccs|^[\d+]$)`),
+		ValidationRegex: regexp.MustCompile(`(all_agents|requester_id|assignee_id|current_user|requester_and_ccs|^\d+$)`),
 		ResourceTypes:   triggerAutomationActionTypes,
 	},
 	ActionFieldNotificationGroup: {
-		ValidationRegex: regexp.MustCompile(`(group_id|^[\d+]$)`),
+		ValidationRegex: regexp.MustCompile(`(group_id|^\d+$)`),
 		ResourceTypes:   triggerAutomationActionTypes,
 	},
 	ActionFieldNotificationTarget: {
-		ValidationRegex: regexp.MustCompile(`^[\d+]$`),
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
 		ResourceTypes:   triggerAutomationActionTypes,
 	},
 	ActionFieldNotificationWebhook: {
@@ -315,7 +346,7 @@ var ValidActionValuesMap = ActionsValueValidator{
 		ResourceTypes:   triggerAutomationActionTypes,
 	},
 	ActionFieldCC: {
-		ValidationRegex: regexp.MustCompile(`(^$|current_user|^[\d+]$)`),
+		ValidationRegex: regexp.MustCompile(`(^$|current_user|^\d+$)`),
 		ResourceTypes:   triggerAutomationActionTypes,
 	},
 	ActionFieldLocaleID: {

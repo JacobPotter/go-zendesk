@@ -215,7 +215,7 @@ func (a ActionsValueValidator) ValidateValue(
 		if result == nil {
 			return fmt.Errorf(
 				"invalid action value %s. does not match regex: %s",
-				string(result),
+				string(value),
 				v.ValidationRegex.String(),
 			)
 		}
@@ -259,11 +259,11 @@ var ValidActionValuesMap = ActionsValueValidator{
 		ResourceTypes:   sharedActionTypes,
 	},
 	ActionFieldGroupID: {
-		ValidationRegex: regexp.MustCompile("(^$|current_groups|^[0-9]*$)"),
+		ValidationRegex: regexp.MustCompile(`(^$|current_groups|^[\d+]$)`),
 		ResourceTypes:   sharedActionTypes,
 	},
 	ActionFieldAssigneeID: {
-		ValidationRegex: regexp.MustCompile("(^$|current_user|^[0-9]*$)"),
+		ValidationRegex: regexp.MustCompile(`(^$|current_user|^[\d+]$)`),
 		ResourceTypes:   sharedActionTypes,
 	},
 	ActionFieldSetTags: {
@@ -279,15 +279,15 @@ var ValidActionValuesMap = ActionsValueValidator{
 		ResourceTypes:   sharedActionTypes,
 	},
 	ActionFieldCustomStatusId: {
-		ValidationRegex: regexp.MustCompile("^[0-9]*$"),
+		ValidationRegex: regexp.MustCompile(`^[\d+]$`),
 		ResourceTypes:   sharedActionTypes,
 	},
 	ActionFieldTicketFormID: {
-		ValidationRegex: regexp.MustCompile("^[0-9]*$"),
+		ValidationRegex: regexp.MustCompile(`^[\d+]$`),
 		ResourceTypes:   sharedActionTypes,
 	},
 	ActionFieldFollower: {
-		ValidationRegex: regexp.MustCompile("(^$|current_user|^[0-9]*$)"),
+		ValidationRegex: regexp.MustCompile(`(^$|current_user|^[\d+]$)`),
 		ResourceTypes:   sharedActionTypes,
 	},
 	ActionFieldCustomField: {
@@ -299,15 +299,15 @@ var ValidActionValuesMap = ActionsValueValidator{
 		ResourceTypes:   triggerAutomationActionTypes,
 	},
 	ActionFieldNotificationUser: {
-		ValidationRegex: regexp.MustCompile("(all_agents|requester_id|assignee_id|current_user|requester_and_ccs|^[0-9]*$)"),
+		ValidationRegex: regexp.MustCompile(`(all_agents|requester_id|assignee_id|current_user|requester_and_ccs|^[\d+]$)`),
 		ResourceTypes:   triggerAutomationActionTypes,
 	},
 	ActionFieldNotificationGroup: {
-		ValidationRegex: regexp.MustCompile("(group_id|^[0-9]*$)"),
+		ValidationRegex: regexp.MustCompile(`(group_id|^[\d+]$)`),
 		ResourceTypes:   triggerAutomationActionTypes,
 	},
 	ActionFieldNotificationTarget: {
-		ValidationRegex: regexp.MustCompile("^[0-9]*$"),
+		ValidationRegex: regexp.MustCompile(`^[\d+]$`),
 		ResourceTypes:   triggerAutomationActionTypes,
 	},
 	ActionFieldNotificationWebhook: {
@@ -315,7 +315,7 @@ var ValidActionValuesMap = ActionsValueValidator{
 		ResourceTypes:   triggerAutomationActionTypes,
 	},
 	ActionFieldCC: {
-		ValidationRegex: regexp.MustCompile("(^$|current_user|^[0-9]*$)"),
+		ValidationRegex: regexp.MustCompile(`(^$|current_user|^[\d+]$)`),
 		ResourceTypes:   triggerAutomationActionTypes,
 	},
 	ActionFieldLocaleID: {

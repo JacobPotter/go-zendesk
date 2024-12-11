@@ -55,6 +55,15 @@ func TestAction_Validate(t *testing.T) {
 			resourceType: TriggerActionResource,
 			shouldPass:   true,
 		},
+		{
+			testName: "should validate action object with array of mixed values",
+			action: Action{
+				Field: string(ActionFieldNotificationUser),
+				Value: []interface{}{12345678910, "webhook body string"},
+			},
+			resourceType: TriggerActionResource,
+			shouldPass:   true,
+		},
 	}
 
 	for _, c := range cases {

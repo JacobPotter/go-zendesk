@@ -245,8 +245,8 @@ func (a ActionsValueValidator) ValidateValue(
 		}
 		if result == nil {
 			return fmt.Errorf(
-				"invalid action value %s. does not match regex: %s",
-				string(value),
+				"invalid action value %v. does not match regex: %s",
+				value,
 				v.ValidationRegex.String(),
 			)
 		}

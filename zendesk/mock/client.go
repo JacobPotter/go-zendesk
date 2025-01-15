@@ -2876,18 +2876,18 @@ func (mr *ClientMockRecorder) UpdateCustomObjectRecord(ctx, customObjectKey, cus
 }
 
 // UpdateCustomRole mocks base method.
-func (m *Client) UpdateCustomRole(ctx context.Context, customRole zendesk.CustomRole) (zendesk.CustomRole, error) {
+func (m *Client) UpdateCustomRole(ctx context.Context, updatedId int64, customRole zendesk.CustomRole) (zendesk.CustomRole, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateCustomRole", ctx, customRole)
+	ret := m.ctrl.Call(m, "UpdateCustomRole", ctx, updatedId, customRole)
 	ret0, _ := ret[0].(zendesk.CustomRole)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // UpdateCustomRole indicates an expected call of UpdateCustomRole.
-func (mr *ClientMockRecorder) UpdateCustomRole(ctx, customRole any) *gomock.Call {
+func (mr *ClientMockRecorder) UpdateCustomRole(ctx, updatedId, customRole any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateCustomRole", reflect.TypeOf((*Client)(nil).UpdateCustomRole), ctx, customRole)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateCustomRole", reflect.TypeOf((*Client)(nil).UpdateCustomRole), ctx, updatedId, customRole)
 }
 
 // UpdateDynamicContentItem mocks base method.

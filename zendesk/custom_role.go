@@ -79,7 +79,7 @@ type CustomRoleAPI interface {
 	GetCustomRoles(ctx context.Context) ([]CustomRole, error)
 	GetCustomRole(ctx context.Context, id int64) (CustomRole, error)
 	CreateCustomRole(ctx context.Context, customRole CustomRole) (CustomRole, error)
-	UpdateCustomRole(ctx context.Context, customRole CustomRole) (CustomRole, error)
+	UpdateCustomRole(ctx context.Context, updatedId int64, customRole CustomRole) (CustomRole, error)
 	DeleteCustomRole(ctx context.Context, id int64) error
 }
 
@@ -141,11 +141,11 @@ func (z *Client) CreateCustomRole(ctx context.Context, customRole CustomRole) (C
 	return result.CustomRole, nil
 }
 
-func (z *Client) UpdateCustomRole(ctx context.Context, customRole CustomRole) (CustomRole, error) {
+func (z *Client) UpdateCustomRole(ctx context.Context, updatedId int64, customRole CustomRole) (CustomRole, error) {
 	var data, result struct {
 		CustomRole CustomRole `json:"custom_role"`
 	}
-	u := fmt.Sprintf("/custom_roles/%d.json", customRole.ID)
+	u := fmt.Sprintf("/custom_roles/%d.json", updatedId)
 	data.CustomRole = customRole
 	body, err := z.put(ctx, u, data)
 	if err != nil {

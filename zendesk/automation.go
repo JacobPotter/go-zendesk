@@ -29,7 +29,7 @@ type Automation struct {
 // ref: https://developer.zendesk.com/rest_api/docs/support/automations#list-automations
 type AutomationListOptions struct {
 	PageOptions
-	Active    bool   `url:"active,omitempty"`
+	Active    bool   `url:"active"`
 	SortBy    string `url:"sort_by,omitempty"`
 	SortOrder string `url:"sort_order,omitempty"`
 }

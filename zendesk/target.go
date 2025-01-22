@@ -14,7 +14,7 @@ type Target struct {
 	CreatedAt *time.Time `json:"created_at,omitempty"`
 	Type      string     `json:"type"`
 	Title     string     `json:"title"`
-	Active    bool       `json:"active,omitempty"`
+	Active    bool       `json:"active"`
 	// email_target
 	Email   string `json:"email,omitempty"`
 	Subject string `json:"subject,omitempty"`

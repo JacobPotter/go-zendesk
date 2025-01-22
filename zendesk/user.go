@@ -17,7 +17,7 @@ type User struct {
 	URL                  string     `json:"url,omitempty"`
 	Email                string     `json:"email,omitempty"`
 	Name                 string     `json:"name"`
-	Active               bool       `json:"active,omitempty"`
+	Active               bool       `json:"active"`
 	Alias                string     `json:"alias,omitempty"`
 	ChatOnly             bool       `json:"chat_only,omitempty"`
 	CustomRoleID         int64      `json:"custom_role_id,omitempty"`

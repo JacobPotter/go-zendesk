@@ -112,7 +112,7 @@ func (r RequirementType) Validate() error {
 // ref: https://developer.zendesk.com/rest_api/docs/support/ticket_forms#available-parameters
 type TicketFormListOptions struct {
 	PageOptions
-	Active            bool `url:"active,omitempty"`
+	Active            bool `url:"active"`
 	EndUserVisible    bool `url:"end_user_visible,omitempty"`
 	FallbackToDefault bool `url:"fallback_to_default,omitempty"`
 	AssociatedToBrand bool `url:"associated_to_brand,omitempty"`

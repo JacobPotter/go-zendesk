@@ -22,7 +22,7 @@ func NewPaginationOptions() *PaginationOptions {
 }
 
 type CommonOptions struct {
-	Active        bool     `url:"active,omitempty"`
+	Active        bool     `url:"active"`
 	Role          string   `url:"role,omitempty"`
 	Roles         []string `url:"role[],omitempty"`
 	PermissionSet int64    `url:"permission_set,omitempty"`

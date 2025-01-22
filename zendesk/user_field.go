@@ -18,7 +18,7 @@ type UserField struct {
 	Description            string              `json:"description,omitempty"`
 	RawDescription         string              `json:"raw_description,omitempty"`
 	Position               int64               `json:"position,omitempty"`
-	Active                 bool                `json:"active,omitempty"`
+	Active                 bool                `json:"active"`
 	System                 bool                `json:"system,omitempty"`
 	RegexpForValidation    string              `json:"regexp_for_validation,omitempty"`
 	Tag                    string              `json:"tag,omitempty"`

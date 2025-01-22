@@ -44,7 +44,7 @@ type DynamicContentVariant struct {
 	Content   string    `json:"content"`
 	LocaleID  int64     `json:"locale_id"`
 	Outdated  bool      `json:"outdated,omitempty"`
-	Active    bool      `json:"active,omitempty"`
+	Active    bool      `json:"active"`
 	Default   bool      `json:"default,omitempty"`
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	UpdatedAt time.Time `json:"updated_at,omitempty"`

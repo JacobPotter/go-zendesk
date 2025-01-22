@@ -16,7 +16,7 @@ type Brand struct {
 	BrandURL          string     `json:"brand_url,omitempty"`
 	HasHelpCenter     bool       `json:"has_help_center,omitempty"`
 	HelpCenterState   string     `json:"help_center_state,omitempty"`
-	Active            bool       `json:"active,omitempty"`
+	Active            bool       `json:"active"`
 	Default           bool       `json:"default,omitempty"`
 	Logo              Attachment `json:"logo,omitempty"`
 	TicketFormIDs     []int64    `json:"ticket_form_ids,omitempty"`

@@ -29,7 +29,7 @@ type Trigger struct {
 // ref: https://developer.zendesk.com/rest_api/docs/support/triggers#list-triggers
 type TriggerListOptions struct {
 	PageOptions
-	Active     bool   `url:"active,omitempty"`
+	Active     bool   `url:"active"`
 	CategoryID string `url:"category_id,omitempty"`
 	SortBy     string `url:"sort_by,omitempty"`
 	SortOrder  string `url:"sort_order,omitempty"`

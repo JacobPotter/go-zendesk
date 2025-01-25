@@ -1,0 +1,15 @@
+{
+  "type": "personal",
+  "participants": [
+    {
+      "userId": "42589ad070d43be9b00ff7e5",
+      "subscribeSDKClient": false
+    }
+  ],
+  "displayName": "My conversation",
+  "description": "Conversation between Rogers and Carl.",
+  "iconUrl": "https://www.gravatar.com/image.jpg",
+  "metadata": {
+    "lang": "en-ca"
+  }
+}

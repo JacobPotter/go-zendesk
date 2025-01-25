@@ -1,0 +1,28 @@
+{
+  "conversation": {
+    "id": "c93bb9c14dde8ffb94564eae",
+    "type": "personal",
+    "metadata": {
+      "lang": "en-ca"
+    },
+    "activeSwitchboardIntegration": {
+      "id": "5ef21b86e933b7355c11c604",
+      "name": "bot",
+      "integrationId": "5ef21b86e933b7355c11c605",
+      "integrationType": "zd:agentWorkspace"
+    },
+    "pendingSwitchboardIntegration": {
+      "id": "5ef21b86e933b7355c11c604",
+      "name": "bot",
+      "integrationId": "5ef21b86e933b7355c11c605",
+      "integrationType": "zd:agentWorkspace"
+    },
+    "isDefault": false,
+    "displayName": "My conversation",
+    "description": "Conversation between Rogers and Carl.",
+    "iconUrl": "https://www.gravatar.com/image.jpg",
+    "businessLastRead": "2020-06-23T14:33:47.492Z",
+    "lastUpdatedAt": "2020-06-26T14:33:47.120Z",
+    "createdAt": "2020-06-20T11:26:07.001Z"
+  }
+}

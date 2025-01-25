@@ -8,6 +8,7 @@ import (
 // API an interface containing all the zendesk client methods
 type API interface {
 	client.BaseAPI
+	ConversationsAPI
 }
 
 type Client struct {

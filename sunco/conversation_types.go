@@ -29,10 +29,17 @@ type PendingSwitchboardIntegration struct {
 	IntegrationType string `json:"integrationType"`
 }
 
+type ConversationType string
+
+const (
+	Personal ConversationType = "personal"
+	SDKGroup ConversationType = "sdkGroup"
+)
+
 // Conversation represents a sunco conversation
 type Conversation struct {
 	ID                            string                        `json:"id,omitempty"`
-	Type                          string                        `json:"type"`
+	Type                          ConversationType              `json:"type"`
 	Metadata                      any                           `json:"metadata,omitempty"`
 	Participants                  []Participants                `json:"participants,omitempty"`
 	ActiveSwitchboardIntegration  ActiveSwitchboardIntegration  `json:"activeSwitchboardIntegration,omitempty"`

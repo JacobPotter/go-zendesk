@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/JacobPotter/go-zendesk/internal/client"
 	"time"
 )
 
@@ -43,7 +44,7 @@ type (
 		SetDefaultOrganization(context.Context, OrganizationMembershipOptions) (OrganizationMembership, error)
 		GetOrganizationMembershipsIterator(ctx context.Context, opts *PaginationOptions) *Iterator[OrganizationMembership]
 		GetOrganizationMembershipsOBP(ctx context.Context, opts *OBPOptions) ([]OrganizationMembership, Page, error)
-		GetOrganizationMembershipsCBP(ctx context.Context, opts *CBPOptions) ([]OrganizationMembership, CursorPaginationMeta, error)
+		GetOrganizationMembershipsCBP(ctx context.Context, opts *CBPOptions) ([]OrganizationMembership, client.CursorPaginationMeta, error)
 	}
 )
 
@@ -60,12 +61,12 @@ func (z *Client) GetOrganizationMemberships(ctx context.Context, opts *Organizat
 		tmp = new(OrganizationMembershipListOptions)
 	}
 
-	u, err := addOptions("/organization_memberships.json", tmp)
+	u, err := client.AddOptions("/organization_memberships.json", tmp)
 	if err != nil {
 		return nil, Page{}, err
 	}
 
-	body, err := z.get(ctx, u)
+	body, err := z.Get(ctx, u)
 	if err != nil {
 		return nil, Page{}, err
 	}
@@ -89,7 +90,7 @@ func (z *Client) CreateOrganizationMembership(ctx context.Context, opts Organiza
 		OrganizationID: opts.OrganizationID,
 	}
 
-	body, err := z.post(ctx, "/organization_memberships.json", data)
+	body, err := z.Post(ctx, "/organization_memberships.json", data)
 
 	if err != nil {
 		return OrganizationMembership{}, err
@@ -110,7 +111,7 @@ func (z *Client) SetDefaultOrganization(ctx context.Context, opts OrganizationMe
 		OrganizationMembership OrganizationMembership `json:"organization_membership"`
 	}
 
-	body, err := z.put(ctx, fmt.Sprintf("/users/%d/organizations/%d/make_default.json", opts.UserID, opts.OrganizationID), nil)
+	body, err := z.Put(ctx, fmt.Sprintf("/users/%d/organizations/%d/make_default.json", opts.UserID, opts.OrganizationID), nil)
 	if err != nil {
 		return OrganizationMembership{}, err
 	}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/JacobPotter/go-zendesk/internal/client"
 	"time"
 )
 
@@ -14,7 +15,7 @@ type TicketCommentAPI interface {
 	MakeCommentPrivate(ctx context.Context, ticketID int64, ticketCommentID int64) error
 	GetTicketCommentsIterator(ctx context.Context, opts *PaginationOptions) *Iterator[TicketComment]
 	GetTicketCommentsOBP(ctx context.Context, opts *OBPOptions) ([]TicketComment, Page, error)
-	GetTicketCommentsCBP(ctx context.Context, opts *CBPOptions) ([]TicketComment, CursorPaginationMeta, error)
+	GetTicketCommentsCBP(ctx context.Context, opts *CBPOptions) ([]TicketComment, client.CursorPaginationMeta, error)
 }
 
 // TicketComment is a struct for ticket comment payload
@@ -78,7 +79,7 @@ func (z *Client) CreateTicketComment(ctx context.Context, ticketID int64, ticket
 	data := &comment{}
 	data.Ticket.TicketComment = ticketComment
 
-	body, err := z.put(ctx, fmt.Sprintf("/tickets/%d.json", ticketID), data)
+	body, err := z.Put(ctx, fmt.Sprintf("/tickets/%d.json", ticketID), data)
 	if err != nil {
 		return TicketComment{}, err
 	}
@@ -107,7 +108,7 @@ const (
 
 // ListTicketCommentOptions contains all the options supported by ListTicketComments endpoint.
 type ListTicketCommentsOptions struct {
-	CursorPagination
+	client.CursorPagination
 
 	Include             string                 `url:"include,omitempty"`
 	IncludeInlineImages string                 `url:"include_inline_images,omitempty"`
@@ -117,9 +118,9 @@ type ListTicketCommentsOptions struct {
 // ListTicketCommentsResult contains the resulting ticket comments
 // and cursor pagination metadata.
 type ListTicketCommentsResult struct {
-	TicketComments []TicketComment      `json:"comments"`
-	Meta           CursorPaginationMeta `json:"meta"`
-	Users          []User               `json:"users"`
+	TicketComments []TicketComment             `json:"comments"`
+	Meta           client.CursorPaginationMeta `json:"meta"`
+	Users          []User                      `json:"users"`
 }
 
 // ListTicketComments gets a list of comment for a specified ticket
@@ -134,13 +135,13 @@ func (z *Client) ListTicketComments(
 
 	var err error
 	if opts != nil {
-		url, err = addOptions(url, opts)
+		url, err = client.AddOptions(url, opts)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	body, err := z.get(ctx, url)
+	body, err := z.Get(ctx, url)
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +160,7 @@ func (z *Client) ListTicketComments(
 // ref: https://developer.zendesk.com/api-reference/ticketing/tickets/ticket_comments/#make-comment-private
 func (z *Client) MakeCommentPrivate(ctx context.Context, ticketID int64, ticketCommentID int64) error {
 	path := fmt.Sprintf("/tickets/%d/comments/%d/make_private", ticketID, ticketCommentID)
-	_, err := z.put(ctx, path, nil)
+	_, err := z.Put(ctx, path, nil)
 	return err
 }
 
@@ -172,6 +173,6 @@ func (z *Client) RedactTicketComment(
 	body RedactTicketCommentRequest,
 ) error {
 	path := fmt.Sprintf("/api/v2/comment_redactions/%d.json", ticketCommentID)
-	_, err := z.put(ctx, path, body)
+	_, err := z.Put(ctx, path, body)
 	return err
 }

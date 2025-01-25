@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/JacobPotter/go-zendesk/internal/client"
 	"time"
 )
 
@@ -15,17 +16,17 @@ type TriggerCategory struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-// TriggerListOptions is options for GetTriggers
+// TriggerCategoryListOptions is options for GetTriggers
 //
 // ref: https://developer.zendesk.com/rest_api/docs/support/triggers#list-triggers
 type TriggerCategoryListOptions struct {
-	CursorPagination
+	client.CursorPagination
 	Sort string `url:"sort,omitempty"`
 }
 
-// TriggerAPI an interface containing all trigger related methods
+// TriggerCategoryAPI an interface containing all trigger related methods
 type TriggerCategoryAPI interface {
-	GetTriggerCategories(ctx context.Context, opts *TriggerCategoryListOptions) ([]TriggerCategory, CursorPaginationMeta, error)
+	GetTriggerCategories(ctx context.Context, opts *TriggerCategoryListOptions) ([]TriggerCategory, client.CursorPaginationMeta, error)
 	CreateTriggerCategory(ctx context.Context, triggerCategory TriggerCategory) (TriggerCategory, error)
 	GetTriggerCategory(ctx context.Context, id int64) (TriggerCategory, error)
 	UpdateTriggerCategory(ctx context.Context, id int64, triggerCategory TriggerCategory) (TriggerCategory, error)
@@ -35,34 +36,34 @@ type TriggerCategoryAPI interface {
 // GetTriggerCategories fetch trigger category list
 //
 // ref: https://developer.zendesk.com/rest_api/docs/support/triggers#getting-triggers
-func (z *Client) GetTriggerCategories(ctx context.Context, opts *TriggerCategoryListOptions) ([]TriggerCategory, CursorPaginationMeta, error) {
+func (z *Client) GetTriggerCategories(ctx context.Context, opts *TriggerCategoryListOptions) ([]TriggerCategory, client.CursorPaginationMeta, error) {
 	var data struct {
 		TriggerCategories []TriggerCategory `json:"trigger_categories"`
-		CursorPaginationMeta
+		client.CursorPaginationMeta
 	}
 
 	if opts == nil {
-		return []TriggerCategory{}, CursorPaginationMeta{}, &OptionsError{opts}
+		return []TriggerCategory{}, client.CursorPaginationMeta{}, &client.OptionsError{Opts: opts}
 	}
 
-	u, err := addOptions("/trigger_categories.json", opts)
+	u, err := client.AddOptions("/trigger_categories.json", opts)
 	if err != nil {
-		return []TriggerCategory{}, CursorPaginationMeta{}, err
+		return []TriggerCategory{}, client.CursorPaginationMeta{}, err
 	}
 
-	body, err := z.get(ctx, u)
+	body, err := z.Get(ctx, u)
 	if err != nil {
-		return []TriggerCategory{}, CursorPaginationMeta{}, err
+		return []TriggerCategory{}, client.CursorPaginationMeta{}, err
 	}
 
 	err = json.Unmarshal(body, &data)
 	if err != nil {
-		return []TriggerCategory{}, CursorPaginationMeta{}, err
+		return []TriggerCategory{}, client.CursorPaginationMeta{}, err
 	}
 	return data.TriggerCategories, data.CursorPaginationMeta, nil
 }
 
-// CreateTriggerCategories creates new trigger category
+// CreateTriggerCategory creates new trigger category
 //
 // ref: https://developer.zendesk.com/rest_api/docs/support/triggers#create-trigger
 func (z *Client) CreateTriggerCategory(ctx context.Context, triggerCategory TriggerCategory) (TriggerCategory, error) {
@@ -71,7 +72,7 @@ func (z *Client) CreateTriggerCategory(ctx context.Context, triggerCategory Trig
 	}
 	data.TriggerCategory = triggerCategory
 
-	body, err := z.post(ctx, "/trigger_categories.json", data)
+	body, err := z.Post(ctx, "/trigger_categories.json", data)
 	if err != nil {
 		return TriggerCategory{}, err
 	}
@@ -83,7 +84,7 @@ func (z *Client) CreateTriggerCategory(ctx context.Context, triggerCategory Trig
 	return result.TriggerCategory, nil
 }
 
-// GetTrigger returns the specified trigger category
+// GetTriggerCategory returns the specified trigger category
 //
 // ref: https://developer.zendesk.com/rest_api/docs/support/triggers#getting-triggers
 func (z *Client) GetTriggerCategory(ctx context.Context, id int64) (TriggerCategory, error) {
@@ -91,7 +92,7 @@ func (z *Client) GetTriggerCategory(ctx context.Context, id int64) (TriggerCateg
 		TriggerCategory TriggerCategory `json:"trigger_category"`
 	}
 
-	body, err := z.get(ctx, fmt.Sprintf("/trigger_categories/%d.json", id))
+	body, err := z.Get(ctx, fmt.Sprintf("/trigger_categories/%d.json", id))
 	if err != nil {
 		return TriggerCategory{}, err
 	}
@@ -103,7 +104,7 @@ func (z *Client) GetTriggerCategory(ctx context.Context, id int64) (TriggerCateg
 	return result.TriggerCategory, nil
 }
 
-// UpdateTrigger updates the specified trigger category and returns the updated one
+// UpdateTriggerCategory updates the specified trigger category and returns the updated one
 //
 // ref: https://developer.zendesk.com/rest_api/docs/support/triggers#update-trigger
 func (z *Client) UpdateTriggerCategory(ctx context.Context, id int64, triggerCategory TriggerCategory) (TriggerCategory, error) {
@@ -112,7 +113,7 @@ func (z *Client) UpdateTriggerCategory(ctx context.Context, id int64, triggerCat
 	}
 
 	data.TriggerCategory = triggerCategory
-	body, err := z.put(ctx, fmt.Sprintf("/trigger_categories/%d.json", id), data)
+	body, err := z.Put(ctx, fmt.Sprintf("/trigger_categories/%d.json", id), data)
 	if err != nil {
 		return TriggerCategory{}, err
 	}
@@ -125,11 +126,11 @@ func (z *Client) UpdateTriggerCategory(ctx context.Context, id int64, triggerCat
 	return result.TriggerCategory, nil
 }
 
-// DeleteTrigger deletes the specified trigger category
+// DeleteTriggerCategory deletes the specified trigger category
 //
 // ref: https://developer.zendesk.com/rest_api/docs/support/triggers#delete-trigger
 func (z *Client) DeleteTriggerCategory(ctx context.Context, id int64) error {
-	err := z.delete(ctx, fmt.Sprintf("/trigger_categories/%d.json", id))
+	err := z.Delete(ctx, fmt.Sprintf("/trigger_categories/%d.json", id))
 	if err != nil {
 		return err
 	}

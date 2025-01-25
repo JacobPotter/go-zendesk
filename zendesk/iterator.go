@@ -2,6 +2,7 @@ package zendesk
 
 import (
 	"context"
+	"github.com/JacobPotter/go-zendesk/internal/client"
 )
 
 // PaginationOptions struct represents general pagination options.
@@ -55,7 +56,7 @@ type CommonOptions struct {
 // CBPOptions struct is used to specify options for listing objects in CBP (Cursor Based Pagination).
 // It embeds the CursorPagination struct for pagination and provides an option Sort for sorting the result.
 type CBPOptions struct {
-	CursorPagination
+	client.CursorPagination
 	CommonOptions
 }
 
@@ -71,7 +72,7 @@ type OBPOptions struct {
 type ObpFunc[T any] func(ctx context.Context, opts *OBPOptions) ([]T, Page, error)
 
 // CbpFunc defines the signature of the function used to list objects in CBP.
-type CbpFunc[T any] func(ctx context.Context, opts *CBPOptions) ([]T, CursorPaginationMeta, error)
+type CbpFunc[T any] func(ctx context.Context, opts *CBPOptions) ([]T, client.CursorPaginationMeta, error)
 
 // terator struct provides a convenient and genric way to iterate over pages of objects in either OBP or CBP.
 // It holds state for iteration, including the current page size, a flag indicating more pages, pagination type (OBP or CBP), and sorting options.
@@ -122,7 +123,7 @@ func (i *Iterator[T]) GetNext() ([]T, error) {
 	}
 
 	cbpOps := &CBPOptions{
-		CursorPagination: CursorPagination{
+		CursorPagination: client.CursorPagination{
 			PageSize:  i.pageSize,
 			PageAfter: i.pageAfter,
 		},

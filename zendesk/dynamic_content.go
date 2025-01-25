@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/JacobPotter/go-zendesk/internal/client"
 	"time"
 )
 
@@ -17,7 +18,7 @@ type DynamicContentAPI interface {
 	DeleteDynamicContentItem(ctx context.Context, id int64) error
 	GetDynamicContentItemsIterator(ctx context.Context, opts *PaginationOptions) *Iterator[DynamicContentItem]
 	GetDynamicContentItemsOBP(ctx context.Context, opts *OBPOptions) ([]DynamicContentItem, Page, error)
-	GetDynamicContentItemsCBP(ctx context.Context, opts *CBPOptions) ([]DynamicContentItem, CursorPaginationMeta, error)
+	GetDynamicContentItemsCBP(ctx context.Context, opts *CBPOptions) ([]DynamicContentItem, client.CursorPaginationMeta, error)
 }
 
 // DynamicContentItem is zendesk dynamic content item JSON payload format
@@ -59,7 +60,7 @@ func (z *Client) GetDynamicContentItems(ctx context.Context) ([]DynamicContentIt
 		Page
 	}
 
-	body, err := z.get(ctx, "/dynamic_content/items.json")
+	body, err := z.Get(ctx, "/dynamic_content/items.json")
 	if err != nil {
 		return []DynamicContentItem{}, Page{}, err
 	}
@@ -80,7 +81,7 @@ func (z *Client) CreateDynamicContentItem(ctx context.Context, item DynamicConte
 	}
 	data.Item = item
 
-	body, err := z.post(ctx, "/dynamic_content/items.json", data)
+	body, err := z.Post(ctx, "/dynamic_content/items.json", data)
 	if err != nil {
 		return DynamicContentItem{}, err
 	}
@@ -100,7 +101,7 @@ func (z *Client) GetDynamicContentItem(ctx context.Context, id int64) (DynamicCo
 		Item DynamicContentItem `json:"item"`
 	}
 
-	body, err := z.get(ctx, fmt.Sprintf("/dynamic_content/items/%d.json", id))
+	body, err := z.Get(ctx, fmt.Sprintf("/dynamic_content/items/%d.json", id))
 	if err != nil {
 		return DynamicContentItem{}, err
 	}
@@ -121,7 +122,7 @@ func (z *Client) UpdateDynamicContentItem(ctx context.Context, id int64, item Dy
 	}
 	data.Item = item
 
-	body, err := z.put(ctx, fmt.Sprintf("/dynamic_content/items/%d.json", id), data)
+	body, err := z.Put(ctx, fmt.Sprintf("/dynamic_content/items/%d.json", id), data)
 	if err != nil {
 		return DynamicContentItem{}, err
 	}
@@ -137,7 +138,7 @@ func (z *Client) UpdateDynamicContentItem(ctx context.Context, id int64, item Dy
 //
 // ref: https://developer.zendesk.com/api-reference/ticketing/ticket-management/dynamic_content/#delete-item
 func (z *Client) DeleteDynamicContentItem(ctx context.Context, id int64) error {
-	err := z.delete(ctx, fmt.Sprintf("/dynamic_content/items/%d.json", id))
+	err := z.Delete(ctx, fmt.Sprintf("/dynamic_content/items/%d.json", id))
 	if err != nil {
 		return err
 	}
@@ -152,7 +153,7 @@ func (z *Client) UpdateDynamicContentVariants(ctx context.Context, id int64, var
 
 	data.Variants = variants
 
-	body, err := z.put(ctx, fmt.Sprintf("/dynamic_content/items/%d/variants/update_many.json", id), data)
+	body, err := z.Put(ctx, fmt.Sprintf("/dynamic_content/items/%d/variants/update_many.json", id), data)
 	if err != nil {
 		return []DynamicContentVariant{}, err
 	}

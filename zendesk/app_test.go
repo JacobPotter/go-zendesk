@@ -2,6 +2,7 @@ package zendesk
 
 import (
 	"context"
+	"github.com/JacobPotter/go-zendesk/internal/testhelper"
 	"net/http"
 	"reflect"
 	"testing"
@@ -9,11 +10,11 @@ import (
 )
 
 func TestListAppInstallations(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodGet, "apps.json", http.StatusOK)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodGet, "apps.json", http.StatusOK)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	actual, err := client.ListInstallations(ctx)
+	actual, err := c.ListInstallations(ctx)
 	if err != nil {
 		t.Fatalf("Failed to send request to list app installations: %s", err)
 	}
@@ -84,14 +85,14 @@ func TestListAppInstallations(t *testing.T) {
 }
 
 func TestListAppInstallationsCanceledContext(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPost, "apps.json", http.StatusOK)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "apps.json", http.StatusOK)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
 	canceled, cancel := context.WithCancel(ctx)
 	cancel()
 
-	_, err := client.ListInstallations(canceled)
+	_, err := c.ListInstallations(canceled)
 	if err == nil {
 		t.Fatalf("did not get expected error")
 	}

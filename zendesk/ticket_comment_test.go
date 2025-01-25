@@ -2,6 +2,8 @@ package zendesk
 
 import (
 	"errors"
+	"github.com/JacobPotter/go-zendesk/internal/client"
+	"github.com/JacobPotter/go-zendesk/internal/testhelper"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -26,24 +28,24 @@ func TestNewPrivateTicketComment(t *testing.T) {
 }
 
 func TestCreateTicketComment(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodPut, "ticket.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodPut, "ticket.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
 	publicComment := NewPublicTicketComment("public comment", 12345)
 
-	_, err := client.CreateTicketComment(ctx, 2, publicComment)
+	_, err := c.CreateTicketComment(ctx, 2, publicComment)
 	if err != nil {
 		t.Fatalf("Failed to create ticket comment: %s", err)
 	}
 }
 
 func TestListTicketComments(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "ticket_comments.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "ticket_comments.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	result, err := client.ListTicketComments(ctx, 2, nil)
+	result, err := c.ListTicketComments(ctx, 2, nil)
 	if err != nil {
 		t.Fatalf("Failed to list ticket comments: %s", err)
 	}
@@ -53,7 +55,7 @@ func TestListTicketComments(t *testing.T) {
 		t.Fatalf("Returned ticket comments does not have the expected length %d. Ticket comments length is %d", expectedLength, len(result.TicketComments))
 	}
 
-	expectedPaginationMeta := CursorPaginationMeta{
+	expectedPaginationMeta := client.CursorPaginationMeta{
 		HasMore:      true,
 		AfterCursor:  "xxx",
 		BeforeCursor: "yyy",
@@ -98,8 +100,8 @@ func TestMakeCommentPrivate(t *testing.T) {
 			}))
 			defer mockAPI.Close()
 
-			client := newTestClient(mockAPI)
-			err := client.MakeCommentPrivate(ctx, 2, 12841284)
+			c := NewTestClient(mockAPI)
+			err := c.MakeCommentPrivate(ctx, 2, 12841284)
 			if err == nil {
 				if test.expectedErrStr != "" {
 					t.Fatalf("Expected error %s, did not get one", test.expectedErrStr)
@@ -114,11 +116,11 @@ func TestMakeCommentPrivate(t *testing.T) {
 }
 
 func TestRedactTicketComment(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodPut, "redact_ticket_comment.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodPut, "redact_ticket_comment.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	err := client.RedactTicketComment(ctx, 123, RedactTicketCommentRequest{
+	err := c.RedactTicketComment(ctx, 123, RedactTicketCommentRequest{
 		TicketID: 100,
 		HTMLBody: "<div class=\"zd-comment\" dir=\"auto\">My ID number is <redact>847564</redact>!</div>",
 	})

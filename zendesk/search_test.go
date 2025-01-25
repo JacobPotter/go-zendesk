@@ -1,7 +1,7 @@
 package zendesk
 
 import (
-	"encoding/json"
+	"github.com/JacobPotter/go-zendesk/internal/testhelper"
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
@@ -9,11 +9,11 @@ import (
 )
 
 func TestSearchTickets(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "search_ticket.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "search_ticket.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	results, _, err := client.Search(ctx, &SearchOptions{})
+	results, _, err := c.Search(ctx, &SearchOptions{})
 	if err != nil {
 		t.Fatalf("Failed to get search results: %s", err)
 	}
@@ -34,11 +34,11 @@ func TestSearchTickets(t *testing.T) {
 }
 
 func TestCountTickets(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "search_count_ticket.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "search_count_ticket.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	count, err := client.SearchCount(ctx, &CountOptions{})
+	count, err := c.SearchCount(ctx, &CountOptions{})
 	if err != nil {
 		t.Fatalf("Failed to get count: %s", err)
 	}
@@ -49,23 +49,12 @@ func TestCountTickets(t *testing.T) {
 	}
 }
 
-func BenchmarkUnmarshalSearchResults(b *testing.B) {
-	file := readFixture("ticket_result.json")
-	for i := 0; i < b.N; i++ {
-		var result SearchResults
-		err := json.Unmarshal(file, &result)
-		if err != nil {
-			b.Fatalf("Recieved error when unmarshalling. %v", err)
-		}
-	}
-}
-
 func TestSearchGroup(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "search_group.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "search_group.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	results, _, err := client.Search(ctx, &SearchOptions{})
+	results, _, err := c.Search(ctx, &SearchOptions{})
 	if err != nil {
 		t.Fatalf("Failed to get search results: %s", err)
 	}
@@ -86,11 +75,11 @@ func TestSearchGroup(t *testing.T) {
 }
 
 func TestSearchUser(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "search_user.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "search_user.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	results, _, err := client.Search(ctx, &SearchOptions{})
+	results, _, err := c.Search(ctx, &SearchOptions{})
 	if err != nil {
 		t.Fatalf("Failed to get search results: %s", err)
 	}
@@ -117,13 +106,13 @@ func TestSearchQueryParam(t *testing.T) {
 		if queryString != expected {
 			t.Fatalf(`Did not get the expect query string: "%s". Was: "%s"`, expected, queryString)
 		}
-		_, err := w.Write(readFixture(filepath.Join(http.MethodGet, "search_user.json")))
+		_, err := w.Write(testhelper.ReadFixture(t, filepath.Join(http.MethodGet, "search_user.json")))
 		if err != nil {
 			t.Logf("Error: %s", err.Error())
 		}
 	}))
 
-	client := newTestClient(mockAPI)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
 	opts := SearchOptions{
@@ -134,7 +123,7 @@ func TestSearchQueryParam(t *testing.T) {
 		Query: expected,
 	}
 
-	_, _, err := client.Search(ctx, &opts)
+	_, _, err := c.Search(ctx, &opts)
 	if err != nil {
 		t.Fatalf("Received error from search api")
 	}

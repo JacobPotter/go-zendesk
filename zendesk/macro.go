@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/JacobPotter/go-zendesk/internal/client"
 	"time"
 )
 
@@ -49,7 +50,7 @@ type MacroAPI interface {
 	DeleteMacro(ctx context.Context, macroID int64) error
 	GetMacrosIterator(ctx context.Context, opts *PaginationOptions) *Iterator[Macro]
 	GetMacrosOBP(ctx context.Context, opts *OBPOptions) ([]Macro, Page, error)
-	GetMacrosCBP(ctx context.Context, opts *CBPOptions) ([]Macro, CursorPaginationMeta, error)
+	GetMacrosCBP(ctx context.Context, opts *CBPOptions) ([]Macro, client.CursorPaginationMeta, error)
 }
 
 // GetMacros get macro list
@@ -66,12 +67,12 @@ func (z *Client) GetMacros(ctx context.Context, opts *MacroListOptions) ([]Macro
 		tmp = &MacroListOptions{}
 	}
 
-	u, err := addOptions("/macros.json", tmp)
+	u, err := client.AddOptions("/macros.json", tmp)
 	if err != nil {
 		return nil, Page{}, err
 	}
 
-	body, err := z.get(ctx, u)
+	body, err := z.Get(ctx, u)
 	if err != nil {
 		return nil, Page{}, err
 	}
@@ -91,7 +92,7 @@ func (z *Client) GetMacro(ctx context.Context, macroID int64) (Macro, error) {
 		Macro Macro `json:"macro"`
 	}
 
-	body, err := z.get(ctx, fmt.Sprintf("/macros/%d.json", macroID))
+	body, err := z.Get(ctx, fmt.Sprintf("/macros/%d.json", macroID))
 	if err != nil {
 		return Macro{}, err
 	}
@@ -113,7 +114,7 @@ func (z *Client) CreateMacro(ctx context.Context, macro Macro) (Macro, error) {
 	}
 	data.Macro = macro
 
-	body, err := z.post(ctx, "/macros.json", data)
+	body, err := z.Post(ctx, "/macros.json", data)
 	if err != nil {
 		return Macro{}, err
 	}
@@ -134,7 +135,7 @@ func (z *Client) UpdateMacro(ctx context.Context, macroID int64, macro Macro) (M
 	data.Macro = macro
 
 	path := fmt.Sprintf("/macros/%d.json", macroID)
-	body, err := z.put(ctx, path, data)
+	body, err := z.Put(ctx, path, data)
 	if err != nil {
 		return Macro{}, err
 	}
@@ -150,7 +151,7 @@ func (z *Client) UpdateMacro(ctx context.Context, macroID int64, macro Macro) (M
 // DeleteMacro deletes the specified macro
 // ref: https://developer.zendesk.com/rest_api/docs/support/macros#delete-macro
 func (z *Client) DeleteMacro(ctx context.Context, macroID int64) error {
-	err := z.delete(ctx, fmt.Sprintf("/macros/%d.json", macroID))
+	err := z.Delete(ctx, fmt.Sprintf("/macros/%d.json", macroID))
 
 	if err != nil {
 		return err

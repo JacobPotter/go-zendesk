@@ -64,7 +64,7 @@ func (z *Client) CreateWebhook(ctx context.Context, hook Webhook) (Webhook, erro
 	}
 	data.Webhook = hook
 
-	body, err := z.post(ctx, "/webhooks", data)
+	body, err := z.Post(ctx, "/webhooks", data)
 	if err != nil {
 		return Webhook{}, err
 	}
@@ -84,7 +84,7 @@ func (z *Client) GetWebhook(ctx context.Context, webhookID string) (Webhook, err
 		Webhook Webhook `json:"webhook"`
 	}
 
-	body, err := z.get(ctx, fmt.Sprintf("/webhooks/%s", webhookID))
+	body, err := z.Get(ctx, fmt.Sprintf("/webhooks/%s", webhookID))
 	if err != nil {
 		return Webhook{}, err
 	}
@@ -106,7 +106,7 @@ func (z *Client) UpdateWebhook(ctx context.Context, webhookID string, hook Webho
 	}
 	data.Webhook = hook
 
-	_, err := z.put(ctx, fmt.Sprintf("/webhooks/%s", webhookID), data)
+	_, err := z.Put(ctx, fmt.Sprintf("/webhooks/%s", webhookID), data)
 	if err != nil {
 		return err
 	}
@@ -118,7 +118,7 @@ func (z *Client) UpdateWebhook(ctx context.Context, webhookID string, hook Webho
 //
 // https://developer.zendesk.com/api-reference/event-connectors/webhooks/webhooks/#delete-webhook
 func (z *Client) DeleteWebhook(ctx context.Context, webhookID string) error {
-	err := z.delete(ctx, fmt.Sprintf("/webhooks/%s", webhookID))
+	err := z.Delete(ctx, fmt.Sprintf("/webhooks/%s", webhookID))
 	if err != nil {
 		return err
 	}
@@ -134,7 +134,7 @@ func (z *Client) GetWebhookSigningSecret(ctx context.Context, webhookID string) 
 		SigningSecret WebhookSigningSecret `json:"signing_secret"`
 	}
 
-	body, err := z.get(ctx, fmt.Sprintf("/webhooks/%s/signing_secret", webhookID))
+	body, err := z.Get(ctx, fmt.Sprintf("/webhooks/%s/signing_secret", webhookID))
 	if err != nil {
 		return WebhookSigningSecret{}, err
 	}

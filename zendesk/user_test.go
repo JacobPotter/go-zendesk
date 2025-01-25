@@ -1,6 +1,7 @@
 package zendesk
 
 import (
+	"github.com/JacobPotter/go-zendesk/internal/testhelper"
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
@@ -16,11 +17,11 @@ func TestUserRoleText(t *testing.T) {
 }
 
 func TestGetUsers(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "users.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "users.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	users, _, err := client.GetUsers(ctx, nil)
+	users, _, err := c.GetUsers(ctx, nil)
 	if err != nil {
 		t.Fatalf("Failed to get users: %s", err)
 	}
@@ -31,11 +32,11 @@ func TestGetUsers(t *testing.T) {
 }
 
 func TestGetOrganizationUsers(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "users.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "users.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	users, _, err := client.GetOrganizationUsers(ctx, 1000006909040, nil)
+	users, _, err := c.GetOrganizationUsers(ctx, 1000006909040, nil)
 	if err != nil {
 		t.Fatalf("Failed to get users: %s", err)
 	}
@@ -46,11 +47,11 @@ func TestGetOrganizationUsers(t *testing.T) {
 }
 
 func TestGetManyUsers(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "users.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "users.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	users, _, err := client.GetManyUsers(ctx, nil)
+	users, _, err := c.GetManyUsers(ctx, nil)
 	if err != nil {
 		t.Fatalf("Failed to get many users: %s", err)
 	}
@@ -61,11 +62,11 @@ func TestGetManyUsers(t *testing.T) {
 }
 
 func TestSearchUsers(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "users.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "users.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	users, _, err := client.SearchUsers(ctx, nil)
+	users, _, err := c.SearchUsers(ctx, nil)
 	if err != nil {
 		t.Fatalf("Failed to get many users: %s", err)
 	}
@@ -76,11 +77,11 @@ func TestSearchUsers(t *testing.T) {
 }
 
 func TestGetUser(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodGet, "user.json", http.StatusOK)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodGet, "user.json", http.StatusOK)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	user, err := client.GetUser(ctx, 369531345753)
+	user, err := c.GetUser(ctx, 369531345753)
 	if err != nil {
 		t.Fatalf("Failed to get user: %s", err)
 	}
@@ -92,13 +93,13 @@ func TestGetUser(t *testing.T) {
 }
 
 func TestGetUserFailure(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodGet, "user.json", http.StatusInternalServerError)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodGet, "user.json", http.StatusInternalServerError)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	_, err := client.GetUser(ctx, 369531345753)
+	_, err := c.GetUser(ctx, 369531345753)
 	if err == nil {
-		t.Fatal("Client did not return error when api failed")
+		t.Fatal("BaseClient did not return error when api failed")
 	}
 }
 
@@ -109,13 +110,13 @@ func TestGetUsersRolesEncodeCorrectly(t *testing.T) {
 		if queryString != expected {
 			t.Fatalf(`Did not get the expect query string: "%s". Was: "%s"`, expected, queryString)
 		}
-		_, err := w.Write(readFixture(filepath.Join(http.MethodGet, "users.json")))
+		_, err := w.Write(testhelper.ReadFixture(t, filepath.Join(http.MethodGet, "users.json")))
 		if err != nil {
 			t.Logf("Error: %s", err.Error())
 		}
 	}))
 
-	client := newTestClient(mockAPI)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
 	opts := UserListOptions{
@@ -125,18 +126,18 @@ func TestGetUsersRolesEncodeCorrectly(t *testing.T) {
 		},
 	}
 
-	_, _, err := client.GetUsers(ctx, &opts)
+	_, _, err := c.GetUsers(ctx, &opts)
 	if err != nil {
 		t.Fatalf("Failed to get users: %s", err)
 	}
 }
 
 func TestCreateUser(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPost, "users.json", http.StatusCreated)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "users.json", http.StatusCreated)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	user, err := client.CreateUser(ctx, User{
+	user, err := c.CreateUser(ctx, User{
 		Email: "test@example.com",
 		Name:  "testuser",
 	})
@@ -149,11 +150,11 @@ func TestCreateUser(t *testing.T) {
 }
 
 func TestCreateOrUpdateUserCreated(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPost, "users.json", http.StatusCreated)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "users.json", http.StatusCreated)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	user, err := client.CreateOrUpdateUser(ctx, User{
+	user, err := c.CreateOrUpdateUser(ctx, User{
 		Email: "test@example.com",
 		Name:  "testuser",
 	})
@@ -166,11 +167,11 @@ func TestCreateOrUpdateUserCreated(t *testing.T) {
 }
 
 func TestCreateOrUpdateUserUpdated(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPost, "users.json", http.StatusOK)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "users.json", http.StatusOK)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	user, err := client.CreateOrUpdateUser(ctx, User{
+	user, err := c.CreateOrUpdateUser(ctx, User{
 		Email: "test@example.com",
 		Name:  "testuser",
 	})
@@ -183,23 +184,23 @@ func TestCreateOrUpdateUserUpdated(t *testing.T) {
 }
 
 func TestCreateOrUpdateUserFailure(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPost, "users.json", http.StatusInternalServerError)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "users.json", http.StatusInternalServerError)
 
-	client := newTestClient(mockAPI)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	_, err := client.CreateOrUpdateUser(ctx, User{})
+	_, err := c.CreateOrUpdateUser(ctx, User{})
 	if err == nil {
-		t.Fatal("Client did not return error when api failed")
+		t.Fatal("BaseClient did not return error when api failed")
 	}
 }
 
 func TestUpdateUser(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPut, "user.json", http.StatusOK)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "user.json", http.StatusOK)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	user, err := client.UpdateUser(ctx, 369531345753, User{})
+	user, err := c.UpdateUser(ctx, 369531345753, User{})
 	if err != nil {
 		t.Fatalf("Failed to update user: %s", err)
 	}
@@ -211,22 +212,22 @@ func TestUpdateUser(t *testing.T) {
 }
 
 func TestUpdateUserFailure(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPut, "user.json", http.StatusInternalServerError)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "user.json", http.StatusInternalServerError)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	_, err := client.UpdateUser(ctx, 369531345753, User{})
+	_, err := c.UpdateUser(ctx, 369531345753, User{})
 	if err == nil {
-		t.Fatal("Client did not return error when api failed")
+		t.Fatal("BaseClient did not return error when api failed")
 	}
 }
 
 func TestGetUserRelated(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodGet, "user_related.json", http.StatusOK)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodGet, "user_related.json", http.StatusOK)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	userRelated, err := client.GetUserRelated(ctx, 369531345753)
+	userRelated, err := c.GetUserRelated(ctx, 369531345753)
 	if err != nil {
 		t.Fatalf("Failed to get user related information: %s", err)
 	}

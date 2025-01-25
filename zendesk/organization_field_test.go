@@ -1,16 +1,17 @@
 package zendesk
 
 import (
+	"github.com/JacobPotter/go-zendesk/internal/testhelper"
 	"net/http"
 	"testing"
 )
 
 func TestGetOrganizationFields(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "organization_fields.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "organization_fields.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	ticketFields, _, err := client.GetOrganizationFields(ctx)
+	ticketFields, _, err := c.GetOrganizationFields(ctx)
 	if err != nil {
 		t.Fatalf("Failed to get organization fields: %s", err)
 	}
@@ -21,11 +22,11 @@ func TestGetOrganizationFields(t *testing.T) {
 }
 
 func TestOrganizationField(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPost, "organization_fields.json", http.StatusCreated)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "organization_fields.json", http.StatusCreated)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	_, err := client.CreateOrganizationField(ctx, OrganizationField{})
+	_, err := c.CreateOrganizationField(ctx, OrganizationField{})
 	if err != nil {
 		t.Fatalf("Failed to send request to create organization field: %s", err)
 	}

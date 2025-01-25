@@ -1,4 +1,4 @@
-package zendesk
+package client
 
 import (
 	"fmt"
@@ -13,8 +13,8 @@ func TestError_Error(t *testing.T) {
 	}
 	body := []byte("foo")
 	err := Error{
-		body: body,
-		resp: resp,
+		ErrorBody: body,
+		Resp:      resp,
 	}
 
 	expected := fmt.Sprintf("%d: %s", status, body)
@@ -29,7 +29,7 @@ func TestError_ErrorEmptyBody(t *testing.T) {
 		StatusCode: status,
 	}
 	err := Error{
-		resp: resp,
+		Resp: resp,
 	}
 
 	expected := fmt.Sprintf("%d: %s", status, http.StatusText(status))
@@ -48,7 +48,7 @@ func TestError_Headers(t *testing.T) {
 	}
 
 	err := Error{
-		resp: resp,
+		Resp: resp,
 	}
 
 	if _, ok := err.Headers()[retryAfter]; !ok {
@@ -66,7 +66,7 @@ func TestError_Status(t *testing.T) {
 	}
 
 	err := Error{
-		resp: resp,
+		Resp: resp,
 	}
 
 	if status := err.Status(); status != http.StatusTooManyRequests {

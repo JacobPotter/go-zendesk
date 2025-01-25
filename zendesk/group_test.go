@@ -1,20 +1,21 @@
 package zendesk
 
 import (
+	"github.com/JacobPotter/go-zendesk/internal/testhelper"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
 func TestGetGroupsIterator(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "groups.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "groups.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
 	ops := NewPaginationOptions()
 	ops.PageSize = 10
 
-	it := client.GetGroupsIterator(ctx, ops)
+	it := c.GetGroupsIterator(ctx, ops)
 
 	expectedLength := 1
 	groupsCount := 0
@@ -34,11 +35,11 @@ func TestGetGroupsIterator(t *testing.T) {
 }
 
 func TestGetGroups(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "groups.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "groups.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	groups, _, err := client.GetGroups(ctx, nil)
+	groups, _, err := c.GetGroups(ctx, nil)
 	if err != nil {
 		t.Fatalf("Failed to get groups: %s", err)
 	}
@@ -49,11 +50,11 @@ func TestGetGroups(t *testing.T) {
 }
 
 func TestGetGroupsOBP(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "groups.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "groups.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	groups, _, err := client.GetGroupsOBP(ctx, nil)
+	groups, _, err := c.GetGroupsOBP(ctx, nil)
 	if err != nil {
 		t.Fatalf("Failed to get groups: %s", err)
 	}
@@ -64,11 +65,11 @@ func TestGetGroupsOBP(t *testing.T) {
 }
 
 func TestGetGroupsCBP(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "groups.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "groups.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	groups, _, err := client.GetGroupsCBP(ctx, nil)
+	groups, _, err := c.GetGroupsCBP(ctx, nil)
 	if err != nil {
 		t.Fatalf("Failed to get groups: %s", err)
 	}
@@ -79,22 +80,22 @@ func TestGetGroupsCBP(t *testing.T) {
 }
 
 func TestCreateGroup(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPost, "groups.json", http.StatusCreated)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "groups.json", http.StatusCreated)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	_, err := client.CreateGroup(ctx, Group{})
+	_, err := c.CreateGroup(ctx, Group{})
 	if err != nil {
 		t.Fatalf("Failed to send request to create group: %s", err)
 	}
 }
 
 func TestGetGroup(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "group.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "group.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	group, err := client.GetGroup(ctx, 123)
+	group, err := c.GetGroup(ctx, 123)
 	if err != nil {
 		t.Fatalf("Failed to get group: %s", err)
 	}
@@ -106,11 +107,11 @@ func TestGetGroup(t *testing.T) {
 }
 
 func TestUpdateGroup(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPut, "groups.json", http.StatusOK)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "groups.json", http.StatusOK)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	updatedGroup, err := client.UpdateGroup(ctx, int64(1234), Group{})
+	updatedGroup, err := c.UpdateGroup(ctx, int64(1234), Group{})
 	if err != nil {
 		t.Fatalf("Failed to send request to create group: %s", err)
 	}
@@ -130,7 +131,7 @@ func TestDeleteGroup(t *testing.T) {
 		}
 	}))
 
-	c := newTestClient(mockAPI)
+	c := NewTestClient(mockAPI)
 	err := c.DeleteGroup(ctx, 1234)
 	if err != nil {
 		t.Fatalf("Failed to delete group: %s", err)

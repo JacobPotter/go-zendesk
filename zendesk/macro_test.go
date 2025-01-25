@@ -1,17 +1,18 @@
 package zendesk
 
 import (
+	"github.com/JacobPotter/go-zendesk/internal/testhelper"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
 func TestGetMacros(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "macros.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "macros.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	macros, _, err := client.GetMacros(ctx, &MacroListOptions{
+	macros, _, err := c.GetMacros(ctx, &MacroListOptions{
 		PageOptions: PageOptions{
 			Page:    1,
 			PerPage: 10,
@@ -30,11 +31,11 @@ func TestGetMacros(t *testing.T) {
 }
 
 func TestGetMacro(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "macro.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "macro.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	macro, err := client.GetMacro(ctx, 2)
+	macro, err := c.GetMacro(ctx, 2)
 	if err != nil {
 		t.Fatalf("Failed to get macro: %s", err)
 	}
@@ -47,11 +48,11 @@ func TestGetMacro(t *testing.T) {
 }
 
 func TestCreateMacro(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPost, "macro.json", http.StatusCreated)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "macro.json", http.StatusCreated)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	macro, err := client.CreateMacro(ctx, Macro{
+	macro, err := c.CreateMacro(ctx, Macro{
 		Title: "nyanyanyanya",
 		// Comment: MacroComment{
 		// 	Body: "(●ↀ ω ↀ )",
@@ -68,11 +69,11 @@ func TestCreateMacro(t *testing.T) {
 }
 
 func TestUpdateMacro(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPut, "macro.json", http.StatusOK)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "macro.json", http.StatusOK)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	macro, err := client.UpdateMacro(ctx, 2, Macro{})
+	macro, err := c.UpdateMacro(ctx, 2, Macro{})
 	if err != nil {
 		t.Fatalf("Failed to update macro: %s", err)
 	}
@@ -84,13 +85,13 @@ func TestUpdateMacro(t *testing.T) {
 }
 
 func TestUpdateMacroFailure(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPut, "macro.json", http.StatusInternalServerError)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "macro.json", http.StatusInternalServerError)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	_, err := client.UpdateMacro(ctx, 2, Macro{})
+	_, err := c.UpdateMacro(ctx, 2, Macro{})
 	if err == nil {
-		t.Fatal("Client did not return error when api failed")
+		t.Fatal("BaseClient did not return error when api failed")
 	}
 }
 
@@ -103,7 +104,7 @@ func TestDeleteMacro(t *testing.T) {
 		}
 	}))
 
-	c := newTestClient(mockAPI)
+	c := NewTestClient(mockAPI)
 	err := c.DeleteMacro(ctx, 437)
 	if err != nil {
 		t.Fatalf("Failed to delete macro field: %s", err)

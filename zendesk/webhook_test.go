@@ -2,17 +2,18 @@ package zendesk
 
 import (
 	"context"
+	"github.com/JacobPotter/go-zendesk/internal/testhelper"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
 func TestCreateWebhook(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodPost, "webhooks.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodPost, "webhooks.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	hook, err := client.CreateWebhook(context.Background(), Webhook{
+	hook, err := c.CreateWebhook(context.Background(), Webhook{
 		Authentication: &WebhookAuthentication{
 			AddPosition: "header",
 			Data: WebhookCredentials{
@@ -41,11 +42,11 @@ func TestCreateWebhook(t *testing.T) {
 }
 
 func TestGetWebhook(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "webhook.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "webhook.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	hook, err := client.GetWebhook(ctx, "01EJFTSCC78X5V07NPY2MHR00M")
+	hook, err := c.GetWebhook(ctx, "01EJFTSCC78X5V07NPY2MHR00M")
 	if err != nil {
 		t.Fatalf("Failed to get webhook: %s", err)
 	}
@@ -64,10 +65,10 @@ func TestUpdateWebhook(t *testing.T) {
 			t.Logf("Error: %s", err.Error())
 		}
 	}))
-	client := newTestClient(mockAPI)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	err := client.UpdateWebhook(ctx, "01EJFTSCC78X5V07NPY2MHR00M", Webhook{})
+	err := c.UpdateWebhook(ctx, "01EJFTSCC78X5V07NPY2MHR00M", Webhook{})
 	if err != nil {
 		t.Fatalf("Failed to send request to create webhook: %s", err)
 	}
@@ -81,10 +82,10 @@ func TestDeleteWebhook(t *testing.T) {
 			t.Logf("Error: %s", err.Error())
 		}
 	}))
-	client := newTestClient(mockAPI)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	err := client.DeleteWebhook(ctx, "01EJFTSCC78X5V07NPY2MHR00M")
+	err := c.DeleteWebhook(ctx, "01EJFTSCC78X5V07NPY2MHR00M")
 	if err != nil {
 		t.Fatalf("Failed to delete webhook: %s", err)
 	}

@@ -1,6 +1,9 @@
 package zendesk
 
-import "context"
+import (
+	"context"
+	"github.com/JacobPotter/go-zendesk/internal/client"
+)
 
 func (z *Client) GetDynamicContentItemsIterator(ctx context.Context, opts *PaginationOptions) *Iterator[DynamicContentItem] {
 	return &Iterator[DynamicContentItem]{
@@ -27,22 +30,22 @@ func (z *Client) GetDynamicContentItemsOBP(ctx context.Context, opts *OBPOptions
 		tmp = &OBPOptions{}
 	}
 
-	u, err := addOptions("/dynamic_content/items.json", tmp)
+	u, err := client.AddOptions("/dynamic_content/items.json", tmp)
 	if err != nil {
 		return nil, Page{}, err
 	}
 
-	err = getData(z, ctx, u, &data)
+	err = client.GetData(z, ctx, u, &data)
 	if err != nil {
 		return nil, Page{}, err
 	}
 	return data.DynamicContentItems, data.Page, nil
 }
 
-func (z *Client) GetDynamicContentItemsCBP(ctx context.Context, opts *CBPOptions) ([]DynamicContentItem, CursorPaginationMeta, error) {
+func (z *Client) GetDynamicContentItemsCBP(ctx context.Context, opts *CBPOptions) ([]DynamicContentItem, client.CursorPaginationMeta, error) {
 	var data struct {
-		DynamicContentItems []DynamicContentItem `json:"items"`
-		Meta    CursorPaginationMeta `json:"meta"`
+		DynamicContentItems []DynamicContentItem        `json:"items"`
+		Meta                client.CursorPaginationMeta `json:"meta"`
 	}
 
 	tmp := opts
@@ -50,15 +53,14 @@ func (z *Client) GetDynamicContentItemsCBP(ctx context.Context, opts *CBPOptions
 		tmp = &CBPOptions{}
 	}
 
-	u, err := addOptions("/dynamic_content/items.json", tmp)
+	u, err := client.AddOptions("/dynamic_content/items.json", tmp)
 	if err != nil {
 		return nil, data.Meta, err
 	}
 
-	err = getData(z, ctx, u, &data)
+	err = client.GetData(z, ctx, u, &data)
 	if err != nil {
 		return nil, data.Meta, err
 	}
 	return data.DynamicContentItems, data.Meta, nil
 }
-

@@ -3,6 +3,8 @@ package zendesk
 import (
 	"context"
 	"encoding/json"
+	"github.com/JacobPotter/go-zendesk/internal/client"
+	"github.com/JacobPotter/go-zendesk/internal/testhelper"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -11,11 +13,11 @@ import (
 )
 
 func TestGetTickets(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "tickets.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "tickets.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	tickets, _, err := client.GetTickets(ctx, &TicketListOptions{
+	tickets, _, err := c.GetTickets(ctx, &TicketListOptions{
 		PageOptions: PageOptions{
 			Page:    1,
 			PerPage: 10,
@@ -34,12 +36,12 @@ func TestGetTickets(t *testing.T) {
 }
 
 func TestGetTicketsCBP(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "tickets.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "tickets.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	tickets, _, err := client.GetTicketsCBP(ctx, &CBPOptions{
-		CursorPagination: CursorPagination{
+	tickets, _, err := c.GetTicketsCBP(ctx, &CBPOptions{
+		CursorPagination: client.CursorPagination{
 			PageSize:  10,
 			PageAfter: "",
 		},
@@ -55,12 +57,12 @@ func TestGetTicketsCBP(t *testing.T) {
 }
 
 func TestGetTicketsIteratorCBPDefault(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "tickets.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "tickets.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
 	ops := NewPaginationOptions()
-	it := client.GetTicketsIterator(ctx, ops)
+	it := c.GetTicketsIterator(ctx, ops)
 
 	expectedLength := 2
 	ticketCount := 0
@@ -79,13 +81,13 @@ func TestGetTicketsIteratorCBPDefault(t *testing.T) {
 }
 
 func TestGetTicketsIteratorOBPOptional(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "tickets.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "tickets.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
 	ops := NewPaginationOptions()
 	ops.IsCBP = false
-	it := client.GetTicketsIterator(ctx, ops)
+	it := c.GetTicketsIterator(ctx, ops)
 
 	expectedLength := 2
 	ticketCount := 0
@@ -104,11 +106,11 @@ func TestGetTicketsIteratorOBPOptional(t *testing.T) {
 }
 
 func TestGetOrganizationTickets(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "tickets.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "tickets.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	tickets, _, err := client.GetOrganizationTickets(ctx, 360363695492, &TicketListOptions{
+	tickets, _, err := c.GetOrganizationTickets(ctx, 360363695492, &TicketListOptions{
 		PageOptions: PageOptions{
 			Page:    1,
 			PerPage: 10,
@@ -127,11 +129,11 @@ func TestGetOrganizationTickets(t *testing.T) {
 }
 
 func TestGetOrganizationTicketsOBP(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "tickets.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "tickets.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	tickets, _, err := client.GetOrganizationTicketsOBP(ctx, &OBPOptions{
+	tickets, _, err := c.GetOrganizationTicketsOBP(ctx, &OBPOptions{
 		PageOptions: PageOptions{
 			Page:    1,
 			PerPage: 10,
@@ -153,12 +155,12 @@ func TestGetOrganizationTicketsOBP(t *testing.T) {
 }
 
 func TestGetOrganizationTicketsCBP(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "tickets.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "tickets.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	tickets, _, err := client.GetOrganizationTicketsCBP(ctx, &CBPOptions{
-		CursorPagination: CursorPagination{
+	tickets, _, err := c.GetOrganizationTicketsCBP(ctx, &CBPOptions{
+		CursorPagination: client.CursorPagination{
 			PageSize:  10,
 			PageAfter: "",
 		},
@@ -179,15 +181,15 @@ func TestGetOrganizationTicketsCBP(t *testing.T) {
 }
 
 func TestGetOrganizationTicketsIterator(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "tickets.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "tickets.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
 	ops := NewPaginationOptions()
 	ops.Sort = "updated_at"
 	ops.PageSize = 10
 	ops.Id = 360363695492
-	it := client.GetOrganizationTicketsIterator(ctx, ops)
+	it := c.GetOrganizationTicketsIterator(ctx, ops)
 
 	expectedLength := 2
 	ticketCount := 0
@@ -209,11 +211,11 @@ func TestGetOrganizationTicketsIterator(t *testing.T) {
 }
 
 func TestGetTicket(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "ticket.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "ticket.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	ticket, err := client.GetTicket(ctx, 2)
+	ticket, err := c.GetTicket(ctx, 2)
 	if err != nil {
 		t.Fatalf("Failed to get ticket: %s", err)
 	}
@@ -248,12 +250,12 @@ func TestGetTicket(t *testing.T) {
 }
 
 func TestGetTicketCanceledContext(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "ticket.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "ticket.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 	canceled, cancelFunc := context.WithCancel(ctx)
 	cancelFunc()
-	_, err := client.GetTicket(canceled, 2)
+	_, err := c.GetTicket(canceled, 2)
 	if err == nil {
 		t.Fatal("Did not get error when calling with cancelled context")
 	}
@@ -279,11 +281,11 @@ func TestGetTicketWithInvalidCustomField(t *testing.T) {
 }
 
 func TestGetTicketWithCustomFields(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "ticket_custom_field.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "ticket_custom_field.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	ticket, err := client.GetTicket(ctx, 4)
+	ticket, err := c.GetTicket(ctx, 4)
 	if err != nil {
 		t.Fatalf("Failed to get ticket: %s", err)
 	}
@@ -328,11 +330,11 @@ func TestGetTicketWithCustomFields(t *testing.T) {
 }
 
 func TestGetMultipleTicket(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "ticket_show_many.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "ticket_show_many.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	tickets, err := client.GetMultipleTickets(ctx, []int64{2, 3})
+	tickets, err := c.GetMultipleTickets(ctx, []int64{2, 3})
 	if err != nil {
 		t.Fatalf("Failed to get ticket: %s", err)
 	}
@@ -344,11 +346,11 @@ func TestGetMultipleTicket(t *testing.T) {
 }
 
 func TestCreateTicket(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPost, "ticket.json", http.StatusCreated)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "ticket.json", http.StatusCreated)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	ticket, err := client.CreateTicket(ctx, Ticket{
+	ticket, err := c.CreateTicket(ctx, Ticket{
 		Subject: "nyanyanyanya",
 		Comment: &TicketComment{
 			Body: "(●ↀ ω ↀ )",
@@ -365,11 +367,11 @@ func TestCreateTicket(t *testing.T) {
 }
 
 func TestUpdateTicket(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPut, "ticket.json", http.StatusOK)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "ticket.json", http.StatusOK)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	ticket, err := client.UpdateTicket(ctx, 2, Ticket{})
+	ticket, err := c.UpdateTicket(ctx, 2, Ticket{})
 	if err != nil {
 		t.Fatalf("Failed to update ticket: %s", err)
 	}
@@ -381,13 +383,13 @@ func TestUpdateTicket(t *testing.T) {
 }
 
 func TestUpdateTicketFailure(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPut, "ticket.json", http.StatusInternalServerError)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "ticket.json", http.StatusInternalServerError)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	_, err := client.UpdateTicket(ctx, 2, Ticket{})
+	_, err := c.UpdateTicket(ctx, 2, Ticket{})
 	if err == nil {
-		t.Fatal("Client did not return error when api failed")
+		t.Fatal("BaseClient did not return error when api failed")
 	}
 }
 
@@ -400,7 +402,7 @@ func TestDeleteTicket(t *testing.T) {
 		}
 	}))
 
-	c := newTestClient(mockAPI)
+	c := NewTestClient(mockAPI)
 	err := c.DeleteTicket(ctx, 437)
 	if err != nil {
 		t.Fatalf("Failed to delete ticket field: %s", err)

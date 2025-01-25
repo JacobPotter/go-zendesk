@@ -1,4 +1,4 @@
-package zendesk
+package client
 
 // Credential is interface of API credential
 type Credential interface {

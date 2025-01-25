@@ -1,14 +1,16 @@
 package zendesk
 
-//nolint
-//go:generate mockgen -source=api.go -destination=mock/client.go -package=mock -mock_names=API=Client -aux_files github.com/JacobPotter/go-zendesk/zendesk=app.go,github.com/JacobPotter/go-zendesk/zendesk=attachment.go API
+import (
+	"github.com/JacobPotter/go-zendesk/internal/client"
+	"net/http"
+)
 
 // API an interface containing all the zendesk client methods
 type API interface {
 	AppAPI
 	AttachmentAPI
 	AutomationAPI
-	BaseAPI
+	client.BaseAPI
 	BrandAPI
 	CustomRoleAPI
 	DynamicContentAPI
@@ -36,6 +38,18 @@ type API interface {
 	ViewAPI
 	WebhookAPI
 	CustomObjectAPI
+}
+
+type Client struct {
+	*client.BaseClient
+}
+
+func NewClient(httpClient *http.Client) (*Client, error) {
+	zdClient, err := client.NewBaseClient(httpClient, false)
+	if err != nil {
+		return nil, err
+	}
+	return &Client{BaseClient: zdClient}, nil
 }
 
 var _ API = (*Client)(nil)

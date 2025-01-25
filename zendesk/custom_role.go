@@ -92,7 +92,7 @@ func (z *Client) GetCustomRoles(ctx context.Context) ([]CustomRole, error) {
 
 	u := "/custom_roles.json"
 
-	body, err := z.get(ctx, u)
+	body, err := z.Get(ctx, u)
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +110,7 @@ func (z *Client) GetCustomRole(ctx context.Context, id int64) (CustomRole, error
 	}
 
 	u := fmt.Sprintf("/custom_roles/%d.json", id)
-	body, err := z.get(ctx, u)
+	body, err := z.Get(ctx, u)
 	if err != nil {
 		return CustomRole{}, err
 	}
@@ -130,7 +130,7 @@ func (z *Client) CreateCustomRole(ctx context.Context, customRole CustomRole) (C
 
 	data.CustomRole = customRole
 
-	body, err := z.post(ctx, u, data)
+	body, err := z.Post(ctx, u, data)
 	if err != nil {
 		return CustomRole{}, err
 	}
@@ -147,7 +147,7 @@ func (z *Client) UpdateCustomRole(ctx context.Context, updatedId int64, customRo
 	}
 	u := fmt.Sprintf("/custom_roles/%d.json", updatedId)
 	data.CustomRole = customRole
-	body, err := z.put(ctx, u, data)
+	body, err := z.Put(ctx, u, data)
 	if err != nil {
 		return CustomRole{}, err
 	}
@@ -161,7 +161,7 @@ func (z *Client) UpdateCustomRole(ctx context.Context, updatedId int64, customRo
 
 func (z *Client) DeleteCustomRole(ctx context.Context, id int64) error {
 	u := fmt.Sprintf("/custom_roles/%d.json", id)
-	err := z.delete(ctx, u)
+	err := z.Delete(ctx, u)
 
 	if err != nil {
 		return err

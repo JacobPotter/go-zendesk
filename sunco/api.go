@@ -9,6 +9,7 @@ import (
 type API interface {
 	client.BaseAPI
 	ConversationsAPI
+	MessagesAPI
 }
 
 type Client struct {

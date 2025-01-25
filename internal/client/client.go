@@ -76,6 +76,10 @@ type (
 	}
 )
 
+func (c *BaseClient) SetSuncoAppId(suncoAppId string) {
+	c.suncoAppId = suncoAppId
+}
+
 // NewBaseClient creates new Zendesk API client
 func NewBaseClient(httpClient *http.Client, sunco bool) (*BaseClient, error) {
 	if httpClient == nil {

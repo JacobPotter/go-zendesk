@@ -3,6 +3,7 @@ package zendesk
 import (
 	"errors"
 	"fmt"
+	"github.com/JacobPotter/go-zendesk/credentialtypes"
 	"github.com/JacobPotter/go-zendesk/internal/client"
 	"github.com/JacobPotter/go-zendesk/internal/testhelper"
 	"io"
@@ -17,7 +18,7 @@ import (
 func NewTestBaseClient(mockAPI *httptest.Server) *client.BaseClient {
 	c := &client.BaseClient{
 		HttpClient: http.DefaultClient,
-		Credential: client.NewAPITokenCredential("", ""),
+		Credential: credentialtypes.NewAPITokenCredential("", ""),
 	}
 	err := c.SetEndpointURL(mockAPI.URL)
 	if err != nil {
@@ -70,7 +71,7 @@ func TestSetEndpointURL(t *testing.T) {
 
 func TestSetCredential(t *testing.T) {
 	c, _ := client.NewBaseClient(nil, false)
-	cred := client.NewBasicAuthCredential("john.doe@example.com", "password")
+	cred := credentialtypes.NewBasicAuthCredential("john.doe@example.com", "password")
 	c.SetCredential(cred)
 
 	if email := c.Credential.Email(); email != "john.doe@example.com" {
@@ -83,7 +84,7 @@ func TestSetCredential(t *testing.T) {
 
 func TestBearerAuthCredential(t *testing.T) {
 	c, _ := client.NewBaseClient(nil, false)
-	cred := client.NewBearerTokenCredential("hello")
+	cred := credentialtypes.NewBearerTokenCredential("hello")
 	c.SetCredential(cred)
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

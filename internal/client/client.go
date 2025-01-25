@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/JacobPotter/go-zendesk/credentialtypes"
 	"io"
 	"log"
 	"net/http"
@@ -33,7 +34,7 @@ type (
 	BaseClient struct {
 		BaseURL    *url.URL
 		HttpClient *http.Client
-		Credential Credential
+		Credential credentialtypes.Credential
 		Headers    map[string]string
 		sunco      bool
 		suncoAppId string
@@ -131,9 +132,9 @@ func (c *BaseClient) SetEndpointURL(newURL string) error {
 
 // SetCredential saves credential in client. It will be set
 // to request header when call API
-func (c *BaseClient) SetCredential(cred Credential) {
+func (c *BaseClient) SetCredential(cred credentialtypes.Credential) {
 	if c.sunco {
-		if _, ok := cred.(BasicAuthCredential); !ok {
+		if _, ok := cred.(credentialtypes.BasicAuthCredential); !ok {
 			c.Credential = cred
 		} else {
 			log.Fatal("Invalid Credential Type, Only Basic Auth Credentials allowed")

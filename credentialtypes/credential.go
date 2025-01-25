@@ -1,4 +1,4 @@
-package client
+package credentialtypes
 
 // Credential is interface of API credential
 type Credential interface {

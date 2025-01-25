@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/JacobPotter/go-zendesk/internal/client"
 	"strings"
 )
 
@@ -97,10 +98,10 @@ type (
 		GetCountTicketsInViews(ctx context.Context, ids []string) ([]ViewCount, error)
 		GetTicketsFromViewIterator(ctx context.Context, opts *PaginationOptions) *Iterator[Ticket]
 		GetTicketsFromViewOBP(ctx context.Context, opts *OBPOptions) ([]Ticket, Page, error)
-		GetTicketsFromViewCBP(ctx context.Context, opts *CBPOptions) ([]Ticket, CursorPaginationMeta, error)
+		GetTicketsFromViewCBP(ctx context.Context, opts *CBPOptions) ([]Ticket, client.CursorPaginationMeta, error)
 		GetViewsIterator(ctx context.Context, opts *PaginationOptions) *Iterator[View]
 		GetViewsOBP(ctx context.Context, opts *OBPOptions) ([]View, Page, error)
-		GetViewsCBP(ctx context.Context, opts *CBPOptions) ([]View, CursorPaginationMeta, error)
+		GetViewsCBP(ctx context.Context, opts *CBPOptions) ([]View, client.CursorPaginationMeta, error)
 	}
 )
 
@@ -178,7 +179,7 @@ func (z *Client) GetViews(ctx context.Context) ([]View, Page, error) {
 		Page
 	}
 
-	body, err := z.get(ctx, "/views.json")
+	body, err := z.Get(ctx, "/views.json")
 
 	if err != nil {
 		return []View{}, Page{}, err
@@ -198,7 +199,7 @@ func (z *Client) GetView(ctx context.Context, viewID int64) (View, error) {
 		View View `json:"view"`
 	}
 
-	body, err := z.get(ctx, fmt.Sprintf("/views/%d.json", viewID))
+	body, err := z.Get(ctx, fmt.Sprintf("/views/%d.json", viewID))
 
 	if err != nil {
 		return View{}, err
@@ -218,7 +219,7 @@ func (z *Client) CreateView(ctx context.Context, newView View) (View, error) {
 
 	data.View = newView
 
-	body, err := z.post(ctx, "/views.json", data)
+	body, err := z.Post(ctx, "/views.json", data)
 
 	if err != nil {
 		return View{}, err
@@ -237,7 +238,7 @@ func (z *Client) UpdateView(ctx context.Context, updatedViewId int64, updatedVie
 	}
 
 	data.View = updatedView
-	body, err := z.put(ctx, fmt.Sprintf("/views/%d.json", updatedViewId), data)
+	body, err := z.Put(ctx, fmt.Sprintf("/views/%d.json", updatedViewId), data)
 
 	if err != nil {
 		return View{}, err
@@ -252,7 +253,7 @@ func (z *Client) UpdateView(ctx context.Context, updatedViewId int64, updatedVie
 }
 
 func (z *Client) DeleteView(ctx context.Context, viewId int64) error {
-	err := z.delete(ctx, fmt.Sprintf("/views/%d.json", viewId))
+	err := z.Delete(ctx, fmt.Sprintf("/views/%d.json", viewId))
 
 	if err != nil {
 		return err
@@ -275,12 +276,12 @@ func (z *Client) GetTicketsFromView(ctx context.Context, viewID int64, opts *Tic
 	}
 
 	path := fmt.Sprintf("/views/%d/tickets.json", viewID)
-	url, err := addOptions(path, tmp)
+	url, err := client.AddOptions(path, tmp)
 	if err != nil {
 		return nil, Page{}, err
 	}
 
-	body, err := z.get(ctx, url)
+	body, err := z.Get(ctx, url)
 
 	if err != nil {
 		return []Ticket{}, Page{}, err
@@ -300,7 +301,7 @@ func (z *Client) GetCountTicketsInViews(ctx context.Context, ids []string) ([]Vi
 		ViewCounts []ViewCount `json:"view_counts"`
 	}
 	idsURLParameter := strings.Join(ids, ",")
-	body, err := z.get(ctx, fmt.Sprintf("/views/count_many?ids=%s", idsURLParameter))
+	body, err := z.Get(ctx, fmt.Sprintf("/views/count_many?ids=%s", idsURLParameter))
 
 	if err != nil {
 		return []ViewCount{}, err

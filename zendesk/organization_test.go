@@ -1,28 +1,29 @@
 package zendesk
 
 import (
+	"github.com/JacobPotter/go-zendesk/internal/testhelper"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
 func TestCreateOrganization(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPost, "organization.json", http.StatusCreated)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "organization.json", http.StatusCreated)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	_, err := client.CreateOrganization(ctx, Organization{})
+	_, err := c.CreateOrganization(ctx, Organization{})
 	if err != nil {
 		t.Fatalf("Failed to send request to create organization: %s", err)
 	}
 }
 
 func TestGetOrganization(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "organization.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "organization.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	org, err := client.GetOrganization(ctx, 123)
+	org, err := c.GetOrganization(ctx, 123)
 	if err != nil {
 		t.Fatalf("Failed to get organization: %s", err)
 	}
@@ -34,11 +35,11 @@ func TestGetOrganization(t *testing.T) {
 }
 
 func TestGetOrganizations(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "organizations.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "organizations.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	orgs, _, err := client.GetOrganizations(ctx, &OrganizationListOptions{})
+	orgs, _, err := c.GetOrganizations(ctx, &OrganizationListOptions{})
 	if err != nil {
 		t.Fatalf("Failed to get organizations: %s", err)
 	}
@@ -49,11 +50,11 @@ func TestGetOrganizations(t *testing.T) {
 }
 
 func TestUpdateOrganization(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPut, "organization.json", http.StatusOK)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "organization.json", http.StatusOK)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	updatedOrg, err := client.UpdateOrganization(ctx, int64(1234), Organization{})
+	updatedOrg, err := c.UpdateOrganization(ctx, int64(1234), Organization{})
 	if err != nil {
 		t.Fatalf("Failed to send request to create organization: %s", err)
 	}
@@ -73,7 +74,7 @@ func TestDeleteOrganization(t *testing.T) {
 		}
 	}))
 
-	c := newTestClient(mockAPI)
+	c := NewTestClient(mockAPI)
 	err := c.DeleteOrganization(ctx, 1234)
 	if err != nil {
 		t.Fatalf("Failed to delete organization: %s", err)

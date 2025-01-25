@@ -1,16 +1,17 @@
 package zendesk
 
 import (
+	"github.com/JacobPotter/go-zendesk/internal/testhelper"
 	"net/http"
 	"testing"
 )
 
 func TestGetTicketTags(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "tags.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "tags.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	tags, err := client.GetTicketTags(ctx, int64(2))
+	tags, err := c.GetTicketTags(ctx, int64(2))
 	if err != nil {
 		t.Fatalf("Failed to get ticket tags: %s", err)
 	}
@@ -22,11 +23,11 @@ func TestGetTicketTags(t *testing.T) {
 }
 
 func TestGetOrganizationTags(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "tags.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "tags.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	tags, err := client.GetOrganizationTags(ctx, int64(2))
+	tags, err := c.GetOrganizationTags(ctx, int64(2))
 	if err != nil {
 		t.Fatalf("Failed to get organization tags: %s", err)
 	}
@@ -38,11 +39,11 @@ func TestGetOrganizationTags(t *testing.T) {
 }
 
 func TestGetUserTags(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "tags.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "tags.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	tags, err := client.GetUserTags(ctx, int64(2))
+	tags, err := c.GetUserTags(ctx, int64(2))
 	if err != nil {
 		t.Fatalf("Failed to get user tags: %s", err)
 	}
@@ -54,13 +55,13 @@ func TestGetUserTags(t *testing.T) {
 }
 
 func TestAddTicketTags(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPut, "tags.json", http.StatusOK)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "tags.json", http.StatusOK)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
 	tag := Tag("example")
 
-	tags, err := client.AddTicketTags(ctx, 2, []Tag{tag})
+	tags, err := c.AddTicketTags(ctx, 2, []Tag{tag})
 	if err != nil {
 		t.Fatalf("Failed to add ticket tags: %s", err)
 	}
@@ -75,13 +76,13 @@ func TestAddTicketTags(t *testing.T) {
 }
 
 func TestAddOrganizationTags(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPut, "tags.json", http.StatusOK)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "tags.json", http.StatusOK)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
 	tag := Tag("example")
 
-	tags, err := client.AddOrganizationTags(ctx, 2, []Tag{tag})
+	tags, err := c.AddOrganizationTags(ctx, 2, []Tag{tag})
 	if err != nil {
 		t.Fatalf("Failed to add ticket tags: %s", err)
 	}
@@ -96,13 +97,13 @@ func TestAddOrganizationTags(t *testing.T) {
 }
 
 func TestAddUserTags(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPut, "tags.json", http.StatusOK)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "tags.json", http.StatusOK)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
 	tag := Tag("example")
 
-	tags, err := client.AddUserTags(ctx, 2, []Tag{tag})
+	tags, err := c.AddUserTags(ctx, 2, []Tag{tag})
 	if err != nil {
 		t.Fatalf("Failed to add ticket tags: %s", err)
 	}

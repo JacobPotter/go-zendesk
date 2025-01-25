@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/JacobPotter/go-zendesk/internal/client"
 	"time"
 )
 
@@ -124,10 +125,10 @@ type UserAPI interface {
 	GetUserRelated(ctx context.Context, userID int64) (UserRelated, error)
 	GetUsersIterator(ctx context.Context, opts *PaginationOptions) *Iterator[User]
 	GetUsersOBP(ctx context.Context, opts *OBPOptions) ([]User, Page, error)
-	GetUsersCBP(ctx context.Context, opts *CBPOptions) ([]User, CursorPaginationMeta, error)
+	GetUsersCBP(ctx context.Context, opts *CBPOptions) ([]User, client.CursorPaginationMeta, error)
 	GetOrganizationUsersIterator(ctx context.Context, opts *PaginationOptions) *Iterator[User]
 	GetOrganizationUsersOBP(ctx context.Context, opts *OBPOptions) ([]User, Page, error)
-	GetOrganizationUsersCBP(ctx context.Context, opts *CBPOptions) ([]User, CursorPaginationMeta, error)
+	GetOrganizationUsersCBP(ctx context.Context, opts *CBPOptions) ([]User, client.CursorPaginationMeta, error)
 }
 
 // GetUsers fetch user list
@@ -143,12 +144,12 @@ func (z *Client) GetUsers(ctx context.Context, opts *UserListOptions) ([]User, P
 		tmp = &UserListOptions{}
 	}
 
-	u, err := addOptions("/users.json", tmp)
+	u, err := client.AddOptions("/users.json", tmp)
 	if err != nil {
 		return nil, Page{}, err
 	}
 
-	body, err := z.get(ctx, u)
+	body, err := z.Get(ctx, u)
 	if err != nil {
 		return nil, Page{}, err
 	}
@@ -175,12 +176,12 @@ func (z *Client) GetOrganizationUsers(ctx context.Context, orgID int64, opts *Us
 	}
 	apiURL := fmt.Sprintf("/organizations/%d/users.json", orgID)
 
-	u, err := addOptions(apiURL, tmp)
+	u, err := client.AddOptions(apiURL, tmp)
 	if err != nil {
 		return nil, Page{}, err
 	}
 
-	body, err := z.get(ctx, u)
+	body, err := z.Get(ctx, u)
 	if err != nil {
 		return nil, Page{}, err
 	}
@@ -207,12 +208,12 @@ func (z *Client) SearchUsers(ctx context.Context, opts *SearchUsersOptions) ([]U
 		tmp = new(SearchUsersOptions)
 	}
 
-	u, err := addOptions("/users/search.json", tmp)
+	u, err := client.AddOptions("/users/search.json", tmp)
 	if err != nil {
 		return nil, Page{}, err
 	}
 
-	body, err := z.get(ctx, u)
+	body, err := z.Get(ctx, u)
 	if err != nil {
 		return nil, Page{}, err
 	}
@@ -239,12 +240,12 @@ func (z *Client) GetManyUsers(ctx context.Context, opts *GetManyUsersOptions) ([
 		tmp = new(GetManyUsersOptions)
 	}
 
-	u, err := addOptions("/users/show_many.json", tmp)
+	u, err := client.AddOptions("/users/show_many.json", tmp)
 	if err != nil {
 		return nil, Page{}, err
 	}
 
-	body, err := z.get(ctx, u)
+	body, err := z.Get(ctx, u)
 	if err != nil {
 		return nil, Page{}, err
 	}
@@ -266,7 +267,7 @@ func (z *Client) CreateUser(ctx context.Context, user User) (User, error) {
 	}
 	data.User = user
 
-	body, err := z.post(ctx, "/users.json", data)
+	body, err := z.Post(ctx, "/users.json", data)
 	if err != nil {
 		return User{}, err
 	}
@@ -286,7 +287,7 @@ func (z *Client) CreateOrUpdateUser(ctx context.Context, user User) (User, error
 	}
 	data.User = user
 
-	body, err := z.post(ctx, "/users/create_or_update.json", data)
+	body, err := z.Post(ctx, "/users/create_or_update.json", data)
 	if err != nil {
 		return User{}, err
 	}
@@ -307,7 +308,7 @@ func (z *Client) GetUser(ctx context.Context, userID int64) (User, error) {
 		User User `json:"user"`
 	}
 
-	body, err := z.get(ctx, fmt.Sprintf("/users/%d.json", userID))
+	body, err := z.Get(ctx, fmt.Sprintf("/users/%d.json", userID))
 	if err != nil {
 		return User{}, err
 	}
@@ -327,7 +328,7 @@ func (z *Client) UpdateUser(ctx context.Context, userID int64, user User) (User,
 	}
 	data.User = user
 
-	body, err := z.put(ctx, fmt.Sprintf("/users/%d.json", userID), data)
+	body, err := z.Put(ctx, fmt.Sprintf("/users/%d.json", userID), data)
 	if err != nil {
 		return User{}, err
 	}
@@ -346,7 +347,7 @@ func (z *Client) GetUserRelated(ctx context.Context, userID int64) (UserRelated,
 		UserRelated UserRelated `json:"user_related"`
 	}
 
-	body, err := z.get(ctx, fmt.Sprintf("/users/%d/related.json", userID))
+	body, err := z.Get(ctx, fmt.Sprintf("/users/%d/related.json", userID))
 	if err != nil {
 		return UserRelated{}, err
 	}

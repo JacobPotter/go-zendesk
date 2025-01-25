@@ -1,17 +1,20 @@
 package zendesk
 
 import (
+	"errors"
+	"github.com/JacobPotter/go-zendesk/internal/client"
+	"github.com/JacobPotter/go-zendesk/internal/testhelper"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
 func TestGetTriggers(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "triggers.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "triggers.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	triggers, _, err := client.GetTriggers(ctx, &TriggerListOptions{})
+	triggers, _, err := c.GetTriggers(ctx, &TriggerListOptions{})
 	if err != nil {
 		t.Fatalf("Failed to get triggers: %s", err)
 	}
@@ -22,37 +25,38 @@ func TestGetTriggers(t *testing.T) {
 }
 
 func TestGetTriggersWithNil(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "triggers.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "triggers.json")
+	c := NewTestClient(mockAPI)
 
-	_, _, err := client.GetTriggers(ctx, nil)
+	_, _, err := c.GetTriggers(ctx, nil)
 	if err == nil {
 		t.Fatal("expected an OptionsError, but no error")
 	}
 
-	_, ok := err.(*OptionsError)
+	var optionsError *client.OptionsError
+	ok := errors.As(err, &optionsError)
 	if !ok {
 		t.Fatalf("unexpected error type: %v", err)
 	}
 }
 
 func TestCreateTrigger(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPost, "triggers.json", http.StatusCreated)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "triggers.json", http.StatusCreated)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	_, err := client.CreateTrigger(ctx, Trigger{})
+	_, err := c.CreateTrigger(ctx, Trigger{})
 	if err != nil {
 		t.Fatalf("Failed to send request to create trigger: %s", err)
 	}
 }
 
 func TestGetTrigger(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "trigger.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "trigger.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	trg, err := client.GetTrigger(ctx, 123)
+	trg, err := c.GetTrigger(ctx, 123)
 	if err != nil {
 		t.Fatalf("Failed to get trigger: %s", err)
 	}
@@ -72,19 +76,19 @@ func TestGetTriggerFailure(t *testing.T) {
 		}
 	}))
 
-	c := newTestClient(mockAPI)
+	c := NewTestClient(mockAPI)
 	_, err := c.GetTrigger(ctx, 1234)
 	if err == nil {
-		t.Fatal("Client did not return error when api failed")
+		t.Fatal("BaseClient did not return error when api failed")
 	}
 }
 
 func TestUpdateTrigger(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPut, "triggers.json", http.StatusOK)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "triggers.json", http.StatusOK)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	trg, err := client.UpdateTrigger(ctx, 123, Trigger{})
+	trg, err := c.UpdateTrigger(ctx, 123, Trigger{})
 	if err != nil {
 		t.Fatalf("Failed to get trigger: %s", err)
 	}
@@ -104,10 +108,10 @@ func TestUpdateTriggerFailure(t *testing.T) {
 		}
 	}))
 
-	c := newTestClient(mockAPI)
+	c := NewTestClient(mockAPI)
 	_, err := c.UpdateTrigger(ctx, 1234, Trigger{})
 	if err == nil {
-		t.Fatal("Client did not return error when api failed")
+		t.Fatal("BaseClient did not return error when api failed")
 	}
 }
 
@@ -120,7 +124,7 @@ func TestDeleteTrigger(t *testing.T) {
 		}
 	}))
 
-	c := newTestClient(mockAPI)
+	c := NewTestClient(mockAPI)
 	err := c.DeleteTrigger(ctx, 1234)
 	if err != nil {
 		t.Fatalf("Failed to delete trigger: %s", err)
@@ -136,9 +140,9 @@ func TestDeleteTriggerFailure(t *testing.T) {
 		}
 	}))
 
-	c := newTestClient(mockAPI)
+	c := NewTestClient(mockAPI)
 	err := c.DeleteTrigger(ctx, 1234)
 	if err == nil {
-		t.Fatal("Client did not return error when api failed")
+		t.Fatal("BaseClient did not return error when api failed")
 	}
 }

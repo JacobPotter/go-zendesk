@@ -27,7 +27,7 @@ func (z *Client) GetTicketTags(ctx context.Context, ticketID int64) ([]Tag, erro
 		Tags []Tag `json:"tags"`
 	}
 
-	body, err := z.get(ctx, fmt.Sprintf("/tickets/%d/tags.json", ticketID))
+	body, err := z.Get(ctx, fmt.Sprintf("/tickets/%d/tags.json", ticketID))
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (z *Client) GetOrganizationTags(ctx context.Context, organizationID int64) 
 		Tags []Tag `json:"tags"`
 	}
 
-	body, err := z.get(ctx, fmt.Sprintf("/organizations/%d/tags.json", organizationID))
+	body, err := z.Get(ctx, fmt.Sprintf("/organizations/%d/tags.json", organizationID))
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +69,7 @@ func (z *Client) GetUserTags(ctx context.Context, userID int64) ([]Tag, error) {
 		Tags []Tag `json:"tags"`
 	}
 
-	body, err := z.get(ctx, fmt.Sprintf("/users/%d/tags.json", userID))
+	body, err := z.Get(ctx, fmt.Sprintf("/users/%d/tags.json", userID))
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +91,7 @@ func (z *Client) AddTicketTags(ctx context.Context, ticketID int64, tags []Tag) 
 	}
 	data.Tags = tags
 
-	body, err := z.put(ctx, fmt.Sprintf("/tickets/%d/tags", ticketID), data)
+	body, err := z.Put(ctx, fmt.Sprintf("/tickets/%d/tags", ticketID), data)
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +112,7 @@ func (z *Client) AddOrganizationTags(ctx context.Context, organizationID int64, 
 	}
 	data.Tags = tags
 
-	body, err := z.put(ctx, fmt.Sprintf("/organizations/%d/tags", organizationID), data)
+	body, err := z.Put(ctx, fmt.Sprintf("/organizations/%d/tags", organizationID), data)
 	if err != nil {
 		return nil, err
 	}
@@ -133,7 +133,7 @@ func (z *Client) AddUserTags(ctx context.Context, userID int64, tags []Tag) ([]T
 	}
 	data.Tags = tags
 
-	body, err := z.put(ctx, fmt.Sprintf("/users/%d/tags", userID), data)
+	body, err := z.Put(ctx, fmt.Sprintf("/users/%d/tags", userID), data)
 	if err != nil {
 		return nil, err
 	}

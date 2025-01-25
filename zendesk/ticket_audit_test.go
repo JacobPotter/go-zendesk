@@ -1,16 +1,17 @@
 package zendesk
 
 import (
+	"github.com/JacobPotter/go-zendesk/internal/testhelper"
 	"net/http"
 	"testing"
 )
 
 func TestGetAllTicketAudits(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "ticket_audits.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "ticket_audits.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	ticketAudits, _, err := client.GetAllTicketAudits(ctx, CursorOption{})
+	ticketAudits, _, err := c.GetAllTicketAudits(ctx, CursorOption{})
 	if err != nil {
 		t.Fatalf("Failed to get ticket audits: %s", err)
 	}
@@ -21,11 +22,11 @@ func TestGetAllTicketAudits(t *testing.T) {
 }
 
 func TestGetTicketAudits(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "ticket_audits.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "ticket_audits.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	ticketAudits, _, err := client.GetTicketAudits(ctx, 666, PageOptions{})
+	ticketAudits, _, err := c.GetTicketAudits(ctx, 666, PageOptions{})
 	if err != nil {
 		t.Fatalf("Failed to get ticket audits: %s", err)
 	}
@@ -36,11 +37,11 @@ func TestGetTicketAudits(t *testing.T) {
 }
 
 func TestGetTicketAudit(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "ticket_audit.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "ticket_audit.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	ticketAudit, err := client.GetTicketAudit(ctx, 666, 2127301143)
+	ticketAudit, err := c.GetTicketAudit(ctx, 666, 2127301143)
 	if err != nil {
 		t.Fatalf("Failed to get ticket audit: %s", err)
 	}

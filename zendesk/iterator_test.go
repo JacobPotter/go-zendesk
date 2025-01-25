@@ -2,6 +2,7 @@ package zendesk
 
 import (
 	"context"
+	"github.com/JacobPotter/go-zendesk/internal/client"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -32,8 +33,8 @@ func mockObpFunc(ctx context.Context, opts *OBPOptions) ([]int, Page, error) {
 	return []int{1, 2, 3}, Page{NextPage: &nextPage, Count: 3}, nil
 }
 
-func mockCbpFunc(ctx context.Context, opts *CBPOptions) ([]int, CursorPaginationMeta, error) {
-	return []int{1, 2, 3}, CursorPaginationMeta{HasMore: true, AfterCursor: "3"}, nil
+func mockCbpFunc(ctx context.Context, opts *CBPOptions) ([]int, client.CursorPaginationMeta, error) {
+	return []int{1, 2, 3}, client.CursorPaginationMeta{HasMore: true, AfterCursor: "3"}, nil
 }
 
 // Test for GetNext function

@@ -1,17 +1,20 @@
 package zendesk
 
 import (
+	"errors"
+	"github.com/JacobPotter/go-zendesk/internal/client"
+	"github.com/JacobPotter/go-zendesk/internal/testhelper"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
 func TestGetAutomations(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "automations.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "automations.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	automations, _, err := client.GetAutomations(ctx, &AutomationListOptions{})
+	automations, _, err := c.GetAutomations(ctx, &AutomationListOptions{})
 	if err != nil {
 		t.Fatalf("Failed to get automations: %s", err)
 	}
@@ -22,37 +25,38 @@ func TestGetAutomations(t *testing.T) {
 }
 
 func TestGetAutomationsWithNil(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "automations.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "automations.json")
+	c := NewTestClient(mockAPI)
 
-	_, _, err := client.GetAutomations(ctx, nil)
+	_, _, err := c.GetAutomations(ctx, nil)
 	if err == nil {
 		t.Fatal("expected an OptionsError, but no error")
 	}
 
-	_, ok := err.(*OptionsError)
+	var optionsError *client.OptionsError
+	ok := errors.As(err, &optionsError)
 	if !ok {
 		t.Fatalf("unexpected error type: %v", err)
 	}
 }
 
 func TestCreateAutomation(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPost, "automations.json", http.StatusCreated)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "automations.json", http.StatusCreated)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	_, err := client.CreateAutomation(ctx, Automation{})
+	_, err := c.CreateAutomation(ctx, Automation{})
 	if err != nil {
 		t.Fatalf("Failed to send request to create automation: %s", err)
 	}
 }
 
 func TestGetAutomation(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "automation.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "automation.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	trg, err := client.GetAutomation(ctx, 123)
+	trg, err := c.GetAutomation(ctx, 123)
 	if err != nil {
 		t.Fatalf("Failed to get automation: %s", err)
 	}
@@ -72,19 +76,19 @@ func TestGetAutomationFailure(t *testing.T) {
 		}
 	}))
 
-	c := newTestClient(mockAPI)
+	c := NewTestClient(mockAPI)
 	_, err := c.GetAutomation(ctx, 1234)
 	if err == nil {
-		t.Fatal("Client did not return error when api failed")
+		t.Fatal("BaseClient did not return error when api failed")
 	}
 }
 
 func TestUpdateAutomation(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPut, "automations.json", http.StatusOK)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "automations.json", http.StatusOK)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	trg, err := client.UpdateAutomation(ctx, 123, Automation{})
+	trg, err := c.UpdateAutomation(ctx, 123, Automation{})
 	if err != nil {
 		t.Fatalf("Failed to get automation: %s", err)
 	}
@@ -104,10 +108,10 @@ func TestUpdateAutomationFailure(t *testing.T) {
 		}
 	}))
 
-	c := newTestClient(mockAPI)
+	c := NewTestClient(mockAPI)
 	_, err := c.UpdateAutomation(ctx, 1234, Automation{})
 	if err == nil {
-		t.Fatal("Client did not return error when api failed")
+		t.Fatal("BaseClient did not return error when api failed")
 	}
 }
 
@@ -120,7 +124,7 @@ func TestDeleteAutomation(t *testing.T) {
 		}
 	}))
 
-	c := newTestClient(mockAPI)
+	c := NewTestClient(mockAPI)
 	err := c.DeleteAutomation(ctx, 1234)
 	if err != nil {
 		t.Fatalf("Failed to delete automation: %s", err)
@@ -136,9 +140,9 @@ func TestDeleteAutomationFailure(t *testing.T) {
 		}
 	}))
 
-	c := newTestClient(mockAPI)
+	c := NewTestClient(mockAPI)
 	err := c.DeleteAutomation(ctx, 1234)
 	if err == nil {
-		t.Fatal("Client did not return error when api failed")
+		t.Fatal("BaseClient did not return error when api failed")
 	}
 }

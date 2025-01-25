@@ -2,6 +2,7 @@ package zendesk
 
 import (
 	"encoding/json"
+	"github.com/JacobPotter/go-zendesk/internal/testhelper"
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
@@ -9,11 +10,11 @@ import (
 )
 
 func TestGetView(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "view.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "view.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	view, err := client.GetView(ctx, 123)
+	view, err := c.GetView(ctx, 123)
 	if err != nil {
 		t.Fatalf("Failed to get view: %s", err)
 	}
@@ -25,8 +26,8 @@ func TestGetView(t *testing.T) {
 }
 
 func TestCreateView(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodPost, "view.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodPost, "view.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
 	fileName := "view_body.json"
@@ -49,7 +50,7 @@ func TestCreateView(t *testing.T) {
 		t.Fatalf("Unable to unmarshal json, error: %s", err.Error())
 	}
 
-	view, err := client.CreateView(ctx, viewResp.View)
+	view, err := c.CreateView(ctx, viewResp.View)
 	if err != nil {
 		t.Fatalf("Failed to get view: %s", err)
 	}
@@ -61,8 +62,8 @@ func TestCreateView(t *testing.T) {
 }
 
 func TestUpdateView(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodPut, "view.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodPut, "view.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
 	fileName := "view_body.json"
@@ -85,7 +86,7 @@ func TestUpdateView(t *testing.T) {
 		t.Fatalf("Unable to unmarshal json, error: %s", err.Error())
 	}
 
-	view, err := client.UpdateView(ctx, 360002440594, viewResp.View)
+	view, err := c.UpdateView(ctx, 360002440594, viewResp.View)
 	if err != nil {
 		t.Fatalf("Failed to get view: %s", err)
 	}
@@ -97,11 +98,11 @@ func TestUpdateView(t *testing.T) {
 }
 
 func TestGetViews(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "views.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "views.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	views, _, err := client.GetViews(ctx)
+	views, _, err := c.GetViews(ctx)
 	if err != nil {
 		t.Fatalf("Failed to get views: %s", err)
 	}
@@ -112,11 +113,11 @@ func TestGetViews(t *testing.T) {
 }
 
 func TestGetCountTicketsInViewsTestGetViews(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "views_ticket_count.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "views_ticket_count.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 	ids := []string{"25", "78"}
-	viewsCount, err := client.GetCountTicketsInViews(ctx, ids)
+	viewsCount, err := c.GetCountTicketsInViews(ctx, ids)
 	if err != nil {
 		t.Fatalf("Failed to get views tickets count: %s", err)
 	}
@@ -135,7 +136,7 @@ func TestDeleteView(t *testing.T) {
 		}
 	}))
 
-	c := newTestClient(mockAPI)
+	c := NewTestClient(mockAPI)
 	err := c.DeleteView(ctx, 437)
 	if err != nil {
 		t.Fatalf("Failed to delete macro field: %s", err)

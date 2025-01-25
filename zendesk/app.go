@@ -43,7 +43,7 @@ func (z *Client) ListInstallations(ctx context.Context) ([]AppInstallation, erro
 		Installations []AppInstallation `json:"installations"`
 	}
 
-	body, err := z.get(ctx, "/apps/installations")
+	body, err := z.Get(ctx, "/apps/installations")
 	if err != nil {
 		return nil, err
 	}

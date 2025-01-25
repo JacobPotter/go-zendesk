@@ -1,16 +1,17 @@
 package zendesk
 
 import (
+	"github.com/JacobPotter/go-zendesk/internal/testhelper"
 	"net/http"
 	"testing"
 )
 
 func TestGetDynamicContentItems(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "dynamic_content/items.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "dynamic_content/items.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	items, page, err := client.GetDynamicContentItems(ctx)
+	items, page, err := c.GetDynamicContentItems(ctx)
 	if err != nil {
 		t.Fatalf("Failed to get dynamic content items: %s", err)
 	}
@@ -29,11 +30,11 @@ func TestGetDynamicContentItems(t *testing.T) {
 }
 
 func TestCreateDynamicContentItem(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPost, "dynamic_content/items.json", http.StatusCreated)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "dynamic_content/items.json", http.StatusCreated)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	item, err := client.CreateDynamicContentItem(ctx, DynamicContentItem{})
+	item, err := c.CreateDynamicContentItem(ctx, DynamicContentItem{})
 	if err != nil {
 		t.Fatalf("Failed to get valid response: %s", err)
 	}

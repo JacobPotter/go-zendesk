@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/JacobPotter/go-zendesk/internal/client"
 	"strconv"
 	"strings"
 	"time"
@@ -146,8 +147,8 @@ type TicketListOptions struct {
 
 // TicketListCBPResult struct represents the result of a ticket list operation in CBP. It includes an array of Ticket objects, and Meta that holds pagination metadata.
 type TicketListCBPResult struct {
-	Tickets []Ticket             `json:"tickets"`
-	Meta    CursorPaginationMeta `json:"meta"`
+	Tickets []Ticket                    `json:"tickets"`
+	Meta    client.CursorPaginationMeta `json:"meta"`
 }
 
 // TicketAPI an interface containing all ticket related methods
@@ -155,10 +156,10 @@ type TicketAPI interface {
 	GetTicketsIterator(ctx context.Context, opts *PaginationOptions) *Iterator[Ticket]
 	GetTickets(ctx context.Context, opts *TicketListOptions) ([]Ticket, Page, error)
 	GetTicketsOBP(ctx context.Context, opts *OBPOptions) ([]Ticket, Page, error)
-	GetTicketsCBP(ctx context.Context, opts *CBPOptions) ([]Ticket, CursorPaginationMeta, error)
+	GetTicketsCBP(ctx context.Context, opts *CBPOptions) ([]Ticket, client.CursorPaginationMeta, error)
 	GetOrganizationTickets(ctx context.Context, organizationID int64, ops *TicketListOptions) ([]Ticket, Page, error)
 	GetOrganizationTicketsOBP(ctx context.Context, opts *OBPOptions) ([]Ticket, Page, error)
-	GetOrganizationTicketsCBP(ctx context.Context, opts *CBPOptions) ([]Ticket, CursorPaginationMeta, error)
+	GetOrganizationTicketsCBP(ctx context.Context, opts *CBPOptions) ([]Ticket, client.CursorPaginationMeta, error)
 	GetOrganizationTicketsIterator(ctx context.Context, opts *PaginationOptions) *Iterator[Ticket]
 	GetTicket(ctx context.Context, id int64) (Ticket, error)
 	GetMultipleTickets(ctx context.Context, ticketIDs []int64) ([]Ticket, error)
@@ -181,12 +182,12 @@ func (z *Client) GetTickets(ctx context.Context, opts *TicketListOptions) ([]Tic
 		tmp = &TicketListOptions{}
 	}
 
-	u, err := addOptions("/tickets.json", tmp)
+	u, err := client.AddOptions("/tickets.json", tmp)
 	if err != nil {
 		return nil, Page{}, err
 	}
 
-	body, err := z.get(ctx, u)
+	body, err := z.Get(ctx, u)
 	if err != nil {
 		return nil, Page{}, err
 	}
@@ -215,12 +216,12 @@ func (z *Client) GetOrganizationTickets(
 	}
 
 	path := fmt.Sprintf("/organizations/%d/tickets.json", organizationID)
-	u, err := addOptions(path, tmp)
+	u, err := client.AddOptions(path, tmp)
 	if err != nil {
 		return nil, Page{}, err
 	}
 
-	err = getData(z, ctx, u, &data)
+	err = client.GetData(z, ctx, u, &data)
 	if err != nil {
 		return nil, Page{}, err
 	}
@@ -235,7 +236,7 @@ func (z *Client) GetTicket(ctx context.Context, ticketID int64) (Ticket, error) 
 		Ticket Ticket `json:"ticket"`
 	}
 
-	body, err := z.get(ctx, fmt.Sprintf("/tickets/%d.json", ticketID))
+	body, err := z.Get(ctx, fmt.Sprintf("/tickets/%d.json", ticketID))
 	if err != nil {
 		return Ticket{}, err
 	}
@@ -265,12 +266,12 @@ func (z *Client) GetMultipleTickets(ctx context.Context, ticketIDs []int64) ([]T
 	}
 	req.IDs = strings.Join(idStrs, ",")
 
-	u, err := addOptions("/tickets/show_many.json", req)
+	u, err := client.AddOptions("/tickets/show_many.json", req)
 	if err != nil {
 		return nil, err
 	}
 
-	body, err := z.get(ctx, u)
+	body, err := z.Get(ctx, u)
 	if err != nil {
 		return nil, err
 	}
@@ -291,7 +292,7 @@ func (z *Client) CreateTicket(ctx context.Context, ticket Ticket) (Ticket, error
 	}
 	data.Ticket = ticket
 
-	body, err := z.post(ctx, "/tickets.json", data)
+	body, err := z.Post(ctx, "/tickets.json", data)
 	if err != nil {
 		return Ticket{}, err
 	}
@@ -312,7 +313,7 @@ func (z *Client) UpdateTicket(ctx context.Context, ticketID int64, ticket Ticket
 	data.Ticket = ticket
 
 	path := fmt.Sprintf("/tickets/%d.json", ticketID)
-	body, err := z.put(ctx, path, data)
+	body, err := z.Put(ctx, path, data)
 	if err != nil {
 		return Ticket{}, err
 	}
@@ -328,7 +329,7 @@ func (z *Client) UpdateTicket(ctx context.Context, ticketID int64, ticket Ticket
 // DeleteTicket deletes the specified ticket
 // ref: https://developer.zendesk.com/rest_api/docs/support/tickets#delete-ticket
 func (z *Client) DeleteTicket(ctx context.Context, ticketID int64) error {
-	err := z.delete(ctx, fmt.Sprintf("/tickets/%d.json", ticketID))
+	err := z.Delete(ctx, fmt.Sprintf("/tickets/%d.json", ticketID))
 
 	if err != nil {
 		return err

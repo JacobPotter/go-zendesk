@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/JacobPotter/go-zendesk/internal/client"
 	"time"
 )
 
@@ -44,7 +45,7 @@ type TriggerAPI interface {
 	DeleteTrigger(ctx context.Context, id int64) error
 	GetTriggersIterator(ctx context.Context, opts *PaginationOptions) *Iterator[Trigger]
 	GetTriggersOBP(ctx context.Context, opts *OBPOptions) ([]Trigger, Page, error)
-	GetTriggersCBP(ctx context.Context, opts *CBPOptions) ([]Trigger, CursorPaginationMeta, error)
+	GetTriggersCBP(ctx context.Context, opts *CBPOptions) ([]Trigger, client.CursorPaginationMeta, error)
 }
 
 // GetTriggers fetch trigger list
@@ -57,15 +58,15 @@ func (z *Client) GetTriggers(ctx context.Context, opts *TriggerListOptions) ([]T
 	}
 
 	if opts == nil {
-		return []Trigger{}, Page{}, &OptionsError{opts}
+		return []Trigger{}, Page{}, &client.OptionsError{Opts: opts}
 	}
 
-	u, err := addOptions("/triggers.json", opts)
+	u, err := client.AddOptions("/triggers.json", opts)
 	if err != nil {
 		return []Trigger{}, Page{}, err
 	}
 
-	body, err := z.get(ctx, u)
+	body, err := z.Get(ctx, u)
 	if err != nil {
 		return []Trigger{}, Page{}, err
 	}
@@ -86,7 +87,7 @@ func (z *Client) CreateTrigger(ctx context.Context, trigger Trigger) (Trigger, e
 	}
 	data.Trigger = trigger
 
-	body, err := z.post(ctx, "/triggers.json", data)
+	body, err := z.Post(ctx, "/triggers.json", data)
 	if err != nil {
 		return Trigger{}, err
 	}
@@ -106,7 +107,7 @@ func (z *Client) GetTrigger(ctx context.Context, id int64) (Trigger, error) {
 		Trigger Trigger `json:"trigger"`
 	}
 
-	body, err := z.get(ctx, fmt.Sprintf("/triggers/%d.json", id))
+	body, err := z.Get(ctx, fmt.Sprintf("/triggers/%d.json", id))
 	if err != nil {
 		return Trigger{}, err
 	}
@@ -127,7 +128,7 @@ func (z *Client) UpdateTrigger(ctx context.Context, id int64, trigger Trigger) (
 	}
 
 	data.Trigger = trigger
-	body, err := z.put(ctx, fmt.Sprintf("/triggers/%d.json", id), data)
+	body, err := z.Put(ctx, fmt.Sprintf("/triggers/%d.json", id), data)
 	if err != nil {
 		return Trigger{}, err
 	}
@@ -144,7 +145,7 @@ func (z *Client) UpdateTrigger(ctx context.Context, id int64, trigger Trigger) (
 //
 // ref: https://developer.zendesk.com/rest_api/docs/support/triggers#delete-trigger
 func (z *Client) DeleteTrigger(ctx context.Context, id int64) error {
-	err := z.delete(ctx, fmt.Sprintf("/triggers/%d.json", id))
+	err := z.Delete(ctx, fmt.Sprintf("/triggers/%d.json", id))
 	if err != nil {
 		return err
 	}

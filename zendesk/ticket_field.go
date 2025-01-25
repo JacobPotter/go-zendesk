@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/JacobPotter/go-zendesk/internal/client"
 	"slices"
 	"time"
 )
@@ -129,7 +130,7 @@ type TicketFieldAPI interface {
 	DeleteTicketField(ctx context.Context, ticketID int64) error
 	GetTicketFieldsIterator(ctx context.Context, opts *PaginationOptions) *Iterator[TicketField]
 	GetTicketFieldsOBP(ctx context.Context, opts *OBPOptions) ([]TicketField, Page, error)
-	GetTicketFieldsCBP(ctx context.Context, opts *CBPOptions) ([]TicketField, CursorPaginationMeta, error)
+	GetTicketFieldsCBP(ctx context.Context, opts *CBPOptions) ([]TicketField, client.CursorPaginationMeta, error)
 }
 
 // GetTicketFields fetches ticket field list
@@ -140,7 +141,7 @@ func (z *Client) GetTicketFields(ctx context.Context) ([]TicketField, Page, erro
 		Page
 	}
 
-	body, err := z.get(ctx, "/ticket_fields.json")
+	body, err := z.Get(ctx, "/ticket_fields.json")
 	if err != nil {
 		return []TicketField{}, Page{}, err
 	}
@@ -160,7 +161,7 @@ func (z *Client) CreateTicketField(ctx context.Context, ticketField TicketField)
 	}
 	data.TicketField = ticketField
 
-	body, err := z.post(ctx, "/ticket_fields.json", data)
+	body, err := z.Post(ctx, "/ticket_fields.json", data)
 	if err != nil {
 		return TicketField{}, err
 	}
@@ -179,7 +180,7 @@ func (z *Client) GetTicketField(ctx context.Context, ticketID int64) (TicketFiel
 		TicketField TicketField `json:"ticket_field"`
 	}
 
-	body, err := z.get(ctx, fmt.Sprintf("/ticket_fields/%d.json", ticketID))
+	body, err := z.Get(ctx, fmt.Sprintf("/ticket_fields/%d.json", ticketID))
 
 	if err != nil {
 		return TicketField{}, err
@@ -202,7 +203,7 @@ func (z *Client) UpdateTicketField(ctx context.Context, ticketID int64, field Ti
 
 	data.TicketField = field
 
-	body, err := z.put(ctx, fmt.Sprintf("/ticket_fields/%d.json", ticketID), data)
+	body, err := z.Put(ctx, fmt.Sprintf("/ticket_fields/%d.json", ticketID), data)
 
 	if err != nil {
 		return TicketField{}, err
@@ -219,7 +220,7 @@ func (z *Client) UpdateTicketField(ctx context.Context, ticketID int64, field Ti
 // DeleteTicketField deletes the specified ticket field
 // ref: https://developer.zendesk.com/rest_api/docs/support/ticket_fields#delete-ticket-field
 func (z *Client) DeleteTicketField(ctx context.Context, ticketID int64) error {
-	err := z.delete(ctx, fmt.Sprintf("/ticket_fields/%d.json", ticketID))
+	err := z.Delete(ctx, fmt.Sprintf("/ticket_fields/%d.json", ticketID))
 
 	if err != nil {
 		return err

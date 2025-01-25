@@ -2,6 +2,7 @@ package zendesk
 
 import (
 	"fmt"
+	"github.com/JacobPotter/go-zendesk/internal/testhelper"
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
@@ -9,11 +10,11 @@ import (
 )
 
 func TestGetUserFields(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "user_fields.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "user_fields.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	fields, page, err := client.GetUserFields(ctx, nil)
+	fields, page, err := c.GetUserFields(ctx, nil)
 	if err != nil {
 		t.Fatalf("Received error calling API: %v", err)
 	}
@@ -45,15 +46,15 @@ func TestUserFieldQueryParamsSet(t *testing.T) {
 		if queryString != expected {
 			t.Fatalf(`Did not get the expect query string: "%s". Was: "%s"`, expected, queryString)
 		}
-		_, err := w.Write(readFixture(filepath.Join(http.MethodGet, "user_fields.json")))
+		_, err := w.Write(testhelper.ReadFixture(t, filepath.Join(http.MethodGet, "user_fields.json")))
 		if err != nil {
 			t.Logf("Error: %s", err.Error())
 		}
 	}))
 
 	defer mockAPI.Close()
-	client := newTestClient(mockAPI)
-	_, _, err := client.GetUserFields(ctx, &opts)
+	c := NewTestClient(mockAPI)
+	_, _, err := c.GetUserFields(ctx, &opts)
 	if err != nil {
 		t.Fatalf("Received error calling API: %v", err)
 	}

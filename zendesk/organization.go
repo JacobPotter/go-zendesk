@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/JacobPotter/go-zendesk/internal/client"
 	"time"
 )
 
@@ -43,7 +44,7 @@ type OrganizationAPI interface {
 	DeleteOrganization(ctx context.Context, orgID int64) error
 	GetOrganizationsIterator(ctx context.Context, opts *PaginationOptions) *Iterator[Organization]
 	GetOrganizationsOBP(ctx context.Context, opts *OBPOptions) ([]Organization, Page, error)
-	GetOrganizationsCBP(ctx context.Context, opts *CBPOptions) ([]Organization, CursorPaginationMeta, error)
+	GetOrganizationsCBP(ctx context.Context, opts *CBPOptions) ([]Organization, client.CursorPaginationMeta, error)
 }
 
 // GetOrganizations fetch organization list
@@ -56,15 +57,15 @@ func (z *Client) GetOrganizations(ctx context.Context, opts *OrganizationListOpt
 	}
 
 	if opts == nil {
-		return []Organization{}, Page{}, &OptionsError{opts}
+		return []Organization{}, Page{}, &client.OptionsError{Opts: opts}
 	}
 
-	u, err := addOptions("/organizations.json", opts)
+	u, err := client.AddOptions("/organizations.json", opts)
 	if err != nil {
 		return []Organization{}, Page{}, err
 	}
 
-	body, err := z.get(ctx, u)
+	body, err := z.Get(ctx, u)
 	if err != nil {
 		return []Organization{}, Page{}, err
 	}
@@ -86,7 +87,7 @@ func (z *Client) CreateOrganization(ctx context.Context, org Organization) (Orga
 
 	data.Organization = org
 
-	body, err := z.post(ctx, "/organizations.json", data)
+	body, err := z.Post(ctx, "/organizations.json", data)
 	if err != nil {
 		return Organization{}, err
 	}
@@ -106,7 +107,7 @@ func (z *Client) GetOrganization(ctx context.Context, orgID int64) (Organization
 		Organization Organization `json:"organization"`
 	}
 
-	body, err := z.get(ctx, fmt.Sprintf("/organizations/%d.json", orgID))
+	body, err := z.Get(ctx, fmt.Sprintf("/organizations/%d.json", orgID))
 	if err != nil {
 		return Organization{}, err
 	}
@@ -127,7 +128,7 @@ func (z *Client) GetOrganizationByExternalID(ctx context.Context, externalID str
 		Page
 	}
 
-	body, err := z.get(ctx, fmt.Sprintf("/organizations/search?external_id=%s", externalID))
+	body, err := z.Get(ctx, fmt.Sprintf("/organizations/search?external_id=%s", externalID))
 	if err != nil {
 		return []Organization{}, Page{}, err
 	}
@@ -149,7 +150,7 @@ func (z *Client) UpdateOrganization(ctx context.Context, orgID int64, org Organi
 
 	data.Organization = org
 
-	body, err := z.put(ctx, fmt.Sprintf("/organizations/%d.json", orgID), data)
+	body, err := z.Put(ctx, fmt.Sprintf("/organizations/%d.json", orgID), data)
 	if err != nil {
 		return Organization{}, err
 	}
@@ -165,7 +166,7 @@ func (z *Client) UpdateOrganization(ctx context.Context, orgID int64, org Organi
 // DeleteOrganization deletes the specified organization
 // ref: https://developer.zendesk.com/rest_api/docs/support/organizations#delete-organization
 func (z *Client) DeleteOrganization(ctx context.Context, orgID int64) error {
-	err := z.delete(ctx, fmt.Sprintf("/organizations/%d.json", orgID))
+	err := z.Delete(ctx, fmt.Sprintf("/organizations/%d.json", orgID))
 	if err != nil {
 		return err
 	}

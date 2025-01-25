@@ -1,17 +1,20 @@
 package zendesk
 
 import (
+	"errors"
+	"github.com/JacobPotter/go-zendesk/internal/client"
+	"github.com/JacobPotter/go-zendesk/internal/testhelper"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
 func TestGetSLAPolicies(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "sla_policies.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "sla_policies.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	slaPolicies, _, err := client.GetSLAPolicies(ctx, &SLAPolicyListOptions{})
+	slaPolicies, _, err := c.GetSLAPolicies(ctx, &SLAPolicyListOptions{})
 	if err != nil {
 		t.Fatalf("Failed to get sla policies: %s", err)
 	}
@@ -22,26 +25,27 @@ func TestGetSLAPolicies(t *testing.T) {
 }
 
 func TestGetSLAPoliciesWithNil(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "sla_policies.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "sla_policies.json")
+	c := NewTestClient(mockAPI)
 
-	_, _, err := client.GetSLAPolicies(ctx, nil)
+	_, _, err := c.GetSLAPolicies(ctx, nil)
 	if err == nil {
 		t.Fatal("expected an OptionsError, but no error")
 	}
 
-	_, ok := err.(*OptionsError)
+	var optionsError *client.OptionsError
+	ok := errors.As(err, &optionsError)
 	if !ok {
 		t.Fatalf("unexpected error type: %v", err)
 	}
 }
 
 func TestCreateSLAPolicy(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPost, "sla_policies.json", http.StatusCreated)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "sla_policies.json", http.StatusCreated)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	policy, err := client.CreateSLAPolicy(ctx, SLAPolicy{})
+	policy, err := c.CreateSLAPolicy(ctx, SLAPolicy{})
 	if err != nil {
 		t.Fatalf("Failed to send request to create sla policy: %s", err)
 	}
@@ -52,11 +56,11 @@ func TestCreateSLAPolicy(t *testing.T) {
 }
 
 func TestGetSLAPolicy(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "sla_policy.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "sla_policy.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	sla, err := client.GetSLAPolicy(ctx, 123)
+	sla, err := c.GetSLAPolicy(ctx, 123)
 	if err != nil {
 		t.Fatalf("Failed to get sla policy: %s", err)
 	}
@@ -76,19 +80,19 @@ func TestGetSLAPolicyFailure(t *testing.T) {
 		}
 	}))
 
-	c := newTestClient(mockAPI)
+	c := NewTestClient(mockAPI)
 	_, err := c.GetSLAPolicy(ctx, 1234)
 	if err == nil {
-		t.Fatal("Client did not return error when api failed")
+		t.Fatal("BaseClient did not return error when api failed")
 	}
 }
 
 func TestUpdateSLAPolicy(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPut, "sla_policies.json", http.StatusOK)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "sla_policies.json", http.StatusOK)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	sla, err := client.UpdateSLAPolicy(ctx, 123, SLAPolicy{})
+	sla, err := c.UpdateSLAPolicy(ctx, 123, SLAPolicy{})
 	if err != nil {
 		t.Fatalf("Failed to get sla policy: %s", err)
 	}
@@ -108,10 +112,10 @@ func TestUpdateSLAPolicyFailure(t *testing.T) {
 		}
 	}))
 
-	c := newTestClient(mockAPI)
+	c := NewTestClient(mockAPI)
 	_, err := c.UpdateSLAPolicy(ctx, 1234, SLAPolicy{})
 	if err == nil {
-		t.Fatal("Client did not return error when api failed")
+		t.Fatal("BaseClient did not return error when api failed")
 	}
 }
 
@@ -124,7 +128,7 @@ func TestDeleteSLAPolicy(t *testing.T) {
 		}
 	}))
 
-	c := newTestClient(mockAPI)
+	c := NewTestClient(mockAPI)
 	err := c.DeleteSLAPolicy(ctx, 1234)
 	if err != nil {
 		t.Fatalf("Failed to delete sla policy: %s", err)
@@ -140,9 +144,9 @@ func TestDeleteSLAPolicyFailure(t *testing.T) {
 		}
 	}))
 
-	c := newTestClient(mockAPI)
+	c := NewTestClient(mockAPI)
 	err := c.DeleteSLAPolicy(ctx, 1234)
 	if err == nil {
-		t.Fatal("Client did not return error when api failed")
+		t.Fatal("BaseClient did not return error when api failed")
 	}
 }

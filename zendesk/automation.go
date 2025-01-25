@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/JacobPotter/go-zendesk/internal/client"
 	"time"
 )
 
@@ -43,7 +44,7 @@ type AutomationAPI interface {
 	DeleteAutomation(ctx context.Context, id int64) error
 	GetAutomationsIterator(ctx context.Context, opts *PaginationOptions) *Iterator[Automation]
 	GetAutomationsOBP(ctx context.Context, opts *OBPOptions) ([]Automation, Page, error)
-	GetAutomationsCBP(ctx context.Context, opts *CBPOptions) ([]Automation, CursorPaginationMeta, error)
+	GetAutomationsCBP(ctx context.Context, opts *CBPOptions) ([]Automation, client.CursorPaginationMeta, error)
 }
 
 // GetAutomations fetch automation list
@@ -56,15 +57,15 @@ func (z *Client) GetAutomations(ctx context.Context, opts *AutomationListOptions
 	}
 
 	if opts == nil {
-		return []Automation{}, Page{}, &OptionsError{opts}
+		return []Automation{}, Page{}, &client.OptionsError{Opts: opts}
 	}
 
-	u, err := addOptions("/automations.json", opts)
+	u, err := client.AddOptions("/automations.json", opts)
 	if err != nil {
 		return []Automation{}, Page{}, err
 	}
 
-	body, err := z.get(ctx, u)
+	body, err := z.Get(ctx, u)
 	if err != nil {
 		return []Automation{}, Page{}, err
 	}
@@ -86,7 +87,7 @@ func (z *Client) CreateAutomation(ctx context.Context, automation Automation) (A
 	}
 
 	data.Automation = automation
-	body, err := z.post(ctx, "/automations.json", data)
+	body, err := z.Post(ctx, "/automations.json", data)
 
 	if err != nil {
 		return Automation{}, err
@@ -108,7 +109,7 @@ func (z *Client) GetAutomation(ctx context.Context, id int64) (Automation, error
 		Automation Automation `json:"automation"`
 	}
 
-	body, err := z.get(ctx, fmt.Sprintf("/automations/%d.json", id))
+	body, err := z.Get(ctx, fmt.Sprintf("/automations/%d.json", id))
 	if err != nil {
 		return Automation{}, err
 	}
@@ -130,7 +131,7 @@ func (z *Client) UpdateAutomation(ctx context.Context, id int64, automation Auto
 	}
 
 	data.Automation = automation
-	body, err := z.put(ctx, fmt.Sprintf("/automations/%d.json", id), data)
+	body, err := z.Put(ctx, fmt.Sprintf("/automations/%d.json", id), data)
 
 	if err != nil {
 		return Automation{}, err
@@ -148,7 +149,7 @@ func (z *Client) UpdateAutomation(ctx context.Context, id int64, automation Auto
 //
 // ref: https://developer.zendesk.com/rest_api/docs/support/automations#delete-automation
 func (z *Client) DeleteAutomation(ctx context.Context, id int64) error {
-	err := z.delete(ctx, fmt.Sprintf("/automations/%d.json", id))
+	err := z.Delete(ctx, fmt.Sprintf("/automations/%d.json", id))
 	if err != nil {
 		return err
 	}

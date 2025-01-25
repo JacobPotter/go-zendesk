@@ -1,16 +1,17 @@
 package zendesk
 
 import (
+	"github.com/JacobPotter/go-zendesk/internal/testhelper"
 	"net/http"
 	"testing"
 )
 
 func TestGetGroupMemberships(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "group_memberships.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "group_memberships.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	groupMemberships, _, err := client.GetGroupMemberships(ctx, &GroupMembershipListOptions{GroupID: 123})
+	groupMemberships, _, err := c.GetGroupMemberships(ctx, &GroupMembershipListOptions{GroupID: 123})
 	if err != nil {
 		t.Fatalf("Failed to get group memberships: %s", err)
 	}

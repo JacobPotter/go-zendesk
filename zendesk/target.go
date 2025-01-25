@@ -43,7 +43,7 @@ func (z *Client) GetTargets(ctx context.Context) ([]Target, Page, error) {
 		Page
 	}
 
-	body, err := z.get(ctx, "/targets.json")
+	body, err := z.Get(ctx, "/targets.json")
 	if err != nil {
 		return []Target{}, Page{}, err
 	}
@@ -65,7 +65,7 @@ func (z *Client) CreateTarget(ctx context.Context, target Target) (Target, error
 
 	data.Target = target
 
-	body, err := z.post(ctx, "/targets.json", data)
+	body, err := z.Post(ctx, "/targets.json", data)
 	if err != nil {
 		return Target{}, err
 	}
@@ -85,7 +85,7 @@ func (z *Client) GetTarget(ctx context.Context, targetID int64) (Target, error) 
 		Target Target `json:"target"`
 	}
 
-	body, err := z.get(ctx, fmt.Sprintf("/targets/%d.json", targetID))
+	body, err := z.Get(ctx, fmt.Sprintf("/targets/%d.json", targetID))
 
 	if err != nil {
 		return Target{}, err
@@ -108,7 +108,7 @@ func (z *Client) UpdateTarget(ctx context.Context, targetID int64, field Target)
 
 	data.Target = field
 
-	body, err := z.put(ctx, fmt.Sprintf("/targets/%d.json", targetID), data)
+	body, err := z.Put(ctx, fmt.Sprintf("/targets/%d.json", targetID), data)
 
 	if err != nil {
 		return Target{}, err
@@ -125,7 +125,7 @@ func (z *Client) UpdateTarget(ctx context.Context, targetID int64, field Target)
 // DeleteTarget deletes the specified target
 // ref: https://developer.zendesk.com/rest_api/docs/support/targets#delete-target
 func (z *Client) DeleteTarget(ctx context.Context, targetID int64) error {
-	err := z.delete(ctx, fmt.Sprintf("/targets/%d.json", targetID))
+	err := z.Delete(ctx, fmt.Sprintf("/targets/%d.json", targetID))
 
 	if err != nil {
 		return err

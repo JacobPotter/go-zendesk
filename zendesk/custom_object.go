@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/JacobPotter/go-zendesk/internal/client"
 	"time"
 )
 
@@ -58,7 +59,7 @@ func (z *Client) CreateCustomObjectRecord(
 	}
 	data.CustomObjectRecord = record
 
-	body, err := z.post(ctx, fmt.Sprintf("/custom_objects/%s/records.json", customObjectKey), data)
+	body, err := z.Post(ctx, fmt.Sprintf("/custom_objects/%s/records.json", customObjectKey), data)
 	if err != nil {
 		return CustomObjectRecord{}, err
 	}
@@ -89,11 +90,11 @@ func (z *Client) ListCustomObjectRecords(
 		tmp = &CustomObjectListOptions{}
 	}
 	url := fmt.Sprintf("/custom_objects/%s/records", customObjectKey)
-	urlWithOptions, err := addOptions(url, tmp)
+	urlWithOptions, err := client.AddOptions(url, tmp)
 	if err != nil {
 		return nil, Page{}, err
 	}
-	body, err := z.get(ctx, urlWithOptions)
+	body, err := z.Get(ctx, urlWithOptions)
 
 	if err != nil {
 		return nil, Page{}, err
@@ -119,13 +120,13 @@ func (z *Client) AutocompleteSearchCustomObjectRecords(
 		tmp = &CustomObjectAutocompleteOptions{}
 	}
 	url := fmt.Sprintf("/custom_objects/%s/records/autocomplete", customObjectKey)
-	urlWithOptions, err := addOptions(url, tmp)
+	urlWithOptions, err := client.AddOptions(url, tmp)
 
 	if err != nil {
 		return nil, Page{}, err
 	}
 
-	body, err := z.get(ctx, urlWithOptions)
+	body, err := z.Get(ctx, urlWithOptions)
 
 	if err != nil {
 		return nil, Page{}, err
@@ -162,13 +163,13 @@ func (z *Client) SearchCustomObjectRecords(
 		tmp = &SearchCustomObjectRecordsOptions{}
 	}
 	url := fmt.Sprintf("/custom_objects/%s/records/search", customObjectKey)
-	urlWithOptions, err := addOptions(url, tmp)
+	urlWithOptions, err := client.AddOptions(url, tmp)
 
 	if err != nil {
 		return nil, Page{}, err
 	}
 
-	body, err := z.get(ctx, urlWithOptions)
+	body, err := z.Get(ctx, urlWithOptions)
 
 	if err != nil {
 		return nil, Page{}, err
@@ -190,7 +191,7 @@ func (z *Client) ShowCustomObjectRecord(
 	}
 
 	url := fmt.Sprintf("/custom_objects/%s/records/%s", customObjectKey, customObjectRecordID)
-	body, err := z.get(ctx, url)
+	body, err := z.Get(ctx, url)
 
 	if err != nil {
 		return nil, err
@@ -214,7 +215,7 @@ func (z *Client) UpdateCustomObjectRecord(
 	data.CustomObjectRecord = record
 
 	url := fmt.Sprintf("/custom_objects/%s/records/%s", customObjectKey, customObjectRecordID)
-	body, err := z.patch(ctx, url, data)
+	body, err := z.Patch(ctx, url, data)
 
 	if err != nil {
 		return nil, err

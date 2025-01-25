@@ -1,59 +1,23 @@
 package zendesk
 
 import (
+	"errors"
 	"fmt"
+	"github.com/JacobPotter/go-zendesk/internal/client"
+	"github.com/JacobPotter/go-zendesk/internal/testhelper"
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"os"
-	"path/filepath"
 	"strings"
 	"testing"
 )
 
 ////////// Helper //////////
 
-func fixture(filename string) string {
-	dir, err := filepath.Abs("../fixture")
-	if err != nil {
-		fmt.Printf("Failed to resolve fixture directory. Check the path: %s", err)
-		os.Exit(1)
-	}
-	return filepath.Join(dir, filename)
-}
-
-func readFixture(filename string) []byte {
-	bytes, err := os.ReadFile(fixture(filename))
-	if err != nil {
-		fmt.Printf("Failed to read fixture. Check the path: %s", err)
-		os.Exit(1)
-	}
-	return bytes
-}
-
-func newMockAPI(method string, filename string) *httptest.Server {
-	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		_, err := w.Write(readFixture(filepath.Join(method, filename)))
-		if err != nil {
-			fmt.Printf("Error: %s", err.Error())
-		}
-	}))
-}
-
-func newMockAPIWithStatus(method string, filename string, status int) *httptest.Server {
-	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(status)
-		_, err := w.Write(readFixture(filepath.Join(method, filename)))
-		if err != nil {
-			fmt.Printf("Error: %s", err.Error())
-		}
-	}))
-}
-
-func newTestClient(mockAPI *httptest.Server) *Client {
-	c := &Client{
-		httpClient: http.DefaultClient,
-		credential: NewAPITokenCredential("", ""),
+func NewTestBaseClient(mockAPI *httptest.Server) *client.BaseClient {
+	c := &client.BaseClient{
+		HttpClient: http.DefaultClient,
+		Credential: client.NewAPITokenCredential("", ""),
 	}
 	err := c.SetEndpointURL(mockAPI.URL)
 	if err != nil {
@@ -65,16 +29,16 @@ func newTestClient(mockAPI *httptest.Server) *Client {
 ////////// Test //////////
 
 func TestNewClient(t *testing.T) {
-	if _, err := NewClient(nil); err != nil {
-		t.Fatal("Failed to create Client")
+	if _, err := client.NewBaseClient(nil, false); err != nil {
+		t.Fatal("Failed to create BaseClient")
 	}
 }
 
 func TestSetHeader(t *testing.T) {
-	client, _ := NewClient(nil)
-	client.SetHeader("Header1", "hogehoge")
+	c, _ := client.NewBaseClient(nil, false)
+	c.SetHeader("Header1", "hogehoge")
 
-	if client.headers["Header1"] != "hogehoge" {
+	if c.Headers["Header1"] != "hogehoge" {
 		t.Fatal("Header1 is wrong")
 	}
 }
@@ -82,8 +46,8 @@ func TestSetHeader(t *testing.T) {
 func TestSetSubdomainSuccess(t *testing.T) {
 	validSubdomain := "subdomain"
 
-	client, _ := NewClient(&http.Client{})
-	if err := client.SetSubdomain(validSubdomain); err != nil {
+	c, _ := client.NewBaseClient(&http.Client{}, false)
+	if err := c.SetSubdomain(validSubdomain); err != nil {
 		t.Fatal("SetSubdomain should success")
 	}
 }
@@ -91,36 +55,36 @@ func TestSetSubdomainSuccess(t *testing.T) {
 func TestSetSubdomainFail(t *testing.T) {
 	invalidSubdomain := ".subdomain"
 
-	client, _ := NewClient(&http.Client{})
-	if err := client.SetSubdomain(invalidSubdomain); err == nil {
+	c, _ := client.NewBaseClient(&http.Client{}, false)
+	if err := c.SetSubdomain(invalidSubdomain); err == nil {
 		t.Fatal("SetSubdomain should fail")
 	}
 }
 
 func TestSetEndpointURL(t *testing.T) {
-	client, _ := NewClient(nil)
-	if err := client.SetEndpointURL("http://127.0.0.1:3000"); err != nil {
+	c, _ := client.NewBaseClient(nil, false)
+	if err := c.SetEndpointURL("http://127.0.0.1:3000"); err != nil {
 		t.Fatal("SetEndpointURL should success")
 	}
 }
 
 func TestSetCredential(t *testing.T) {
-	client, _ := NewClient(nil)
-	cred := NewBasicAuthCredential("john.doe@example.com", "password")
-	client.SetCredential(cred)
+	c, _ := client.NewBaseClient(nil, false)
+	cred := client.NewBasicAuthCredential("john.doe@example.com", "password")
+	c.SetCredential(cred)
 
-	if email := client.credential.Email(); email != "john.doe@example.com" {
+	if email := c.Credential.Email(); email != "john.doe@example.com" {
 		t.Fatal("client.credential.Email() returns wrong email: " + email)
 	}
-	if secret := client.credential.Secret(); secret != "password" {
+	if secret := c.Credential.Secret(); secret != "password" {
 		t.Fatal("client.credential.Secret() returns wrong secret: " + secret)
 	}
 }
 
 func TestBearerAuthCredential(t *testing.T) {
-	client, _ := NewClient(nil)
-	cred := NewBearerTokenCredential("hello")
-	client.SetCredential(cred)
+	c, _ := client.NewBaseClient(nil, false)
+	cred := client.NewBearerTokenCredential("hello")
+	c.SetCredential(cred)
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		auth := r.Header.Get("Authorization")
@@ -128,22 +92,22 @@ func TestBearerAuthCredential(t *testing.T) {
 			t.Fatal("unexpected auth header: " + auth)
 		}
 	}))
-	err := client.SetEndpointURL(server.URL)
+	err := c.SetEndpointURL(server.URL)
 	if err != nil {
 		t.Logf("Error: %s", err.Error())
 	}
 	defer server.Close()
 
 	// trigger request, assert in the server code
-	_, _ = client.get(ctx, "/groups.json")
+	_, _ = c.Get(ctx, "/groups.json")
 }
 
 func TestGet(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "groups.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "groups.json")
+	c := NewTestBaseClient(mockAPI)
 	defer mockAPI.Close()
 
-	body, err := client.get(ctx, "/groups.json")
+	body, err := c.Get(ctx, "/groups.json")
 	if err != nil {
 		t.Fatalf("Failed to send request: %s", err)
 	}
@@ -154,8 +118,8 @@ func TestGet(t *testing.T) {
 }
 
 func TestGetData(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "groups.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "groups.json")
+	c := NewTestBaseClient(mockAPI)
 	defer mockAPI.Close()
 
 	var data struct {
@@ -165,12 +129,12 @@ func TestGetData(t *testing.T) {
 
 	opts := &OBPOptions{}
 
-	u, err := addOptions("/groups.json", opts)
+	u, err := client.AddOptions("/groups.json", opts)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	err = getData(client, ctx, u, &data)
+	err = client.GetData(c, ctx, u, &data)
 	if err != nil {
 		t.Fatalf("Failed to send request: %s", err)
 	}
@@ -180,53 +144,54 @@ func TestGetData(t *testing.T) {
 }
 
 func TestGetFailure(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodGet, "groups.json", http.StatusInternalServerError)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodGet, "groups.json", http.StatusInternalServerError)
+	c := NewTestBaseClient(mockAPI)
 	defer mockAPI.Close()
 
-	_, err := client.get(ctx, "/groups.json")
+	_, err := c.Get(ctx, "/groups.json")
 	if err == nil {
 		t.Fatal("Did not receive error from client")
 	}
 
-	if _, ok := err.(Error); !ok {
+	var e client.Error
+	if !errors.As(err, &e) {
 		t.Fatalf("Did not return a zendesk error %s", err)
 	}
 }
 
 func TestGetFailureCanReadErrorBody(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodGet, "groups.json", http.StatusInternalServerError)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodGet, "groups.json", http.StatusInternalServerError)
+	c := NewTestBaseClient(mockAPI)
 	defer mockAPI.Close()
 
-	_, err := client.get(ctx, "/groups.json")
+	_, err := c.Get(ctx, "/groups.json")
 	if err == nil {
 		t.Fatal("Did not receive error from client")
 	}
 
-	clientErr, ok := err.(Error)
-	if !ok {
+	var clientErr client.Error
+	if ok := errors.As(err, &clientErr); !ok {
 		t.Fatalf("Did not return a zendesk error %s", err)
 	}
 
 	body := clientErr.Body()
 	_, err = io.ReadAll(body)
 	if err != nil {
-		t.Fatal("Client received error while reading client body")
+		t.Fatal("BaseClient received error while reading client body")
 	}
 
 	err = body.Close()
 	if err != nil {
-		t.Fatal("Client received error while closing body")
+		t.Fatal("BaseClient received error while closing body")
 	}
 }
 
 func TestPost(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPost, "groups.json", http.StatusCreated)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "groups.json", http.StatusCreated)
+	c := NewTestBaseClient(mockAPI)
 	defer mockAPI.Close()
 
-	body, err := client.post(ctx, "/groups.json", Group{})
+	body, err := c.Post(ctx, "/groups.json", Group{})
 	if err != nil {
 		t.Fatalf("Failed to send request: %s", err)
 	}
@@ -237,26 +202,27 @@ func TestPost(t *testing.T) {
 }
 
 func TestPostFailure(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPost, "groups.json", http.StatusInternalServerError)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "groups.json", http.StatusInternalServerError)
+	c := NewTestBaseClient(mockAPI)
 	defer mockAPI.Close()
 
-	_, err := client.post(ctx, "/groups.json", Group{})
+	_, err := c.Post(ctx, "/groups.json", Group{})
 	if err == nil {
 		t.Fatal("Did not receive error from client")
 	}
 
-	if _, ok := err.(Error); !ok {
+	var e client.Error
+	if !errors.As(err, &e) {
 		t.Fatalf("Did not return a zendesk error %s", err)
 	}
 }
 
 func TestPut(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPut, "groups.json", http.StatusOK)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "groups.json", http.StatusOK)
+	c := NewTestBaseClient(mockAPI)
 	defer mockAPI.Close()
 
-	body, err := client.put(ctx, "/groups.json", Group{})
+	body, err := c.Put(ctx, "/groups.json", Group{})
 	if err != nil {
 		t.Fatalf("Failed to send request: %s", err)
 	}
@@ -267,16 +233,17 @@ func TestPut(t *testing.T) {
 }
 
 func TestPutFailure(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPut, "groups.json", http.StatusInternalServerError)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "groups.json", http.StatusInternalServerError)
+	c := NewTestBaseClient(mockAPI)
 	defer mockAPI.Close()
 
-	_, err := client.put(ctx, "/groups.json", Group{})
+	_, err := c.Put(ctx, "/groups.json", Group{})
 	if err == nil {
 		t.Fatal("Did not receive error from client")
 	}
 
-	if _, ok := err.(Error); !ok {
+	var clientErr client.Error
+	if !errors.As(err, &clientErr) {
 		t.Fatalf("Did not return a zendesk error %s", err)
 	}
 }
@@ -290,8 +257,8 @@ func TestDelete(t *testing.T) {
 		}
 	}))
 
-	c := newTestClient(mockAPI)
-	err := c.delete(ctx, "/foo/id")
+	c := NewTestBaseClient(mockAPI)
+	err := c.Delete(ctx, "/foo/id")
 	if err != nil {
 		t.Fatalf("Failed to send request: %s", err)
 	}
@@ -306,23 +273,23 @@ func TestDeleteFailure(t *testing.T) {
 		}
 	}))
 
-	c := newTestClient(mockAPI)
-	err := c.delete(ctx, "/foo/id")
+	c := NewTestBaseClient(mockAPI)
+	err := c.Delete(ctx, "/foo/id")
 	if err == nil {
 		t.Fatalf("Failed to recieve error from Delete")
 	}
 }
 
 func TestIncludeHeaders(t *testing.T) {
-	client, _ := NewClient(nil)
-	client.headers = map[string]string{
+	c, _ := client.NewBaseClient(nil, false)
+	c.Headers = map[string]string{
 		"Header1":      "1",
 		"Header2":      "2",
 		"Content-Type": "application/json",
 	}
 
 	req, _ := http.NewRequest("POST", "localhost", strings.NewReader(""))
-	client.includeHeaders(req)
+	c.IncludeHeaders(req)
 
 	if len(req.Header) != 3 {
 		t.Fatal("req.Header length does not match")
@@ -357,7 +324,7 @@ func TestAddOptions(t *testing.T) {
 	}
 	expected := "/triggers.json?active=true&page=2&per_page=10"
 
-	u, err := addOptions(ep, ops)
+	u, err := client.AddOptions(ep, ops)
 	if err != nil {
 		t.Fatal(err)
 	}

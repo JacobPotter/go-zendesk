@@ -3,6 +3,7 @@ package zendesk
 import (
 	"context"
 	"encoding/json"
+	"github.com/JacobPotter/go-zendesk/internal/client"
 	"time"
 )
 
@@ -33,7 +34,7 @@ type (
 		GetGroupMemberships(context.Context, *GroupMembershipListOptions) ([]GroupMembership, Page, error)
 		GetGroupMembershipsIterator(ctx context.Context, opts *PaginationOptions) *Iterator[GroupMembership]
 		GetGroupMembershipsOBP(ctx context.Context, opts *OBPOptions) ([]GroupMembership, Page, error)
-		GetGroupMembershipsCBP(ctx context.Context, opts *CBPOptions) ([]GroupMembership, CursorPaginationMeta, error)
+		GetGroupMembershipsCBP(ctx context.Context, opts *CBPOptions) ([]GroupMembership, client.CursorPaginationMeta, error)
 	}
 )
 
@@ -50,12 +51,12 @@ func (z *Client) GetGroupMemberships(ctx context.Context, opts *GroupMembershipL
 		tmp = new(GroupMembershipListOptions)
 	}
 
-	u, err := addOptions("/group_memberships.json", tmp)
+	u, err := client.AddOptions("/group_memberships.json", tmp)
 	if err != nil {
 		return nil, Page{}, err
 	}
 
-	body, err := z.get(ctx, u)
+	body, err := z.Get(ctx, u)
 	if err != nil {
 		return nil, Page{}, err
 	}

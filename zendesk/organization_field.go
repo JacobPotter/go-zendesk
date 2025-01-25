@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/JacobPotter/go-zendesk/internal/client"
 	"time"
 )
 
@@ -38,7 +39,7 @@ type OrganizationFieldAPI interface {
 	DeleteOrganizationField(ctx context.Context, id int64) error
 	GetOrganizationFieldsIterator(ctx context.Context, opts *PaginationOptions) *Iterator[OrganizationField]
 	GetOrganizationFieldsOBP(ctx context.Context, opts *OBPOptions) ([]OrganizationField, Page, error)
-	GetOrganizationFieldsCBP(ctx context.Context, opts *CBPOptions) ([]OrganizationField, CursorPaginationMeta, error)
+	GetOrganizationFieldsCBP(ctx context.Context, opts *CBPOptions) ([]OrganizationField, client.CursorPaginationMeta, error)
 }
 
 // GetOrganizationFields fetches organization field list
@@ -49,7 +50,7 @@ func (z *Client) GetOrganizationFields(ctx context.Context) ([]OrganizationField
 		Page
 	}
 
-	body, err := z.get(ctx, "/organization_fields.json")
+	body, err := z.Get(ctx, "/organization_fields.json")
 	if err != nil {
 		return []OrganizationField{}, Page{}, err
 	}
@@ -69,7 +70,7 @@ func (z *Client) CreateOrganizationField(ctx context.Context, organizationField 
 	}
 	data.OrganizationField = organizationField
 
-	body, err := z.post(ctx, "/organization_fields.json", data)
+	body, err := z.Post(ctx, "/organization_fields.json", data)
 	if err != nil {
 		return OrganizationField{}, err
 	}
@@ -86,7 +87,7 @@ func (z *Client) GetOrganizationField(ctx context.Context, id int64) (Organizati
 		OrganizationField OrganizationField `json:"organization_field"`
 	}
 
-	body, err := z.get(ctx, fmt.Sprintf("/organization_fields/%d.json", id))
+	body, err := z.Get(ctx, fmt.Sprintf("/organization_fields/%d.json", id))
 
 	if err != nil {
 		return OrganizationField{}, err
@@ -108,7 +109,7 @@ func (z *Client) UpdateOrganizationField(ctx context.Context, id int64, userFiel
 
 	data.OrganizationField = userField
 
-	body, err := z.put(ctx, fmt.Sprintf("/organization_fields/%d.json", id), data)
+	body, err := z.Put(ctx, fmt.Sprintf("/organization_fields/%d.json", id), data)
 
 	if err != nil {
 		return OrganizationField{}, err
@@ -124,7 +125,7 @@ func (z *Client) UpdateOrganizationField(ctx context.Context, id int64, userFiel
 }
 
 func (z *Client) DeleteOrganizationField(ctx context.Context, id int64) error {
-	err := z.delete(ctx, fmt.Sprintf("/organization_fields/%d.json", id))
+	err := z.Delete(ctx, fmt.Sprintf("/organization_fields/%d.json", id))
 
 	if err != nil {
 		return err

@@ -1,4 +1,4 @@
-package zendesk
+package client
 
 import "testing"
 

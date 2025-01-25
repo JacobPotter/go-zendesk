@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/JacobPotter/go-zendesk/internal/client"
 	"time"
 )
 
@@ -71,12 +72,12 @@ func (z *Client) GetTicketMetrics(ctx context.Context, opts *TicketMetricListOpt
 		tmp = &TicketMetricListOptions{}
 	}
 
-	u, err := addOptions("/ticket_metrics.json", tmp)
+	u, err := client.AddOptions("/ticket_metrics.json", tmp)
 	if err != nil {
 		return nil, Page{}, err
 	}
 
-	body, err := z.get(ctx, u)
+	body, err := z.Get(ctx, u)
 	if err != nil {
 		return nil, Page{}, err
 	}
@@ -95,7 +96,7 @@ func (z *Client) GetTicketMetric(ctx context.Context, ticketMetricsID int64) (Ti
 		TicketMetric TicketMetric `json:"ticket_metric"`
 	}
 
-	body, err := z.get(ctx, fmt.Sprintf("/ticket_metrics/%d.json", ticketMetricsID))
+	body, err := z.Get(ctx, fmt.Sprintf("/ticket_metrics/%d.json", ticketMetricsID))
 	if err != nil {
 		return TicketMetric{}, err
 	}
@@ -114,7 +115,7 @@ func (z *Client) GetTicketMetricByTicket(ctx context.Context, ticketID int64) (T
 		TicketMetric TicketMetric `json:"ticket_metric"`
 	}
 
-	body, err := z.get(ctx, fmt.Sprintf("/tickets/%d/metrics.json", ticketID))
+	body, err := z.Get(ctx, fmt.Sprintf("/tickets/%d/metrics.json", ticketID))
 	if err != nil {
 		return TicketMetric{}, err
 	}

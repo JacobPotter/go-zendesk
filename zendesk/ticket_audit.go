@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/JacobPotter/go-zendesk/internal/client"
 	"time"
 )
 
@@ -35,7 +36,7 @@ type TicketAuditAPI interface {
 	GetTicketAudit(ctx context.Context, TicketID, ID int64) (TicketAudit, error)
 	GetTicketAuditsIterator(ctx context.Context, opts *PaginationOptions) *Iterator[TicketAudit]
 	GetTicketAuditsOBP(ctx context.Context, opts *OBPOptions) ([]TicketAudit, Page, error)
-	GetTicketAuditsCBP(ctx context.Context, opts *CBPOptions) ([]TicketAudit, CursorPaginationMeta, error)
+	GetTicketAuditsCBP(ctx context.Context, opts *CBPOptions) ([]TicketAudit, client.CursorPaginationMeta, error)
 }
 
 // GetAllTicketAudits list all ticket audits
@@ -46,12 +47,12 @@ func (z *Client) GetAllTicketAudits(ctx context.Context, opts CursorOption) ([]T
 		Cursor
 	}
 
-	u, err := addOptions("/ticket_audits.json", opts)
+	u, err := client.AddOptions("/ticket_audits.json", opts)
 	if err != nil {
 		return []TicketAudit{}, Cursor{}, err
 	}
 
-	body, err := z.get(ctx, u)
+	body, err := z.Get(ctx, u)
 	if err != nil {
 		return []TicketAudit{}, Cursor{}, err
 	}
@@ -72,12 +73,12 @@ func (z *Client) GetTicketAudits(ctx context.Context, ticketID int64, opts PageO
 		Page
 	}
 
-	u, err := addOptions(fmt.Sprintf("/tickets/%d/audits.json", ticketID), opts)
+	u, err := client.AddOptions(fmt.Sprintf("/tickets/%d/audits.json", ticketID), opts)
 	if err != nil {
 		return []TicketAudit{}, Page{}, err
 	}
 
-	body, err := z.get(ctx, u)
+	body, err := z.Get(ctx, u)
 	if err != nil {
 		return []TicketAudit{}, Page{}, err
 	}
@@ -97,7 +98,7 @@ func (z *Client) GetTicketAudit(ctx context.Context, ticketID, ID int64) (Ticket
 		Audit TicketAudit `json:"audit"`
 	}
 
-	body, err := z.get(ctx, fmt.Sprintf("/tickets/%d/audits/%d.json", ticketID, ID))
+	body, err := z.Get(ctx, fmt.Sprintf("/tickets/%d/audits/%d.json", ticketID, ID))
 	if err != nil {
 		return TicketAudit{}, err
 	}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/JacobPotter/go-zendesk/internal/client"
 	"time"
 )
 
@@ -41,7 +42,7 @@ type UserFieldAPI interface {
 	DeleteUserField(ctx context.Context, id int64) error
 	GetUserFieldsIterator(ctx context.Context, opts *PaginationOptions) *Iterator[UserField]
 	GetUserFieldsOBP(ctx context.Context, opts *OBPOptions) ([]UserField, Page, error)
-	GetUserFieldsCBP(ctx context.Context, opts *CBPOptions) ([]UserField, CursorPaginationMeta, error)
+	GetUserFieldsCBP(ctx context.Context, opts *CBPOptions) ([]UserField, client.CursorPaginationMeta, error)
 }
 
 // GetUserFields fetch trigger list
@@ -58,12 +59,12 @@ func (z *Client) GetUserFields(ctx context.Context, opts *UserFieldListOptions) 
 		tmp = &UserFieldListOptions{}
 	}
 
-	u, err := addOptions("/user_fields.json", tmp)
+	u, err := client.AddOptions("/user_fields.json", tmp)
 	if err != nil {
 		return nil, Page{}, err
 	}
 
-	body, err := z.get(ctx, u)
+	body, err := z.Get(ctx, u)
 	if err != nil {
 		return nil, Page{}, err
 	}
@@ -83,7 +84,7 @@ func (z *Client) CreateUserField(ctx context.Context, userField UserField) (User
 	}
 	data.UserField = userField
 
-	body, err := z.post(ctx, "/user_fields.json", data)
+	body, err := z.Post(ctx, "/user_fields.json", data)
 	if err != nil {
 		return UserField{}, err
 	}
@@ -100,7 +101,7 @@ func (z *Client) GetUserField(ctx context.Context, id int64) (UserField, error) 
 		UserField UserField `json:"user_field"`
 	}
 
-	body, err := z.get(ctx, fmt.Sprintf("/user_fields/%d.json", id))
+	body, err := z.Get(ctx, fmt.Sprintf("/user_fields/%d.json", id))
 
 	if err != nil {
 		return UserField{}, err
@@ -122,7 +123,7 @@ func (z *Client) UpdateUserField(ctx context.Context, id int64, userField UserFi
 
 	data.UserField = userField
 
-	body, err := z.put(ctx, fmt.Sprintf("/user_fields/%d.json", id), data)
+	body, err := z.Put(ctx, fmt.Sprintf("/user_fields/%d.json", id), data)
 
 	if err != nil {
 		return UserField{}, err
@@ -138,7 +139,7 @@ func (z *Client) UpdateUserField(ctx context.Context, id int64, userField UserFi
 }
 
 func (z *Client) DeleteUserField(ctx context.Context, id int64) error {
-	err := z.delete(ctx, fmt.Sprintf("/user_fields/%d.json", id))
+	err := z.Delete(ctx, fmt.Sprintf("/user_fields/%d.json", id))
 
 	if err != nil {
 		return err

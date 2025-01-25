@@ -1,17 +1,18 @@
 package zendesk
 
 import (
+	"github.com/JacobPotter/go-zendesk/internal/testhelper"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
 func TestGetTicketForms(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "ticket_forms.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "ticket_forms.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	ticketForms, _, err := client.GetTicketForms(ctx, nil)
+	ticketForms, _, err := c.GetTicketForms(ctx, nil)
 	if err != nil {
 		t.Fatalf("Failed to get ticket forms: %s", err)
 	}
@@ -22,11 +23,11 @@ func TestGetTicketForms(t *testing.T) {
 }
 
 func TestCreateTicketForm(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPost, "ticket_form.json", http.StatusCreated)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "ticket_form.json", http.StatusCreated)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	_, err := client.CreateTicketForm(ctx, TicketForm{})
+	_, err := c.CreateTicketForm(ctx, TicketForm{})
 	if err != nil {
 		t.Fatalf("Failed to send request to create ticket form: %s", err)
 	}
@@ -41,7 +42,7 @@ func TestDeleteTicketForm(t *testing.T) {
 		}
 	}))
 
-	c := newTestClient(mockAPI)
+	c := NewTestClient(mockAPI)
 	err := c.DeleteTicketForm(ctx, 1234)
 	if err != nil {
 		t.Fatalf("Failed to delete ticket field: %s", err)
@@ -57,19 +58,19 @@ func TestDeleteTicketFormFailure(t *testing.T) {
 		}
 	}))
 
-	c := newTestClient(mockAPI)
+	c := NewTestClient(mockAPI)
 	err := c.DeleteTicketForm(ctx, 1234)
 	if err == nil {
-		t.Fatal("Client did not return error when api failed")
+		t.Fatal("BaseClient did not return error when api failed")
 	}
 }
 
 func TestGetTicketForm(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "ticket_form.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "ticket_form.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	f, err := client.GetTicketForm(ctx, 123)
+	f, err := c.GetTicketForm(ctx, 123)
 	if err != nil {
 		t.Fatalf("Failed to get ticket fields: %s", err)
 	}
@@ -89,19 +90,19 @@ func TestGetTicketFormFailure(t *testing.T) {
 		}
 	}))
 
-	c := newTestClient(mockAPI)
+	c := NewTestClient(mockAPI)
 	_, err := c.GetTicketForm(ctx, 1234)
 	if err == nil {
-		t.Fatal("Client did not return error when api failed")
+		t.Fatal("BaseClient did not return error when api failed")
 	}
 }
 
 func TestUpdateTicketForm(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPut, "ticket_form.json", http.StatusOK)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "ticket_form.json", http.StatusOK)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	f, err := client.UpdateTicketForm(ctx, 123, TicketForm{})
+	f, err := c.UpdateTicketForm(ctx, 123, TicketForm{})
 	if err != nil {
 		t.Fatalf("Failed to get ticket fields: %s", err)
 	}
@@ -121,9 +122,9 @@ func TestUpdateTicketFormFailure(t *testing.T) {
 		}
 	}))
 
-	c := newTestClient(mockAPI)
+	c := NewTestClient(mockAPI)
 	_, err := c.UpdateTicketForm(ctx, 1234, TicketForm{})
 	if err == nil {
-		t.Fatal("Client did not return error when api failed")
+		t.Fatal("BaseClient did not return error when api failed")
 	}
 }

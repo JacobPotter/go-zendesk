@@ -1,6 +1,7 @@
 package zendesk
 
 import (
+	"github.com/JacobPotter/go-zendesk/internal/testhelper"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -118,11 +119,11 @@ func TestTicketField_Validate(t *testing.T) {
 }
 
 func TestGetTicketFields(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "ticket_fields.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "ticket_fields.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	ticketFields, _, err := client.GetTicketFields(ctx)
+	ticketFields, _, err := c.GetTicketFields(ctx)
 	if err != nil {
 		t.Fatalf("Failed to get ticket fields: %s", err)
 	}
@@ -133,11 +134,11 @@ func TestGetTicketFields(t *testing.T) {
 }
 
 func TestGetTicketField(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "ticket_field.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "ticket_field.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	ticketField, err := client.GetTicketField(ctx, 123)
+	ticketField, err := c.GetTicketField(ctx, 123)
 	if err != nil {
 		t.Fatalf("Failed to get ticket fields: %s", err)
 	}
@@ -149,22 +150,22 @@ func TestGetTicketField(t *testing.T) {
 }
 
 func TestCreateTicketField(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPost, "ticket_fields.json", http.StatusCreated)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "ticket_fields.json", http.StatusCreated)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	_, err := client.CreateTicketField(ctx, TicketField{})
+	_, err := c.CreateTicketField(ctx, TicketField{})
 	if err != nil {
 		t.Fatalf("Failed to send request to create ticket field: %s", err)
 	}
 }
 
 func TestUpdateTicketField(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPut, "ticket_field.json", http.StatusOK)
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "ticket_field.json", http.StatusOK)
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	updatedField, err := client.UpdateTicketField(ctx, int64(1234), TicketField{})
+	updatedField, err := c.UpdateTicketField(ctx, int64(1234), TicketField{})
 	if err != nil {
 		t.Fatalf("Failed to send request to create ticket field: %s", err)
 	}
@@ -184,7 +185,7 @@ func TestDeleteTicketField(t *testing.T) {
 		}
 	}))
 
-	c := newTestClient(mockAPI)
+	c := NewTestClient(mockAPI)
 	err := c.DeleteTicketField(ctx, 1234)
 	if err != nil {
 		t.Fatalf("Failed to delete ticket field: %s", err)

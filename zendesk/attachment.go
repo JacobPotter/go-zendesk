@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/JacobPotter/go-zendesk/internal/client"
 	"io"
 	"net/http"
 	"sync"
@@ -50,7 +51,7 @@ type UploadWriter interface {
 }
 
 type writer struct {
-	*Client
+	client   *Client
 	once     sync.Once
 	w        io.WriteCloser
 	filename string
@@ -65,12 +66,12 @@ func (wr *writer) open() error {
 
 	wr.w = w
 	path := "/uploads.json"
-	req, err := http.NewRequest(http.MethodPost, wr.baseURL.String()+path, r)
+	req, err := http.NewRequest(http.MethodPost, wr.client.BaseURL.String()+path, r)
 	if err != nil {
 		return err
 	}
 
-	req = wr.prepareRequest(wr.ctx, req)
+	req = wr.client.PrepareRequest(wr.ctx, req)
 	req.Header.Set("Content-Type", "application/binary")
 
 	q := req.URL.Query()
@@ -82,7 +83,7 @@ func (wr *writer) open() error {
 	req.URL.RawQuery = q.Encode()
 
 	go func() {
-		resp, err := wr.httpClient.Do(req)
+		resp, err := wr.client.HttpClient.Do(req)
 		if err != nil {
 			wr.c <- result{
 				err: err,
@@ -134,9 +135,9 @@ func (wr *writer) Close() (Upload, error) {
 
 	resp, body := result.resp, result.body
 	if resp.StatusCode != http.StatusCreated {
-		return Upload{}, Error{
-			resp: resp,
-			body: body,
+		return Upload{}, client.Error{
+			Resp:      resp,
+			ErrorBody: body,
 		}
 	}
 
@@ -163,7 +164,7 @@ type AttachmentAPI interface {
 // ref: https://developer.zendesk.com/rest_api/docs/support/attachments#upload-files
 func (z *Client) UploadAttachment(ctx context.Context, filename string, token string) UploadWriter {
 	return &writer{
-		Client:   z,
+		client:   z,
 		filename: filename,
 		token:    token,
 		ctx:      ctx,
@@ -173,7 +174,7 @@ func (z *Client) UploadAttachment(ctx context.Context, filename string, token st
 // DeleteUpload deletes a previously uploaded file
 // ref: https://developer.zendesk.com/rest_api/docs/support/attachments#delete-upload
 func (z *Client) DeleteUpload(ctx context.Context, token string) error {
-	return z.delete(ctx, fmt.Sprintf("/uploads/%s.json", token))
+	return z.Delete(ctx, fmt.Sprintf("/uploads/%s.json", token))
 }
 
 // GetAttachment returns the current state of an uploaded attachment
@@ -183,7 +184,7 @@ func (z *Client) GetAttachment(ctx context.Context, id int64) (Attachment, error
 		Attachment Attachment `json:"attachment"`
 	}
 
-	body, err := z.get(ctx, fmt.Sprintf("/attachments/%d.json", id))
+	body, err := z.Get(ctx, fmt.Sprintf("/attachments/%d.json", id))
 	if err != nil {
 		return Attachment{}, err
 	}
@@ -200,6 +201,6 @@ func (z *Client) GetAttachment(ctx context.Context, id int64) (Attachment, error
 // https://developer.zendesk.com/api-reference/ticketing/tickets/ticket-attachments/#redact-comment-attachment
 func (z *Client) RedactCommentAttachment(ctx context.Context, ticketID, commentID, attachmentID int64) error {
 	path := fmt.Sprintf("/api/v2/tickets/%d/comments/%d/attachments/%d/redact", ticketID, commentID, attachmentID)
-	_, err := z.put(ctx, path, nil)
+	_, err := z.Put(ctx, path, nil)
 	return err
 }

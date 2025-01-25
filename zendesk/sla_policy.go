@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/JacobPotter/go-zendesk/internal/client"
 	"time"
 )
 
@@ -86,7 +87,7 @@ type SLAPolicyAPI interface {
 	DeleteSLAPolicy(ctx context.Context, id int64) error
 	GetSLAPoliciesIterator(ctx context.Context, opts *PaginationOptions) *Iterator[SLAPolicy]
 	GetSLAPoliciesOBP(ctx context.Context, opts *OBPOptions) ([]SLAPolicy, Page, error)
-	GetSLAPoliciesCBP(ctx context.Context, opts *CBPOptions) ([]SLAPolicy, CursorPaginationMeta, error)
+	GetSLAPoliciesCBP(ctx context.Context, opts *CBPOptions) ([]SLAPolicy, client.CursorPaginationMeta, error)
 }
 
 // GetSLAPolicies fetch slaPolicy list
@@ -99,15 +100,15 @@ func (z *Client) GetSLAPolicies(ctx context.Context, opts *SLAPolicyListOptions)
 	}
 
 	if opts == nil {
-		return []SLAPolicy{}, Page{}, &OptionsError{opts}
+		return []SLAPolicy{}, Page{}, &client.OptionsError{Opts: opts}
 	}
 
-	u, err := addOptions("/slas/policies.json", opts)
+	u, err := client.AddOptions("/slas/policies.json", opts)
 	if err != nil {
 		return []SLAPolicy{}, Page{}, err
 	}
 
-	body, err := z.get(ctx, u)
+	body, err := z.Get(ctx, u)
 	if err != nil {
 		return []SLAPolicy{}, Page{}, err
 	}
@@ -130,7 +131,7 @@ func (z *Client) CreateSLAPolicy(ctx context.Context, slaPolicy SLAPolicy) (SLAP
 
 	data.SLAPolicy = slaPolicy
 
-	body, err := z.post(ctx, "/slas/policies.json", data)
+	body, err := z.Post(ctx, "/slas/policies.json", data)
 	if err != nil {
 		return SLAPolicy{}, err
 	}
@@ -151,7 +152,7 @@ func (z *Client) GetSLAPolicy(ctx context.Context, id int64) (SLAPolicy, error) 
 		SLAPolicy SLAPolicy `json:"sla_policy"`
 	}
 
-	body, err := z.get(ctx, fmt.Sprintf("/slas/policies/%d.json", id))
+	body, err := z.Get(ctx, fmt.Sprintf("/slas/policies/%d.json", id))
 	if err != nil {
 		return SLAPolicy{}, err
 	}
@@ -174,7 +175,7 @@ func (z *Client) UpdateSLAPolicy(ctx context.Context, id int64, slaPolicy SLAPol
 
 	data.SLAPolicy = slaPolicy
 
-	body, err := z.put(ctx, fmt.Sprintf("/slas/policies/%d.json", id), data)
+	body, err := z.Put(ctx, fmt.Sprintf("/slas/policies/%d.json", id), data)
 	if err != nil {
 		return SLAPolicy{}, err
 	}
@@ -191,7 +192,7 @@ func (z *Client) UpdateSLAPolicy(ctx context.Context, id int64, slaPolicy SLAPol
 //
 // ref: https://developer.zendesk.com/rest_api/docs/support/slas/policies#delete-slaPolicy
 func (z *Client) DeleteSLAPolicy(ctx context.Context, id int64) error {
-	err := z.delete(ctx, fmt.Sprintf("/slas/policies/%d.json", id))
+	err := z.Delete(ctx, fmt.Sprintf("/slas/policies/%d.json", id))
 	if err != nil {
 		return err
 	}

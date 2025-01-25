@@ -1,16 +1,17 @@
 package zendesk
 
 import (
+	"github.com/JacobPotter/go-zendesk/internal/testhelper"
 	"net/http"
 	"testing"
 )
 
 func TestGetLocales(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "locales.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "locales.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	locales, err := client.GetLocales(ctx)
+	locales, err := c.GetLocales(ctx)
 	if err != nil {
 		t.Fatalf("Failed to get locales: %s", err)
 	}

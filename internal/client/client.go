@@ -1,10 +1,11 @@
-package zendesk
+package client
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -16,23 +17,26 @@ import (
 )
 
 const (
-	baseURLFormat = "https://%s.zendesk.com/api/v2"
+	baseURLFormat      = "https://%s.zendesk.com/api/v2"
+	baseSuncoURLFormat = "https://%s.zendesk.com/sc/v2/apps/%s"
 )
 
 var defaultHeaders = map[string]string{
-	"User-Agent":   "nukosuke/go-zendesk/0.18.0",
+	"User-Agent":   "JacobPotter/go-zendesk/0.18.0",
 	"Content-Type": "application/json",
 }
 
 var subdomainRegexp = regexp.MustCompile("^[a-z0-9][a-z0-9-]+[a-z0-9]$")
 
 type (
-	// Client of Zendesk API
-	Client struct {
-		baseURL    *url.URL
-		httpClient *http.Client
-		credential Credential
-		headers    map[string]string
+	// BaseClient of Zendesk API
+	BaseClient struct {
+		BaseURL    *url.URL
+		HttpClient *http.Client
+		Credential Credential
+		Headers    map[string]string
+		sunco      bool
+		suncoAppId string
 	}
 
 	// BaseAPI encapsulates base methods for zendesk client
@@ -71,74 +75,91 @@ type (
 	}
 )
 
-// NewClient creates new Zendesk API client
-func NewClient(httpClient *http.Client) (*Client, error) {
+// NewBaseClient creates new Zendesk API client
+func NewBaseClient(httpClient *http.Client, sunco bool) (*BaseClient, error) {
 	if httpClient == nil {
 		httpClient = http.DefaultClient
 	}
 
-	client := &Client{httpClient: httpClient}
-	client.headers = defaultHeaders
+	client := &BaseClient{HttpClient: httpClient, sunco: sunco}
+	client.Headers = defaultHeaders
 	return client, nil
 }
 
 // SetHeader saves HTTP header in client. It will be included all API request
-func (z *Client) SetHeader(key string, value string) {
-	z.headers[key] = value
+func (c *BaseClient) SetHeader(key string, value string) {
+	c.Headers[key] = value
 }
 
 // SetSubdomain saves subdomain in client. It will be used
 // when call API
-func (z *Client) SetSubdomain(subdomain string) error {
+func (c *BaseClient) SetSubdomain(subdomain string) error {
 	if !subdomainRegexp.MatchString(subdomain) {
 		return fmt.Errorf("%s is invalid subdomain", subdomain)
 	}
 
-	baseURLString := fmt.Sprintf(baseURLFormat, subdomain)
+	var baseURLString string
+
+	if c.sunco {
+		if c.suncoAppId != "" {
+			log.Fatal("cannot set sunco to true without also setting suncoAppId")
+		}
+		baseURLString = fmt.Sprintf(baseSuncoURLFormat, subdomain, c.suncoAppId)
+	} else {
+		baseURLString = fmt.Sprintf(baseURLFormat, subdomain)
+	}
 	baseURL, err := url.Parse(baseURLString)
 	if err != nil {
 		return err
 	}
 
-	z.baseURL = baseURL
+	c.BaseURL = baseURL
 	return nil
 }
 
 // SetEndpointURL replace full URL of endpoint without subdomain validation.
 // This is mainly used for testing to point to mock API server.
-func (z *Client) SetEndpointURL(newURL string) error {
+func (c *BaseClient) SetEndpointURL(newURL string) error {
 	baseURL, err := url.Parse(newURL)
 	if err != nil {
 		return err
 	}
 
-	z.baseURL = baseURL
+	c.BaseURL = baseURL
 	return nil
 }
 
 // SetCredential saves credential in client. It will be set
 // to request header when call API
-func (z *Client) SetCredential(cred Credential) {
-	z.credential = cred
+func (c *BaseClient) SetCredential(cred Credential) {
+	if c.sunco {
+		if _, ok := cred.(BasicAuthCredential); !ok {
+			c.Credential = cred
+		} else {
+			log.Fatal("Invalid Credential Type, Only Basic Auth Credentials allowed")
+		}
+	} else {
+		c.Credential = cred
+	}
 }
 
-// get get JSON data from API and returns its body as []bytes
-func (z *Client) get(ctx context.Context, path string) ([]byte, error) {
-	req, err := http.NewRequest(http.MethodGet, z.baseURL.String()+path, nil)
+// Get Get JSON data from API and returns its body as []bytes
+func (c *BaseClient) Get(ctx context.Context, path string) ([]byte, error) {
+	req, err := http.NewRequest(http.MethodGet, c.BaseURL.String()+path, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	req = z.prepareRequest(ctx, req)
+	req = c.PrepareRequest(ctx, req)
 
-	resp, err := z.httpClient.Do(req)
+	resp, err := c.HttpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
 
 	if resp.StatusCode == http.StatusTooManyRequests {
 		waitForRetry(resp)
-		return z.get(ctx, path)
+		return c.Get(ctx, path)
 	}
 
 	defer resp.Body.Close()
@@ -150,8 +171,8 @@ func (z *Client) get(ctx context.Context, path string) ([]byte, error) {
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, Error{
-			body: body,
-			resp: resp,
+			ErrorBody: body,
+			Resp:      resp,
 		}
 	}
 	return body, nil
@@ -171,28 +192,28 @@ func waitForRetry(resp *http.Response) {
 	time.Sleep(time.Duration(int64(time.Second)*retry + 1))
 }
 
-// post send data to API and returns response body as []bytes
-func (z *Client) post(ctx context.Context, path string, data interface{}) ([]byte, error) {
+// Post send data to API and returns response body as []bytes
+func (c *BaseClient) Post(ctx context.Context, path string, data interface{}) ([]byte, error) {
 	bytes, err := json.Marshal(data)
 	if err != nil {
 		return nil, err
 	}
 
-	req, err := http.NewRequest(http.MethodPost, z.baseURL.String()+path, strings.NewReader(string(bytes)))
+	req, err := http.NewRequest(http.MethodPost, c.BaseURL.String()+path, strings.NewReader(string(bytes)))
 	if err != nil {
 		return nil, err
 	}
 
-	req = z.prepareRequest(ctx, req)
+	req = c.PrepareRequest(ctx, req)
 
-	resp, err := z.httpClient.Do(req)
+	resp, err := c.HttpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
 
 	if resp.StatusCode == http.StatusTooManyRequests {
 		waitForRetry(resp)
-		return z.post(ctx, path, data)
+		return c.Post(ctx, path, data)
 	}
 
 	defer resp.Body.Close()
@@ -203,36 +224,36 @@ func (z *Client) post(ctx context.Context, path string, data interface{}) ([]byt
 
 	if !(resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusCreated) {
 		return nil, Error{
-			body: body,
-			resp: resp,
+			ErrorBody: body,
+			Resp:      resp,
 		}
 	}
 
 	return body, nil
 }
 
-// put sends data to API and returns response body as []bytes
-func (z *Client) put(ctx context.Context, path string, data interface{}) ([]byte, error) {
+// Put sends data to API and returns response body as []bytes
+func (c *BaseClient) Put(ctx context.Context, path string, data interface{}) ([]byte, error) {
 	bytes, err := json.Marshal(data)
 	if err != nil {
 		return nil, err
 	}
 
-	req, err := http.NewRequest(http.MethodPut, z.baseURL.String()+path, strings.NewReader(string(bytes)))
+	req, err := http.NewRequest(http.MethodPut, c.BaseURL.String()+path, strings.NewReader(string(bytes)))
 	if err != nil {
 		return nil, err
 	}
 
-	req = z.prepareRequest(ctx, req)
+	req = c.PrepareRequest(ctx, req)
 
-	resp, err := z.httpClient.Do(req)
+	resp, err := c.HttpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
 
 	if resp.StatusCode == http.StatusTooManyRequests {
 		waitForRetry(resp)
-		return z.put(ctx, path, data)
+		return c.Put(ctx, path, data)
 	}
 
 	defer resp.Body.Close()
@@ -244,36 +265,36 @@ func (z *Client) put(ctx context.Context, path string, data interface{}) ([]byte
 	// NOTE: some webhook mutation APIs return status No Content.
 	if !(resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusNoContent) {
 		return nil, Error{
-			body: body,
-			resp: resp,
+			ErrorBody: body,
+			Resp:      resp,
 		}
 	}
 
 	return body, nil
 }
 
-// patch sends data to API and returns response body as []bytes
-func (z *Client) patch(ctx context.Context, path string, data interface{}) ([]byte, error) {
+// Patch sends data to API and returns response body as []bytes
+func (c *BaseClient) Patch(ctx context.Context, path string, data interface{}) ([]byte, error) {
 	bytes, err := json.Marshal(data)
 	if err != nil {
 		return nil, err
 	}
 
-	req, err := http.NewRequest(http.MethodPatch, z.baseURL.String()+path, strings.NewReader(string(bytes)))
+	req, err := http.NewRequest(http.MethodPatch, c.BaseURL.String()+path, strings.NewReader(string(bytes)))
 	if err != nil {
 		return nil, err
 	}
 
-	req = z.prepareRequest(ctx, req)
+	req = c.PrepareRequest(ctx, req)
 
-	resp, err := z.httpClient.Do(req)
+	resp, err := c.HttpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
 
 	if resp.StatusCode == http.StatusTooManyRequests {
 		waitForRetry(resp)
-		return z.patch(ctx, path, data)
+		return c.Patch(ctx, path, data)
 	}
 
 	defer resp.Body.Close()
@@ -285,31 +306,31 @@ func (z *Client) patch(ctx context.Context, path string, data interface{}) ([]by
 	// NOTE: some webhook mutation APIs return status No Content.
 	if !(resp.StatusCode == http.StatusOK || resp.StatusCode == http.StatusNoContent) {
 		return nil, Error{
-			body: body,
-			resp: resp,
+			ErrorBody: body,
+			Resp:      resp,
 		}
 	}
 
 	return body, nil
 }
 
-// delete sends data to API and returns an error if unsuccessful
-func (z *Client) delete(ctx context.Context, path string) error {
-	req, err := http.NewRequest(http.MethodDelete, z.baseURL.String()+path, nil)
+// Delete sends data to API and returns an error if unsuccessful
+func (c *BaseClient) Delete(ctx context.Context, path string) error {
+	req, err := http.NewRequest(http.MethodDelete, c.BaseURL.String()+path, nil)
 	if err != nil {
 		return err
 	}
 
-	req = z.prepareRequest(ctx, req)
+	req = c.PrepareRequest(ctx, req)
 
-	resp, err := z.httpClient.Do(req)
+	resp, err := c.HttpClient.Do(req)
 	if err != nil {
 		return err
 	}
 
 	if resp.StatusCode == http.StatusTooManyRequests {
 		waitForRetry(resp)
-		return z.delete(ctx, path)
+		return c.Delete(ctx, path)
 	}
 
 	defer resp.Body.Close()
@@ -320,8 +341,8 @@ func (z *Client) delete(ctx context.Context, path string) error {
 
 	if resp.StatusCode != http.StatusNoContent {
 		return Error{
-			body: body,
-			resp: resp,
+			ErrorBody: body,
+			Resp:      resp,
 		}
 	}
 
@@ -329,29 +350,29 @@ func (z *Client) delete(ctx context.Context, path string) error {
 }
 
 // prepare request sets common request variables such as authn and user agent
-func (z *Client) prepareRequest(ctx context.Context, req *http.Request) *http.Request {
+func (c *BaseClient) PrepareRequest(ctx context.Context, req *http.Request) *http.Request {
 	out := req.WithContext(ctx)
-	z.includeHeaders(out)
-	if z.credential != nil {
-		if z.credential.Bearer() {
-			out.Header.Add("Authorization", "Bearer "+z.credential.Secret())
+	c.IncludeHeaders(out)
+	if c.Credential != nil {
+		if c.Credential.Bearer() {
+			out.Header.Add("Authorization", "Bearer "+c.Credential.Secret())
 		} else {
-			out.SetBasicAuth(z.credential.Email(), z.credential.Secret())
+			out.SetBasicAuth(c.Credential.Email(), c.Credential.Secret())
 		}
 	}
 
 	return out
 }
 
-// includeHeaders set HTTP headers from client.headers to *http.Request
-func (z *Client) includeHeaders(req *http.Request) {
-	for key, value := range z.headers {
+// IncludeHeaders set HTTP Headers from client.headers to *http.Request
+func (c *BaseClient) IncludeHeaders(req *http.Request) {
+	for key, value := range c.Headers {
 		req.Header.Set(key, value)
 	}
 }
 
-// addOptions build query string
-func addOptions(s string, opts interface{}) (string, error) {
+// AddOptions build query string
+func AddOptions(s string, opts interface{}) (string, error) {
 	u, err := url.Parse(s)
 	if err != nil {
 		return s, err
@@ -366,9 +387,9 @@ func addOptions(s string, opts interface{}) (string, error) {
 	return u.String(), nil
 }
 
-// getData is a generic helper function that retrieves and unmarshals JSON data from a specified URL.
+// GetData is a generic helper function that retrieves and unmarshals JSON data from a specified URL.
 // It takes four parameters:
-// - a pointer to a Client (z) which is used to execute the GET request,
+// - a pointer to a BaseClient (z) which is used to execute the GET request,
 // - a context (ctx) for managing the request's lifecycle,
 // - a string (url) representing the endpoint from which data should be retrieved,
 // - and an empty interface (data) where the retrieved data will be stored after being unmarshalled from JSON.
@@ -377,8 +398,8 @@ func addOptions(s string, opts interface{}) (string, error) {
 // the returned body in the form of a byte slice is unmarshalled into the provided empty interface using the json.Unmarshal function.
 //
 // If an error occurs during either the GET request or the JSON unmarshalling, the function will return this error.
-func getData(z *Client, ctx context.Context, url string, data any) error {
-	body, err := z.get(ctx, url)
+func GetData(z BaseAPI, ctx context.Context, url string, data any) error {
+	body, err := z.Get(ctx, url)
 	if err == nil {
 		err = json.Unmarshal(body, data)
 		if err != nil {
@@ -386,24 +407,4 @@ func getData(z *Client, ctx context.Context, url string, data any) error {
 		}
 	}
 	return err
-}
-
-// Get allows users to send requests not yet implemented
-func (z *Client) Get(ctx context.Context, path string) ([]byte, error) {
-	return z.get(ctx, path)
-}
-
-// Post allows users to send requests not yet implemented
-func (z *Client) Post(ctx context.Context, path string, data interface{}) ([]byte, error) {
-	return z.post(ctx, path, data)
-}
-
-// Put allows users to send requests not yet implemented
-func (z *Client) Put(ctx context.Context, path string, data interface{}) ([]byte, error) {
-	return z.put(ctx, path, data)
-}
-
-// Delete allows users to send requests not yet implemented
-func (z *Client) Delete(ctx context.Context, path string) error {
-	return z.delete(ctx, path)
 }

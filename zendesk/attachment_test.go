@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/sha1"
+	"github.com/JacobPotter/go-zendesk/internal/testhelper"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -13,7 +14,7 @@ import (
 )
 
 func TestWrite(t *testing.T) {
-	file := readFixture(filepath.Join(http.MethodPost, "upload.json"))
+	file := testhelper.ReadFixture(t, filepath.Join(http.MethodPost, "upload.json"))
 	h := sha1.New()
 	h.Write(file)
 	expectedSum := h.Sum(nil)
@@ -33,7 +34,7 @@ func TestWrite(t *testing.T) {
 		}
 	}))
 
-	c := newTestClient(mockAPI)
+	c := NewTestClient(mockAPI)
 	w := c.UploadAttachment(ctx, "foo", "bar")
 
 	_, err := io.Copy(w, r)
@@ -57,14 +58,14 @@ func TestWrite(t *testing.T) {
 }
 
 func TestWriteCancelledContext(t *testing.T) {
-	mockAPI := newMockAPIWithStatus(http.MethodPost, "ticket.json", 201)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "ticket.json", 201)
 	defer mockAPI.Close()
 
-	client := newTestClient(mockAPI)
+	c := NewTestClient(mockAPI)
 
 	canceled, cancelFunc := context.WithCancel(ctx)
 	cancelFunc()
-	w := client.UploadAttachment(canceled, "foo", "bar")
+	w := c.UploadAttachment(canceled, "foo", "bar")
 
 	file := []byte("body")
 	r := bytes.NewBuffer(file)
@@ -89,7 +90,7 @@ func TestDeleteUpload(t *testing.T) {
 		}
 	}))
 
-	c := newTestClient(mockAPI)
+	c := NewTestClient(mockAPI)
 	err := c.DeleteUpload(ctx, "foobar")
 	if err != nil {
 		t.Fatalf("Failed to delete ticket field: %s", err)
@@ -105,7 +106,7 @@ func TestDeleteUploadCanceledContext(t *testing.T) {
 		}
 	}))
 
-	c := newTestClient(mockAPI)
+	c := NewTestClient(mockAPI)
 	canceled, cancelFunc := context.WithCancel(ctx)
 	cancelFunc()
 
@@ -116,11 +117,11 @@ func TestDeleteUploadCanceledContext(t *testing.T) {
 }
 
 func TestGetAttachment(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodGet, "attachment.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodGet, "attachment.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	attachment, err := client.GetAttachment(ctx, 123)
+	attachment, err := c.GetAttachment(ctx, 123)
 	if err != nil {
 		t.Fatalf("Failed to get attachment: %s", err)
 	}
@@ -132,11 +133,11 @@ func TestGetAttachment(t *testing.T) {
 }
 
 func TestRedactCommentAttachment(t *testing.T) {
-	mockAPI := newMockAPI(http.MethodPut, "redact_ticket_comment_attachment.json")
-	client := newTestClient(mockAPI)
+	mockAPI := testhelper.NewMockAPI(t, http.MethodPut, "redact_ticket_comment_attachment.json")
+	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
-	err := client.RedactCommentAttachment(ctx, 123, 456, 789)
+	err := c.RedactCommentAttachment(ctx, 123, 456, 789)
 
 	if err != nil {
 		t.Fatalf("Failed to redact ticket comment attachment: %s", err)

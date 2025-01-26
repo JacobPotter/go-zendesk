@@ -1,7 +1,7 @@
 package zendesk
 
 import (
-	"github.com/JacobPotter/go-zendesk/internal/client"
+	"github.com/JacobPotter/go-zendesk/client"
 	"net/http"
 )
 

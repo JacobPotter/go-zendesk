@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/JacobPotter/go-zendesk/internal/client"
+	client2 "github.com/JacobPotter/go-zendesk/client"
 	"time"
 )
 
@@ -87,7 +87,7 @@ type SLAPolicyAPI interface {
 	DeleteSLAPolicy(ctx context.Context, id int64) error
 	GetSLAPoliciesIterator(ctx context.Context, opts *PaginationOptions) *Iterator[SLAPolicy]
 	GetSLAPoliciesOBP(ctx context.Context, opts *OBPOptions) ([]SLAPolicy, Page, error)
-	GetSLAPoliciesCBP(ctx context.Context, opts *CBPOptions) ([]SLAPolicy, client.CursorPaginationMeta, error)
+	GetSLAPoliciesCBP(ctx context.Context, opts *CBPOptions) ([]SLAPolicy, client2.CursorPaginationMeta, error)
 }
 
 // GetSLAPolicies fetch slaPolicy list
@@ -100,10 +100,10 @@ func (z *Client) GetSLAPolicies(ctx context.Context, opts *SLAPolicyListOptions)
 	}
 
 	if opts == nil {
-		return []SLAPolicy{}, Page{}, &client.OptionsError{Opts: opts}
+		return []SLAPolicy{}, Page{}, &client2.OptionsError{Opts: opts}
 	}
 
-	u, err := client.AddOptions("/slas/policies.json", opts)
+	u, err := client2.AddOptions("/slas/policies.json", opts)
 	if err != nil {
 		return []SLAPolicy{}, Page{}, err
 	}

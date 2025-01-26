@@ -3,7 +3,7 @@ package zendesk
 import (
 	"context"
 	"encoding/json"
-	"github.com/JacobPotter/go-zendesk/internal/client"
+	"github.com/JacobPotter/go-zendesk/client"
 	"time"
 )
 

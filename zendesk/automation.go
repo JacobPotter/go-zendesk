@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/JacobPotter/go-zendesk/internal/client"
+	client2 "github.com/JacobPotter/go-zendesk/client"
 	"time"
 )
 
@@ -44,7 +44,7 @@ type AutomationAPI interface {
 	DeleteAutomation(ctx context.Context, id int64) error
 	GetAutomationsIterator(ctx context.Context, opts *PaginationOptions) *Iterator[Automation]
 	GetAutomationsOBP(ctx context.Context, opts *OBPOptions) ([]Automation, Page, error)
-	GetAutomationsCBP(ctx context.Context, opts *CBPOptions) ([]Automation, client.CursorPaginationMeta, error)
+	GetAutomationsCBP(ctx context.Context, opts *CBPOptions) ([]Automation, client2.CursorPaginationMeta, error)
 }
 
 // GetAutomations fetch automation list
@@ -57,10 +57,10 @@ func (z *Client) GetAutomations(ctx context.Context, opts *AutomationListOptions
 	}
 
 	if opts == nil {
-		return []Automation{}, Page{}, &client.OptionsError{Opts: opts}
+		return []Automation{}, Page{}, &client2.OptionsError{Opts: opts}
 	}
 
-	u, err := client.AddOptions("/automations.json", opts)
+	u, err := client2.AddOptions("/automations.json", opts)
 	if err != nil {
 		return []Automation{}, Page{}, err
 	}

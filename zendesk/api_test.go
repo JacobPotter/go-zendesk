@@ -2,8 +2,8 @@ package zendesk
 
 import (
 	"fmt"
+	"github.com/JacobPotter/go-zendesk/client"
 	"github.com/JacobPotter/go-zendesk/credentialtypes"
-	"github.com/JacobPotter/go-zendesk/internal/client"
 	"net/http"
 	"net/http/httptest"
 )

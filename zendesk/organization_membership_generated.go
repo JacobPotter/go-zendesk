@@ -9,7 +9,7 @@ package zendesk
 
 import (
 	"context"
-	"github.com/JacobPotter/go-zendesk/internal/client"
+	"github.com/JacobPotter/go-zendesk/client"
 )
 
 func (z *Client) GetOrganizationMembershipsIterator(ctx context.Context, opts *PaginationOptions) *Iterator[OrganizationMembership] {

@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/JacobPotter/go-zendesk/internal/client"
+	client2 "github.com/JacobPotter/go-zendesk/client"
 	"time"
 )
 
@@ -44,7 +44,7 @@ type OrganizationAPI interface {
 	DeleteOrganization(ctx context.Context, orgID int64) error
 	GetOrganizationsIterator(ctx context.Context, opts *PaginationOptions) *Iterator[Organization]
 	GetOrganizationsOBP(ctx context.Context, opts *OBPOptions) ([]Organization, Page, error)
-	GetOrganizationsCBP(ctx context.Context, opts *CBPOptions) ([]Organization, client.CursorPaginationMeta, error)
+	GetOrganizationsCBP(ctx context.Context, opts *CBPOptions) ([]Organization, client2.CursorPaginationMeta, error)
 }
 
 // GetOrganizations fetch organization list
@@ -57,10 +57,10 @@ func (z *Client) GetOrganizations(ctx context.Context, opts *OrganizationListOpt
 	}
 
 	if opts == nil {
-		return []Organization{}, Page{}, &client.OptionsError{Opts: opts}
+		return []Organization{}, Page{}, &client2.OptionsError{Opts: opts}
 	}
 
-	u, err := client.AddOptions("/organizations.json", opts)
+	u, err := client2.AddOptions("/organizations.json", opts)
 	if err != nil {
 		return []Organization{}, Page{}, err
 	}

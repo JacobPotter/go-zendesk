@@ -2,7 +2,7 @@ package zendesk
 
 import (
 	"context"
-	"github.com/JacobPotter/go-zendesk/internal/client"
+	"github.com/JacobPotter/go-zendesk/client"
 )
 
 func (z *Client) GetDynamicContentItemsIterator(ctx context.Context, opts *PaginationOptions) *Iterator[DynamicContentItem] {

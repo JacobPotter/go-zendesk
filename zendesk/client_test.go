@@ -3,8 +3,8 @@ package zendesk
 import (
 	"errors"
 	"fmt"
+	client2 "github.com/JacobPotter/go-zendesk/client"
 	"github.com/JacobPotter/go-zendesk/credentialtypes"
-	"github.com/JacobPotter/go-zendesk/internal/client"
 	"github.com/JacobPotter/go-zendesk/internal/testhelper"
 	"io"
 	"net/http"
@@ -15,8 +15,8 @@ import (
 
 ////////// Helper //////////
 
-func NewTestBaseClient(mockAPI *httptest.Server) *client.BaseClient {
-	c := &client.BaseClient{
+func NewTestBaseClient(mockAPI *httptest.Server) *client2.BaseClient {
+	c := &client2.BaseClient{
 		HttpClient: http.DefaultClient,
 		Credential: credentialtypes.NewAPITokenCredential("", ""),
 	}
@@ -30,13 +30,13 @@ func NewTestBaseClient(mockAPI *httptest.Server) *client.BaseClient {
 ////////// Test //////////
 
 func TestNewClient(t *testing.T) {
-	if _, err := client.NewBaseClient(nil, false); err != nil {
+	if _, err := client2.NewBaseClient(nil, false); err != nil {
 		t.Fatal("Failed to create BaseClient")
 	}
 }
 
 func TestSetHeader(t *testing.T) {
-	c, _ := client.NewBaseClient(nil, false)
+	c, _ := client2.NewBaseClient(nil, false)
 	c.SetHeader("Header1", "hogehoge")
 
 	if c.Headers["Header1"] != "hogehoge" {
@@ -47,7 +47,7 @@ func TestSetHeader(t *testing.T) {
 func TestSetSubdomainSuccess(t *testing.T) {
 	validSubdomain := "subdomain"
 
-	c, _ := client.NewBaseClient(&http.Client{}, false)
+	c, _ := client2.NewBaseClient(&http.Client{}, false)
 	if err := c.SetSubdomain(validSubdomain); err != nil {
 		t.Fatal("SetSubdomain should success")
 	}
@@ -56,21 +56,21 @@ func TestSetSubdomainSuccess(t *testing.T) {
 func TestSetSubdomainFail(t *testing.T) {
 	invalidSubdomain := ".subdomain"
 
-	c, _ := client.NewBaseClient(&http.Client{}, false)
+	c, _ := client2.NewBaseClient(&http.Client{}, false)
 	if err := c.SetSubdomain(invalidSubdomain); err == nil {
 		t.Fatal("SetSubdomain should fail")
 	}
 }
 
 func TestSetEndpointURL(t *testing.T) {
-	c, _ := client.NewBaseClient(nil, false)
+	c, _ := client2.NewBaseClient(nil, false)
 	if err := c.SetEndpointURL("http://127.0.0.1:3000"); err != nil {
 		t.Fatal("SetEndpointURL should success")
 	}
 }
 
 func TestSetCredential(t *testing.T) {
-	c, _ := client.NewBaseClient(nil, false)
+	c, _ := client2.NewBaseClient(nil, false)
 	cred := credentialtypes.NewBasicAuthCredential("john.doe@example.com", "password")
 	c.SetCredential(cred)
 
@@ -83,7 +83,7 @@ func TestSetCredential(t *testing.T) {
 }
 
 func TestBearerAuthCredential(t *testing.T) {
-	c, _ := client.NewBaseClient(nil, false)
+	c, _ := client2.NewBaseClient(nil, false)
 	cred := credentialtypes.NewBearerTokenCredential("hello")
 	c.SetCredential(cred)
 
@@ -130,12 +130,12 @@ func TestGetData(t *testing.T) {
 
 	opts := &OBPOptions{}
 
-	u, err := client.AddOptions("/groups.json", opts)
+	u, err := client2.AddOptions("/groups.json", opts)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	err = client.GetData(c, ctx, u, &data)
+	err = client2.GetData(c, ctx, u, &data)
 	if err != nil {
 		t.Fatalf("Failed to send request: %s", err)
 	}
@@ -154,7 +154,7 @@ func TestGetFailure(t *testing.T) {
 		t.Fatal("Did not receive error from client")
 	}
 
-	var e client.Error
+	var e client2.Error
 	if !errors.As(err, &e) {
 		t.Fatalf("Did not return a zendesk error %s", err)
 	}
@@ -170,7 +170,7 @@ func TestGetFailureCanReadErrorBody(t *testing.T) {
 		t.Fatal("Did not receive error from client")
 	}
 
-	var clientErr client.Error
+	var clientErr client2.Error
 	if ok := errors.As(err, &clientErr); !ok {
 		t.Fatalf("Did not return a zendesk error %s", err)
 	}
@@ -212,7 +212,7 @@ func TestPostFailure(t *testing.T) {
 		t.Fatal("Did not receive error from client")
 	}
 
-	var e client.Error
+	var e client2.Error
 	if !errors.As(err, &e) {
 		t.Fatalf("Did not return a zendesk error %s", err)
 	}
@@ -243,7 +243,7 @@ func TestPutFailure(t *testing.T) {
 		t.Fatal("Did not receive error from client")
 	}
 
-	var clientErr client.Error
+	var clientErr client2.Error
 	if !errors.As(err, &clientErr) {
 		t.Fatalf("Did not return a zendesk error %s", err)
 	}
@@ -282,7 +282,7 @@ func TestDeleteFailure(t *testing.T) {
 }
 
 func TestIncludeHeaders(t *testing.T) {
-	c, _ := client.NewBaseClient(nil, false)
+	c, _ := client2.NewBaseClient(nil, false)
 	c.Headers = map[string]string{
 		"Header1":      "1",
 		"Header2":      "2",
@@ -325,7 +325,7 @@ func TestAddOptions(t *testing.T) {
 	}
 	expected := "/triggers.json?active=true&page=2&per_page=10"
 
-	u, err := client.AddOptions(ep, ops)
+	u, err := client2.AddOptions(ep, ops)
 	if err != nil {
 		t.Fatal(err)
 	}

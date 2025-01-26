@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/JacobPotter/go-zendesk/internal/client"
+	client2 "github.com/JacobPotter/go-zendesk/client"
 )
 
 // SearchOptions are the options that can be provided to the search API
@@ -29,7 +29,7 @@ type SearchAPI interface {
 	SearchCount(ctx context.Context, opts *CountOptions) (int, error)
 	GetSearchIterator(ctx context.Context, opts *PaginationOptions) *Iterator[SearchResults]
 	GetSearchOBP(ctx context.Context, opts *OBPOptions) ([]SearchResults, Page, error)
-	GetSearchCBP(ctx context.Context, opts *CBPOptions) ([]SearchResults, client.CursorPaginationMeta, error)
+	GetSearchCBP(ctx context.Context, opts *CBPOptions) ([]SearchResults, client2.CursorPaginationMeta, error)
 }
 
 type SearchResults struct {
@@ -132,10 +132,10 @@ func (z *Client) Search(ctx context.Context, opts *SearchOptions) (SearchResults
 	}
 
 	if opts == nil {
-		return SearchResults{}, Page{}, &client.OptionsError{Opts: opts}
+		return SearchResults{}, Page{}, &client2.OptionsError{Opts: opts}
 	}
 
-	u, err := client.AddOptions("/search.json", opts)
+	u, err := client2.AddOptions("/search.json", opts)
 	if err != nil {
 		return SearchResults{}, Page{}, err
 	}
@@ -162,10 +162,10 @@ func (z *Client) SearchCount(ctx context.Context, opts *CountOptions) (int, erro
 	}
 
 	if opts == nil {
-		return 0, &client.OptionsError{Opts: opts}
+		return 0, &client2.OptionsError{Opts: opts}
 	}
 
-	u, err := client.AddOptions("/search/count.json", opts)
+	u, err := client2.AddOptions("/search/count.json", opts)
 	if err != nil {
 		return 0, err
 	}

@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/JacobPotter/go-zendesk/internal/client"
+	client2 "github.com/JacobPotter/go-zendesk/client"
 	"time"
 )
 
@@ -45,7 +45,7 @@ type TriggerAPI interface {
 	DeleteTrigger(ctx context.Context, id int64) error
 	GetTriggersIterator(ctx context.Context, opts *PaginationOptions) *Iterator[Trigger]
 	GetTriggersOBP(ctx context.Context, opts *OBPOptions) ([]Trigger, Page, error)
-	GetTriggersCBP(ctx context.Context, opts *CBPOptions) ([]Trigger, client.CursorPaginationMeta, error)
+	GetTriggersCBP(ctx context.Context, opts *CBPOptions) ([]Trigger, client2.CursorPaginationMeta, error)
 }
 
 // GetTriggers fetch trigger list
@@ -58,10 +58,10 @@ func (z *Client) GetTriggers(ctx context.Context, opts *TriggerListOptions) ([]T
 	}
 
 	if opts == nil {
-		return []Trigger{}, Page{}, &client.OptionsError{Opts: opts}
+		return []Trigger{}, Page{}, &client2.OptionsError{Opts: opts}
 	}
 
-	u, err := client.AddOptions("/triggers.json", opts)
+	u, err := client2.AddOptions("/triggers.json", opts)
 	if err != nil {
 		return []Trigger{}, Page{}, err
 	}

@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/JacobPotter/go-zendesk/internal/client"
+	client2 "github.com/JacobPotter/go-zendesk/client"
 	"time"
 )
 
@@ -20,13 +20,13 @@ type TriggerCategory struct {
 //
 // ref: https://developer.zendesk.com/rest_api/docs/support/triggers#list-triggers
 type TriggerCategoryListOptions struct {
-	client.CursorPagination
+	client2.CursorPagination
 	Sort string `url:"sort,omitempty"`
 }
 
 // TriggerCategoryAPI an interface containing all trigger related methods
 type TriggerCategoryAPI interface {
-	GetTriggerCategories(ctx context.Context, opts *TriggerCategoryListOptions) ([]TriggerCategory, client.CursorPaginationMeta, error)
+	GetTriggerCategories(ctx context.Context, opts *TriggerCategoryListOptions) ([]TriggerCategory, client2.CursorPaginationMeta, error)
 	CreateTriggerCategory(ctx context.Context, triggerCategory TriggerCategory) (TriggerCategory, error)
 	GetTriggerCategory(ctx context.Context, id int64) (TriggerCategory, error)
 	UpdateTriggerCategory(ctx context.Context, id int64, triggerCategory TriggerCategory) (TriggerCategory, error)
@@ -36,29 +36,29 @@ type TriggerCategoryAPI interface {
 // GetTriggerCategories fetch trigger category list
 //
 // ref: https://developer.zendesk.com/rest_api/docs/support/triggers#getting-triggers
-func (z *Client) GetTriggerCategories(ctx context.Context, opts *TriggerCategoryListOptions) ([]TriggerCategory, client.CursorPaginationMeta, error) {
+func (z *Client) GetTriggerCategories(ctx context.Context, opts *TriggerCategoryListOptions) ([]TriggerCategory, client2.CursorPaginationMeta, error) {
 	var data struct {
 		TriggerCategories []TriggerCategory `json:"trigger_categories"`
-		client.CursorPaginationMeta
+		client2.CursorPaginationMeta
 	}
 
 	if opts == nil {
-		return []TriggerCategory{}, client.CursorPaginationMeta{}, &client.OptionsError{Opts: opts}
+		return []TriggerCategory{}, client2.CursorPaginationMeta{}, &client2.OptionsError{Opts: opts}
 	}
 
-	u, err := client.AddOptions("/trigger_categories.json", opts)
+	u, err := client2.AddOptions("/trigger_categories.json", opts)
 	if err != nil {
-		return []TriggerCategory{}, client.CursorPaginationMeta{}, err
+		return []TriggerCategory{}, client2.CursorPaginationMeta{}, err
 	}
 
 	body, err := z.Get(ctx, u)
 	if err != nil {
-		return []TriggerCategory{}, client.CursorPaginationMeta{}, err
+		return []TriggerCategory{}, client2.CursorPaginationMeta{}, err
 	}
 
 	err = json.Unmarshal(body, &data)
 	if err != nil {
-		return []TriggerCategory{}, client.CursorPaginationMeta{}, err
+		return []TriggerCategory{}, client2.CursorPaginationMeta{}, err
 	}
 	return data.TriggerCategories, data.CursorPaginationMeta, nil
 }

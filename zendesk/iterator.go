@@ -2,7 +2,7 @@ package zendesk
 
 import (
 	"context"
-	"github.com/JacobPotter/go-zendesk/internal/client"
+	"github.com/JacobPotter/go-zendesk/client"
 )
 
 // PaginationOptions struct represents general pagination options.

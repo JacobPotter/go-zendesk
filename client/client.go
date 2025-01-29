@@ -106,7 +106,7 @@ func (c *BaseClient) SetSubdomain(subdomain string) error {
 	var baseURLString string
 
 	if c.sunco {
-		if c.suncoAppId != "" {
+		if c.suncoAppId == "" {
 			log.Fatal("cannot set sunco to true without also setting suncoAppId")
 		}
 		baseURLString = fmt.Sprintf(baseSuncoURLFormat, subdomain, c.suncoAppId)

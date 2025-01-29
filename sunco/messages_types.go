@@ -11,8 +11,10 @@ const (
 
 // Author of sunco Message
 type Author struct {
-	Type      AuthorType `json:"type"`
-	AvatarUrl string     `json:"avatarUrl,omitempty"`
+	Type           AuthorType `json:"type"`
+	AvatarUrl      string     `json:"avatarUrl,omitempty"`
+	UserId         string     `json:"userId,omitempty"`
+	UserExternalId string     `json:"userExternalId,omitempty"`
 }
 
 // Content of Message

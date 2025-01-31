@@ -37,4 +37,17 @@ type Message struct {
 // MessageResponse is the standard response for MessagesAPI endpoints
 type MessageResponse struct {
 	Messages []Message `json:"messages"`
+	Meta     *Meta     `json:"meta,omitempty"`
+	Links    *Links    `json:"links,omitempty"`
+}
+
+type Meta struct {
+	HasMore      bool   `json:"hasMore"`
+	AfterCursor  string `json:"afterCursor"`
+	BeforeCursor string `json:"beforeCursor"`
+}
+
+type Links struct {
+	Prev string `json:"prev"`
+	Next string `json:"next"`
 }

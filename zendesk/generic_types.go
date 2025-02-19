@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -104,6 +105,16 @@ func (v *ParsedValue) UnmarshalJSON(bytes []byte) error {
 		value = strconv.FormatBool(newValue)
 	case time.Time:
 		value = newValue.Format(time.RFC3339)
+	case []interface{}:
+		list := make([]string, len(newValue))
+		for i, raw := range newValue {
+			val, ok := raw.(string)
+			if !ok {
+				return fmt.Errorf("invalid list type %T", raw)
+			}
+			list[i] = val
+		}
+		value = strings.Join(list, ",")
 	case nil:
 		value = ""
 	default:

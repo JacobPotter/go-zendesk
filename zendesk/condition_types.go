@@ -24,7 +24,7 @@ func (c Condition) Validate(resourceType ResourceType[ConditionResourceType]) er
 
 	if err := ValidConditionOperatorValues.ValidateValue(
 		ConditionField(c.Field),
-		c.Value.Data,
+		c.Value,
 		Operator(c.Operator),
 		resourceType,
 	); err != nil {
@@ -232,7 +232,7 @@ type ConditionValueValidator ValueValidator[ConditionResourceType]
 
 type ConditionsValueValidator map[ConditionField]ConditionValueValidator
 
-func (c ConditionsValueValidator) ValidateValue(key ConditionField, value string, operator Operator, resourceType ResourceType[ConditionResourceType]) error {
+func (c ConditionsValueValidator) ValidateValue(key ConditionField, value ParsedValue, operator Operator, resourceType ResourceType[ConditionResourceType]) error {
 
 	isCustomField := strings.HasPrefix(string(key), string(ConditionFieldCustomField))
 	isCustomFieldAlt := strings.HasPrefix(string(key), string(ConditionFieldCustomFieldAlt))
@@ -280,19 +280,32 @@ func (c ConditionsValueValidator) ValidateValue(key ConditionField, value string
 			return fmt.Errorf("invalid operator for condition key: %s", newKey)
 		}
 
-		var result []byte
+		found := true
 
 		if isCustomField {
 			after, _ := strings.CutPrefix(string(key), string(ConditionFieldCustomField))
-			result = v.ValidationRegex.Find([]byte(after))
+			found = v.ValidationRegex.Match([]byte(after))
 		} else if isCustomFieldAlt {
 			after, _ := strings.CutPrefix(string(key), string(ConditionFieldCustomFieldAlt))
-			result = v.ValidationRegex.Find([]byte(after))
+			found = v.ValidationRegex.Match([]byte(after))
 		} else {
-			result = v.ValidationRegex.Find([]byte(value))
+			if len(value.ListData) == 0 {
+				found = v.ValidationRegex.Match([]byte(value.Data))
+			} else {
+				for _, val := range value.ListData {
+					found = v.ValidationRegex.Match([]byte(val))
+					if !found {
+						return fmt.Errorf(
+							"invalid condition value in list: %s. does not match regex: %s",
+							val,
+							v.ValidationRegex.String(),
+						)
+					}
+				}
+			}
 
 		}
-		if result == nil {
+		if !found {
 			return fmt.Errorf(
 				"invalid condition value %s. does not match regex: %s",
 				value,
@@ -385,7 +398,7 @@ var ValidConditionOperatorValues = ConditionsValueValidator{
 		ValidOperators:  []Operator{Includes, NotIncludes},
 	},
 	ConditionFieldViaID: {
-		ValidationRegex: regexp.MustCompile(`^\d+(,\d+)*$`),
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
 		ResourceTypes:   sharedConditionTypes,
 		ValidOperators:  []Operator{Is, IsNot, Includes, NotIncludes},
 	},

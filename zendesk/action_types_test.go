@@ -15,7 +15,7 @@ func TestAction_Validate(t *testing.T) {
 			testName: "should validate action object for resource type",
 			action: Action{
 				Field: string(ActionFieldStatus),
-				Value: "open",
+				Value: ParsedValue{Data: "open"},
 			},
 			resourceType: TriggerActionResource,
 			shouldPass:   true,
@@ -23,7 +23,7 @@ func TestAction_Validate(t *testing.T) {
 			testName: "should not validate action object for resource type",
 			action: Action{
 				Field: string(ActionFieldStatus),
-				Value: "blah",
+				Value: ParsedValue{Data: "blah"},
 			},
 			resourceType: TriggerActionResource,
 			shouldPass:   false,
@@ -32,7 +32,7 @@ func TestAction_Validate(t *testing.T) {
 			testName: "should not validate action object for invalid resource type",
 			action: Action{
 				Field: string(ActionFieldNotificationWebhook),
-				Value: "ABCDEFG12345",
+				Value: ParsedValue{Data: "ABCDEFG12345"},
 			},
 			resourceType: MacroActionResource,
 			shouldPass:   false,
@@ -41,7 +41,7 @@ func TestAction_Validate(t *testing.T) {
 			testName: "should not validate action object for invalid field id",
 			action: Action{
 				Field: "some_key",
-				Value: "some_value",
+				Value: ParsedValue{Data: "some_value"},
 			},
 			resourceType: MacroActionResource,
 			shouldPass:   false,
@@ -50,16 +50,7 @@ func TestAction_Validate(t *testing.T) {
 			testName: "should validate action object with array of values",
 			action: Action{
 				Field: string(ActionFieldNotificationWebhook),
-				Value: []string{"ABCDEFG12345", "webhook body string"},
-			},
-			resourceType: TriggerActionResource,
-			shouldPass:   true,
-		},
-		{
-			testName: "should validate action object with array of mixed values",
-			action: Action{
-				Field: string(ActionFieldNotificationUser),
-				Value: []interface{}{12345678910, "webhook body string"},
+				Value: ParsedValue{ListData: []string{"ABCDEFG12345", "webhook body string"}},
 			},
 			resourceType: TriggerActionResource,
 			shouldPass:   true,
@@ -81,28 +72,28 @@ func TestActionValueValidator_ValidateActionValue(t *testing.T) {
 	cases := []struct {
 		testName     string
 		key          ActionField
-		value        string
+		value        ParsedValue
 		resourceType ActionResourceType
 		shouldPass   bool
 	}{
 		{
 			testName:     "should pass with valid status value",
 			key:          ActionFieldStatus,
-			value:        "open",
+			value:        ParsedValue{Data: "open"},
 			resourceType: TriggerActionResource,
 			shouldPass:   true,
 		},
 		{
 			testName:     "should fail with invalid status value",
 			key:          ActionFieldStatus,
-			value:        "blah",
+			value:        ParsedValue{Data: "blah"},
 			resourceType: TriggerActionResource,
 			shouldPass:   false,
 		},
 		{
 			testName:     "should fail with invalid field",
 			key:          "some_key",
-			value:        "blah",
+			value:        ParsedValue{Data: "blah"},
 			resourceType: TriggerActionResource,
 			shouldPass:   false,
 		},

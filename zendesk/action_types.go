@@ -5,7 +5,6 @@ import (
 	"golang.org/x/exp/maps"
 	"regexp"
 	"slices"
-	"strconv"
 	"strings"
 )
 
@@ -14,7 +13,7 @@ import (
 // [Zendesk Actions Reference]: https://developer.zendesk.com/documentation/ticketing/reference-guides/actions-Reference/
 type Action struct {
 	Field string      `json:"field"`
-	Value interface{} `json:"value"`
+	Value ParsedValue `json:"value,omitempty"`
 }
 
 var _ ValidateValue[ActionResourceType] = &Action{}
@@ -25,64 +24,15 @@ func (a Action) Validate(resourceType ResourceType[ActionResourceType]) error {
 		return err
 	}
 
-	switch typedValue := a.Value.(type) {
-	case string:
-		if err := ValidActionValuesMap.ValidateValue(
-			ActionField(a.Field),
-			typedValue,
-			"",
-			resourceType,
-		); err != nil {
-			return err
-		}
-		return nil
-	case []interface{}:
-		if len(typedValue) == 0 {
-			return fmt.Errorf("no empty for action value for field %s", a.Field)
-		}
-
-		var target string
-		switch targetValue := typedValue[0].(type) {
-		case string:
-			target = targetValue
-		case []string:
-			println(targetValue)
-		case int:
-			target = strconv.Itoa(targetValue)
-		case int64:
-			target = strconv.FormatInt(targetValue, 10)
-		case float64:
-			target = strconv.FormatFloat(targetValue, 'E', -1, 64)
-		case float32:
-			target = strconv.FormatFloat(float64(targetValue), 'E', -1, 32)
-		default:
-			return fmt.Errorf("invalid type for action value type %T for field %s", targetValue, a.Field)
-		}
-		if err := ValidActionValuesMap.ValidateValue(
-			ActionField(a.Field),
-			target,
-			"",
-			resourceType,
-		); err != nil {
-			return err
-		}
-		return nil
-	case []string:
-		if len(typedValue) == 0 {
-			return fmt.Errorf("no empty for action value for field %s", a.Field)
-		}
-		if err := ValidActionValuesMap.ValidateValue(
-			ActionField(a.Field),
-			typedValue[0],
-			"",
-			resourceType,
-		); err != nil {
-			return err
-		}
-		return nil
-	default:
-		return fmt.Errorf("invalid value type %T for field %s", a.Value, a.Field)
+	if err := ValidActionValuesMap.ValidateValue(
+		ActionField(a.Field),
+		a.Value,
+		"",
+		resourceType,
+	); err != nil {
+		return err
 	}
+	return nil
 }
 
 // ActionField action field types which defined by system, see [Zendesk Actions Reference]
@@ -205,12 +155,7 @@ type ActionsValueValidator map[ActionField]ValueValidator[ActionResourceType]
 
 var _ Validator[ActionField, ActionResourceType] = ActionsValueValidator{}
 
-func (a ActionsValueValidator) ValidateValue(
-	key ActionField,
-	value string,
-	_ Operator,
-	resourceType ResourceType[ActionResourceType],
-) error {
+func (a ActionsValueValidator) ValidateValue(key ActionField, value ParsedValue, operator Operator, resourceType ResourceType[ActionResourceType]) error {
 
 	isCustomField := strings.HasPrefix(
 		string(key),
@@ -234,16 +179,29 @@ func (a ActionsValueValidator) ValidateValue(
 			return fmt.Errorf("invalid resource type for action key: %s", resourceType)
 		}
 
-		var result []byte
+		var found bool
 
 		if isCustomField {
 			after, _ := strings.CutPrefix(string(key), string(ActionFieldCustomField))
-			result = v.ValidationRegex.Find([]byte(after))
+			found = v.ValidationRegex.Match([]byte(after))
 		} else {
-			result = v.ValidationRegex.Find([]byte(value))
+			if len(value.ListData) == 0 {
+				found = v.ValidationRegex.Match([]byte(value.Data))
+			} else {
+				for _, val := range value.ListData {
+					found = v.ValidationRegex.Match([]byte(val))
+					if !found {
+						return fmt.Errorf(
+							"invalid condition value in list: %s. does not match regex: %s",
+							val,
+							v.ValidationRegex.String(),
+						)
+					}
+				}
+			}
 
 		}
-		if result == nil {
+		if !found {
 			return fmt.Errorf(
 				"invalid action value %v. does not match regex: %s",
 				value,

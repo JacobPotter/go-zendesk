@@ -387,7 +387,7 @@ var ValidConditionOperatorValues = ConditionsValueValidator{
 	ConditionFieldViaID: {
 		ValidationRegex: regexp.MustCompile(`^\d+$`),
 		ResourceTypes:   sharedConditionTypes,
-		ValidOperators:  []Operator{Is, IsNot},
+		ValidOperators:  []Operator{Is, IsNot, Includes, NotIncludes},
 	},
 	ConditionFieldRecipient: {
 		ValidationRegex: regexp.MustCompile(`.*`),

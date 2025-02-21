@@ -295,7 +295,7 @@ func (c ConditionsValueValidator) ValidateValue(key ConditionField, value string
 		if result == nil {
 			return fmt.Errorf(
 				"invalid condition value %s. does not match regex: %s",
-				string(result),
+				value,
 				v.ValidationRegex.String(),
 			)
 		}
@@ -385,7 +385,7 @@ var ValidConditionOperatorValues = ConditionsValueValidator{
 		ValidOperators:  []Operator{Includes, NotIncludes},
 	},
 	ConditionFieldViaID: {
-		ValidationRegex: regexp.MustCompile(`^\d+$`),
+		ValidationRegex: regexp.MustCompile(`^\d+(,\d+)*$`),
 		ResourceTypes:   sharedConditionTypes,
 		ValidOperators:  []Operator{Is, IsNot, Includes, NotIncludes},
 	},

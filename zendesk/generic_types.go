@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -62,7 +61,7 @@ type ValidateValue[T any] interface {
 }
 
 type Validator[F any, T any] interface {
-	ValidateValue(key F, value string, operator Operator, resourceType ResourceType[T]) error
+	ValidateValue(key F, value ParsedValue, operator Operator, resourceType ResourceType[T]) error
 	ValidKeys() []string
 }
 
@@ -73,7 +72,8 @@ type ValueValidator[T any] struct {
 }
 
 type ParsedValue struct {
-	Data string
+	Data     string
+	ListData []string
 }
 
 var _ json.Unmarshaler = &ParsedValue{}
@@ -87,7 +87,18 @@ func (v *ParsedValue) UnmarshalJSON(bytes []byte) error {
 		return err
 	}
 
+	value, list := parseRawValue(valueRaw)
+
+	v.Data = value
+	v.ListData = list
+
+	return nil
+
+}
+
+func parseRawValue(valueRaw any) (string, []string) {
 	var value string
+	var list []string
 
 	switch newValue := valueRaw.(type) {
 	case string:
@@ -105,28 +116,25 @@ func (v *ParsedValue) UnmarshalJSON(bytes []byte) error {
 		value = strconv.FormatBool(newValue)
 	case time.Time:
 		value = newValue.Format(time.RFC3339)
-	case []interface{}:
-		list := make([]string, len(newValue))
+	case []any:
+		list = make([]string, len(newValue))
 		for i, raw := range newValue {
-			val, ok := raw.(string)
-			if !ok {
-				return fmt.Errorf("invalid list type %T", raw)
-			}
+			val, _ := parseRawValue(raw)
 			list[i] = val
 		}
-		value = strings.Join(list, ",")
 	case nil:
 		value = ""
 	default:
-		return fmt.Errorf("invalid value type: %T", newValue)
+		value = fmt.Sprintf("%v", newValue)
 	}
-
-	v.Data = value
-
-	return nil
-
+	return value, list
 }
 
 func (v *ParsedValue) MarshalJSON() ([]byte, error) {
-	return json.Marshal(v.Data)
+	if len(v.ListData) == 0 {
+		return json.Marshal(v.Data)
+	} else {
+		return json.Marshal(v.ListData)
+	}
+
 }

@@ -188,16 +188,21 @@ func (a ActionsValueValidator) ValidateValue(key ActionField, value ParsedValue,
 			if len(value.ListData) == 0 {
 				found = v.ValidationRegex.Match([]byte(value.Data))
 			} else {
-				for _, val := range value.ListData {
-					found = v.ValidationRegex.Match([]byte(val))
-					if !found {
-						return fmt.Errorf(
-							"invalid condition value in list: %s. does not match regex: %s",
-							val,
-							v.ValidationRegex.String(),
-						)
+				if newKey == ActionFieldNotificationUser || newKey == ActionFieldNotificationGroup || newKey == ActionFieldNotificationWebhook {
+					found = v.ValidationRegex.Match([]byte(value.ListData[0]))
+				} else {
+					for _, val := range value.ListData {
+						found = v.ValidationRegex.Match([]byte(val))
+						if !found {
+							return fmt.Errorf(
+								"invalid condition value in list: %s. does not match regex: %s",
+								val,
+								v.ValidationRegex.String(),
+							)
+						}
 					}
 				}
+
 			}
 
 		}

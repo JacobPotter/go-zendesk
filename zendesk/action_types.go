@@ -110,6 +110,8 @@ const (
 	ActionSetSchedule               ActionField = "set_schedule"
 	ActionNotificationZis           ActionField = "notification_zis"
 	ActionNotificationMessagingCsat ActionField = "notification_messaging_csat"
+	ActionReplyPublic               ActionField = "reply_public"
+	ActionReplyInternal             ActionField = "reply_internal"
 )
 
 // ActionResourceType String type of resource the action belongs to. Valid
@@ -155,7 +157,7 @@ type ActionsValueValidator map[ActionField]ValueValidator[ActionResourceType]
 
 var _ Validator[ActionField, ActionResourceType] = ActionsValueValidator{}
 
-func (a ActionsValueValidator) ValidateValue(key ActionField, value ParsedValue, operator Operator, resourceType ResourceType[ActionResourceType]) error {
+func (a ActionsValueValidator) ValidateValue(key ActionField, value ParsedValue, _ Operator, resourceType ResourceType[ActionResourceType]) error {
 
 	isCustomField := strings.HasPrefix(
 		string(key),
@@ -371,5 +373,13 @@ var ValidActionValuesMap = ActionsValueValidator{
 	ActionNotificationMessagingCsat: {
 		ValidationRegex: regexp.MustCompile(`([\s\S]*)`),
 		ResourceTypes:   sharedActionTypes,
+	},
+	ActionReplyPublic: {
+		ValidationRegex: regexp.MustCompile(`([\s\S]*)`),
+		ResourceTypes:   triggerActionTypes,
+	},
+	ActionReplyInternal: {
+		ValidationRegex: regexp.MustCompile(`([\s\S]*)`),
+		ResourceTypes:   triggerActionTypes,
 	},
 }

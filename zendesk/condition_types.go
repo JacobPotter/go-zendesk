@@ -159,6 +159,8 @@ const (
 	ConditionFieldSlaNextBreachAt ConditionField = "sla_next_breach_at"
 	ConditionFieldRole            ConditionField = "role"
 	ConditionFieldWithinSchedule  ConditionField = "within_schedule"
+	// Handoff TF Test
+	ConditionFieldTest ConditionField = "terraform_test"
 )
 
 type ConditionFields []ConditionField
@@ -883,6 +885,14 @@ var ValidConditionOperatorValues = ConditionsValueValidator{
 	ConditionFieldWithinSchedule: {
 		ValidationRegex: regexp.MustCompile(`^\d+$`),
 		ResourceTypes:   triggerConditionTypes,
+		ValidOperators: []Operator{
+			Is,
+			IsNot,
+		},
+	},
+	ConditionFieldTest: {
+		ValidationRegex: regexp.MustCompile(`^.*$`),
+		ResourceTypes:   sharedConditionTypes,
 		ValidOperators: []Operator{
 			Is,
 			IsNot,

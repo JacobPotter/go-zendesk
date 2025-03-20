@@ -30,7 +30,6 @@ func (c *BaseClient) Get(ctx context.Context, path string) ([]byte, error) {
 	}
 
 	if resp.StatusCode == http.StatusTooManyRequests {
-
 		if c.ClientRetry {
 			duration := GetRetryWaitTime(resp)
 			WaitForRetry(ctx, duration)

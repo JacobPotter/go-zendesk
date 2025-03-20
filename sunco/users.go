@@ -29,7 +29,7 @@ func (c *Client) CreateUser(ctx context.Context, user User) (User, error) {
 func (c *Client) GetUser(ctx context.Context, userId string) (User, error) {
 	var response UserResponse
 
-	body, err := c.Get(ctx, fmt.Sprintf("/users/%s.json", userId))
+	body, err := c.Get(ctx, fmt.Sprintf("/users/%s", userId))
 	if err != nil {
 		return User{}, err
 	}

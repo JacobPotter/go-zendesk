@@ -10,7 +10,7 @@ import (
 )
 
 func TestListAppInstallations(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodGet, "apps.json", http.StatusOK)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodGet, "apps.json", http.StatusOK, nil, false)
 	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
@@ -85,7 +85,7 @@ func TestListAppInstallations(t *testing.T) {
 }
 
 func TestListAppInstallationsCanceledContext(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "apps.json", http.StatusOK)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "apps.json", http.StatusOK, nil, false)
 	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 

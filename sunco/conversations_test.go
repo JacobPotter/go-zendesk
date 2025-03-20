@@ -8,7 +8,7 @@ import (
 
 func TestClient_CreateConversation(t *testing.T) {
 	t.Parallel()
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "conversations.json", http.StatusOK)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "conversations.json", http.StatusOK, nil, false)
 	c := NewTestClient(mockAPI)
 
 	defer mockAPI.Close()

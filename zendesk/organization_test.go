@@ -8,7 +8,7 @@ import (
 )
 
 func TestCreateOrganization(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "organization.json", http.StatusCreated)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "organization.json", http.StatusCreated, nil, false)
 	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
@@ -50,7 +50,7 @@ func TestGetOrganizations(t *testing.T) {
 }
 
 func TestUpdateOrganization(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "organization.json", http.StatusOK)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "organization.json", http.StatusOK, nil, false)
 	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 

@@ -41,7 +41,7 @@ func TestGetSLAPoliciesWithNil(t *testing.T) {
 }
 
 func TestCreateSLAPolicy(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "sla_policies.json", http.StatusCreated)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "sla_policies.json", http.StatusCreated, nil, false)
 	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
@@ -88,7 +88,7 @@ func TestGetSLAPolicyFailure(t *testing.T) {
 }
 
 func TestUpdateSLAPolicy(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "sla_policies.json", http.StatusOK)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "sla_policies.json", http.StatusOK, nil, false)
 	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 

@@ -48,7 +48,7 @@ func TestGetMacro(t *testing.T) {
 }
 
 func TestCreateMacro(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "macro.json", http.StatusCreated)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "macro.json", http.StatusCreated, nil, false)
 	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
@@ -69,7 +69,7 @@ func TestCreateMacro(t *testing.T) {
 }
 
 func TestUpdateMacro(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "macro.json", http.StatusOK)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "macro.json", http.StatusOK, nil, false)
 	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
@@ -85,7 +85,7 @@ func TestUpdateMacro(t *testing.T) {
 }
 
 func TestUpdateMacroFailure(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "macro.json", http.StatusInternalServerError)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "macro.json", http.StatusInternalServerError, nil, false)
 	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 

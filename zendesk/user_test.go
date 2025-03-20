@@ -77,7 +77,7 @@ func TestSearchUsers(t *testing.T) {
 }
 
 func TestGetUser(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodGet, "user.json", http.StatusOK)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodGet, "user.json", http.StatusOK, nil, false)
 	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
@@ -93,7 +93,7 @@ func TestGetUser(t *testing.T) {
 }
 
 func TestGetUserFailure(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodGet, "user.json", http.StatusInternalServerError)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodGet, "user.json", http.StatusInternalServerError, nil, false)
 	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
@@ -133,7 +133,7 @@ func TestGetUsersRolesEncodeCorrectly(t *testing.T) {
 }
 
 func TestCreateUser(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "users.json", http.StatusCreated)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "users.json", http.StatusCreated, nil, false)
 	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
@@ -150,7 +150,7 @@ func TestCreateUser(t *testing.T) {
 }
 
 func TestCreateOrUpdateUserCreated(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "users.json", http.StatusCreated)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "users.json", http.StatusCreated, nil, false)
 	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
@@ -167,7 +167,7 @@ func TestCreateOrUpdateUserCreated(t *testing.T) {
 }
 
 func TestCreateOrUpdateUserUpdated(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "users.json", http.StatusOK)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "users.json", http.StatusOK, nil, false)
 	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
@@ -184,7 +184,7 @@ func TestCreateOrUpdateUserUpdated(t *testing.T) {
 }
 
 func TestCreateOrUpdateUserFailure(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "users.json", http.StatusInternalServerError)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "users.json", http.StatusInternalServerError, nil, false)
 
 	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
@@ -196,7 +196,7 @@ func TestCreateOrUpdateUserFailure(t *testing.T) {
 }
 
 func TestUpdateUser(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "user.json", http.StatusOK)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "user.json", http.StatusOK, nil, false)
 	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
@@ -212,7 +212,7 @@ func TestUpdateUser(t *testing.T) {
 }
 
 func TestUpdateUserFailure(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "user.json", http.StatusInternalServerError)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "user.json", http.StatusInternalServerError, nil, false)
 	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
@@ -223,7 +223,7 @@ func TestUpdateUserFailure(t *testing.T) {
 }
 
 func TestGetUserRelated(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodGet, "user_related.json", http.StatusOK)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodGet, "user_related.json", http.StatusOK, nil, false)
 	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 

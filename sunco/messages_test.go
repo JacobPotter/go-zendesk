@@ -8,7 +8,7 @@ import (
 
 func TestClient_PostMessage(t *testing.T) {
 	t.Parallel()
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "messages.json", http.StatusOK)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "messages.json", http.StatusOK, nil, false)
 	c := NewTestClient(mockAPI)
 
 	defer mockAPI.Close()

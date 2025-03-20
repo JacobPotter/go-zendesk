@@ -41,7 +41,7 @@ func TestGetTriggersWithNil(t *testing.T) {
 }
 
 func TestCreateTrigger(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "triggers.json", http.StatusCreated)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "triggers.json", http.StatusCreated, nil, false)
 	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
@@ -84,7 +84,7 @@ func TestGetTriggerFailure(t *testing.T) {
 }
 
 func TestUpdateTrigger(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "triggers.json", http.StatusOK)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "triggers.json", http.StatusOK, nil, false)
 	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 

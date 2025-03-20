@@ -45,13 +45,26 @@ func MarshalMockData[T any](t *testing.T, filename string) T {
 	return data
 }
 
-func NewMockAPIWithStatus(t *testing.T, method string, filename string, status int) *httptest.Server {
+func NewMockAPIWithStatus(t *testing.T, method string, filename string, status int, headers map[string]string, testRetry bool) *httptest.Server {
 	t.Helper()
+	requestCount := 0
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(status)
+		for key, val := range headers {
+			w.Header().Set(key, val)
+		}
+
+		newStatus := status
+
+		if testRetry && requestCount > 0 {
+			newStatus = http.StatusOK
+		}
+
+		w.WriteHeader(newStatus)
+
 		_, err := w.Write(ReadFixture(t, filepath.Join(method, filename)))
 		if err != nil {
 			t.Fatalf("Error: %s", err.Error())
 		}
+		requestCount++
 	}))
 }

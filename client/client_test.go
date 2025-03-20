@@ -10,9 +10,9 @@ import (
 func NewTestClient(mockAPI *httptest.Server, clientRetry bool) *BaseClient {
 
 	c := &BaseClient{
-		HttpClient: http.DefaultClient,
-		Credential: credentialtypes.NewAPITokenCredential("", ""),
-		Retry:      RetryMeta{ClientRetry: clientRetry},
+		HttpClient:  http.DefaultClient,
+		Credential:  credentialtypes.NewAPITokenCredential("", ""),
+		ClientRetry: clientRetry,
 	}
 
 	err := c.SetEndpointURL(mockAPI.URL)

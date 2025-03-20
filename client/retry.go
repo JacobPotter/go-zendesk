@@ -22,7 +22,7 @@ func WaitForRetry(ctx context.Context, retryWaitDuration time.Duration) {
 
 }
 
-func getRetryWaitTime(resp *http.Response) time.Duration {
+func GetRetryWaitTime(resp *http.Response) time.Duration {
 	retryWaitTime, err := strconv.ParseInt(resp.Header.Get("retry-after"), 10, 64)
 
 	if err != nil {

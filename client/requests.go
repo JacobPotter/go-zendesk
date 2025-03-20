@@ -31,13 +31,11 @@ func (c *BaseClient) Get(ctx context.Context, path string) ([]byte, error) {
 
 	if resp.StatusCode == http.StatusTooManyRequests {
 
-		if c.Retry.ClientRetry {
-			duration := getRetryWaitTime(resp)
+		if c.ClientRetry {
+			duration := GetRetryWaitTime(resp)
 			WaitForRetry(ctx, duration)
 			return c.Get(ctx, path)
 		} else {
-			duration := getRetryWaitTime(resp)
-			c.Retry.WaitTime = duration
 			return nil, NewError(body, resp)
 		}
 	}
@@ -74,13 +72,11 @@ func (c *BaseClient) Post(ctx context.Context, path string, data interface{}) ([
 	}
 
 	if resp.StatusCode == http.StatusTooManyRequests {
-		if c.Retry.ClientRetry {
-			duration := getRetryWaitTime(resp)
+		if c.ClientRetry {
+			duration := GetRetryWaitTime(resp)
 			WaitForRetry(ctx, duration)
 			return c.Post(ctx, path, data)
 		} else {
-			retry := getRetryWaitTime(resp)
-			c.Retry.WaitTime = retry
 			return nil, NewError(body, resp)
 		}
 	}
@@ -118,13 +114,11 @@ func (c *BaseClient) Put(ctx context.Context, path string, data interface{}) ([]
 	}
 
 	if resp.StatusCode == http.StatusTooManyRequests {
-		if c.Retry.ClientRetry {
-			duration := getRetryWaitTime(resp)
+		if c.ClientRetry {
+			duration := GetRetryWaitTime(resp)
 			WaitForRetry(ctx, duration)
 			return c.Put(ctx, path, data)
 		} else {
-			retry := getRetryWaitTime(resp)
-			c.Retry.WaitTime = retry
 			return nil, NewError(body, resp)
 		}
 	}
@@ -163,13 +157,11 @@ func (c *BaseClient) Patch(ctx context.Context, path string, data interface{}) (
 	}
 
 	if resp.StatusCode == http.StatusTooManyRequests {
-		if c.Retry.ClientRetry {
-			duration := getRetryWaitTime(resp)
+		if c.ClientRetry {
+			duration := GetRetryWaitTime(resp)
 			WaitForRetry(ctx, duration)
 			return c.Patch(ctx, path, data)
 		} else {
-			retry := getRetryWaitTime(resp)
-			c.Retry.WaitTime = retry
 			return nil, NewError(body, resp)
 		}
 	}
@@ -204,7 +196,7 @@ func (c *BaseClient) Delete(ctx context.Context, path string) error {
 	}
 
 	if resp.StatusCode == http.StatusTooManyRequests {
-		duration := getRetryWaitTime(resp)
+		duration := GetRetryWaitTime(resp)
 		WaitForRetry(ctx, duration)
 		return c.Delete(ctx, path)
 	}

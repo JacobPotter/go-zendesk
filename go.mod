@@ -13,3 +13,9 @@ require (
 	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+retract (
+	// Versions that were for testing knowledge share
+	v0.33.2
+	v0.33.1
+)

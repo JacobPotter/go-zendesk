@@ -22,7 +22,7 @@ func TestGetOrganizationFields(t *testing.T) {
 }
 
 func TestOrganizationField(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "organization_fields.json", http.StatusCreated)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "organization_fields.json", http.StatusCreated, nil, false)
 	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 

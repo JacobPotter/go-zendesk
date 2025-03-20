@@ -58,7 +58,7 @@ func TestWrite(t *testing.T) {
 }
 
 func TestWriteCancelledContext(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "ticket.json", 201)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "ticket.json", 201, nil, false)
 	defer mockAPI.Close()
 
 	c := NewTestClient(mockAPI)

@@ -24,7 +24,7 @@ func TestGetOrganizationMemberships(t *testing.T) {
 }
 
 func TestCreateOrganizationMembership(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "organization_membership.json", http.StatusCreated)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "organization_membership.json", http.StatusCreated, nil, false)
 	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
@@ -35,7 +35,7 @@ func TestCreateOrganizationMembership(t *testing.T) {
 }
 
 func TestSetDefaultOrganization(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "organization_membership.json", http.StatusOK)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "organization_membership.json", http.StatusOK, nil, false)
 	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 

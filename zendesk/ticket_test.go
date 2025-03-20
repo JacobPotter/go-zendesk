@@ -346,7 +346,7 @@ func TestGetMultipleTicket(t *testing.T) {
 }
 
 func TestCreateTicket(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "ticket.json", http.StatusCreated)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "ticket.json", http.StatusCreated, nil, false)
 	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
@@ -367,7 +367,7 @@ func TestCreateTicket(t *testing.T) {
 }
 
 func TestUpdateTicket(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "ticket.json", http.StatusOK)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "ticket.json", http.StatusOK, nil, false)
 	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 
@@ -383,7 +383,7 @@ func TestUpdateTicket(t *testing.T) {
 }
 
 func TestUpdateTicketFailure(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "ticket.json", http.StatusInternalServerError)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "ticket.json", http.StatusInternalServerError, nil, false)
 	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 

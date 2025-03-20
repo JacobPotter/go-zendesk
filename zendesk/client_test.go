@@ -145,7 +145,7 @@ func TestGetData(t *testing.T) {
 }
 
 func TestGetFailure(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodGet, "groups.json", http.StatusInternalServerError)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodGet, "groups.json", http.StatusInternalServerError, nil, false)
 	c := NewTestBaseClient(mockAPI)
 	defer mockAPI.Close()
 
@@ -161,7 +161,7 @@ func TestGetFailure(t *testing.T) {
 }
 
 func TestGetFailureCanReadErrorBody(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodGet, "groups.json", http.StatusInternalServerError)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodGet, "groups.json", http.StatusInternalServerError, nil, false)
 	c := NewTestBaseClient(mockAPI)
 	defer mockAPI.Close()
 
@@ -188,7 +188,7 @@ func TestGetFailureCanReadErrorBody(t *testing.T) {
 }
 
 func TestPost(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "groups.json", http.StatusCreated)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "groups.json", http.StatusCreated, nil, false)
 	c := NewTestBaseClient(mockAPI)
 	defer mockAPI.Close()
 
@@ -203,7 +203,7 @@ func TestPost(t *testing.T) {
 }
 
 func TestPostFailure(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "groups.json", http.StatusInternalServerError)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "groups.json", http.StatusInternalServerError, nil, false)
 	c := NewTestBaseClient(mockAPI)
 	defer mockAPI.Close()
 
@@ -219,7 +219,7 @@ func TestPostFailure(t *testing.T) {
 }
 
 func TestPut(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "groups.json", http.StatusOK)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "groups.json", http.StatusOK, nil, false)
 	c := NewTestBaseClient(mockAPI)
 	defer mockAPI.Close()
 
@@ -234,7 +234,7 @@ func TestPut(t *testing.T) {
 }
 
 func TestPutFailure(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "groups.json", http.StatusInternalServerError)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPut, "groups.json", http.StatusInternalServerError, nil, false)
 	c := NewTestBaseClient(mockAPI)
 	defer mockAPI.Close()
 

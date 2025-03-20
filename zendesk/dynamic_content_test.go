@@ -30,7 +30,7 @@ func TestGetDynamicContentItems(t *testing.T) {
 }
 
 func TestCreateDynamicContentItem(t *testing.T) {
-	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "dynamic_content/items.json", http.StatusCreated)
+	mockAPI := testhelper.NewMockAPIWithStatus(t, http.MethodPost, "dynamic_content/items.json", http.StatusCreated, nil, false)
 	c := NewTestClient(mockAPI)
 	defer mockAPI.Close()
 

@@ -10,6 +10,7 @@ type API interface {
 	client.BaseAPI
 	ConversationsAPI
 	MessagesAPI
+	UsersAPI
 }
 
 type Client struct {

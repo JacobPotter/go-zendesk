@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
-	"time"
 )
 
 const (
@@ -21,21 +20,16 @@ var defaultHeaders = map[string]string{
 
 var subdomainRegexp = regexp.MustCompile("^[a-z0-9][a-z0-9-]+[a-z0-9]$")
 
-type RetryMeta struct {
-	ClientRetry bool
-	WaitTime    time.Duration
-}
-
 type (
 	// BaseClient of Zendesk API
 	BaseClient struct {
-		BaseURL    *url.URL
-		HttpClient *http.Client
-		Credential credentialtypes.Credential
-		Headers    map[string]string
-		sunco      bool
-		suncoAppId string
-		Retry      RetryMeta
+		BaseURL     *url.URL
+		HttpClient  *http.Client
+		Credential  credentialtypes.Credential
+		Headers     map[string]string
+		sunco       bool
+		suncoAppId  string
+		ClientRetry bool
 	}
 
 	// BaseAPI encapsulates base methods for zendesk client
@@ -73,6 +67,10 @@ type (
 		BeforeCursor string `json:"before_cursor,omitempty"`
 	}
 )
+
+func (c *BaseClient) SetClientRetry(clientRetry bool) {
+	c.ClientRetry = clientRetry
+}
 
 // NewBaseClient creates new Zendesk API client
 func NewBaseClient(httpClient *http.Client, sunco bool) (*BaseClient, error) {

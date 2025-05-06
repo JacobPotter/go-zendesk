@@ -3,7 +3,7 @@ package zendesk
 import (
 	"errors"
 	"github.com/JacobPotter/go-zendesk/client"
-	"github.com/JacobPotter/go-zendesk/internal/testhelper"
+	"github.com/JacobPotter/go-zendesk/testhelper"
 	"net/http"
 	"net/http/httptest"
 	"testing"

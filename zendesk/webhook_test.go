@@ -2,7 +2,7 @@ package zendesk
 
 import (
 	"context"
-	"github.com/JacobPotter/go-zendesk/internal/testhelper"
+	"github.com/JacobPotter/go-zendesk/testhelper"
 	"net/http"
 	"net/http/httptest"
 	"testing"

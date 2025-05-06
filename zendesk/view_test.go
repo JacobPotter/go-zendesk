@@ -2,7 +2,7 @@ package zendesk
 
 import (
 	"encoding/json"
-	"github.com/JacobPotter/go-zendesk/internal/testhelper"
+	"github.com/JacobPotter/go-zendesk/testhelper"
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"

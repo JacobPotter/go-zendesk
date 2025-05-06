@@ -3,7 +3,7 @@ package client
 import (
 	"context"
 	"fmt"
-	"github.com/JacobPotter/go-zendesk/internal/testhelper"
+	"github.com/JacobPotter/go-zendesk/testhelper"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"path/filepath"

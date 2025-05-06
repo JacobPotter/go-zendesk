@@ -5,7 +5,7 @@ import (
 	"fmt"
 	client2 "github.com/JacobPotter/go-zendesk/client"
 	"github.com/JacobPotter/go-zendesk/credentialtypes"
-	"github.com/JacobPotter/go-zendesk/internal/testhelper"
+	"github.com/JacobPotter/go-zendesk/testhelper"
 	"io"
 	"net/http"
 	"net/http/httptest"

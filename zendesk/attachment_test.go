@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/sha1"
-	"github.com/JacobPotter/go-zendesk/internal/testhelper"
+	"github.com/JacobPotter/go-zendesk/testhelper"
 	"io"
 	"net/http"
 	"net/http/httptest"

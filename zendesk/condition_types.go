@@ -631,7 +631,10 @@ var ValidConditionOperatorValues = ConditionsValueValidator{
 	ConditionFieldInBusinessHours: {
 		ValidationRegex: regexp.MustCompile(`(true|false)`),
 		ResourceTypes:   triggerConditionTypes,
-		ValidOperators:  []Operator{EmptyOperator},
+		ValidOperators: []Operator{
+			Is,
+			IsNot,
+		},
 	},
 	ConditionFieldRequesterTwitterFollowersCount: {
 		ValidationRegex: regexp.MustCompile(`^\d+$`),

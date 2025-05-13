@@ -37,10 +37,9 @@ jobs:
           bump_each_commit: true
           bump_each_commit_patch_pattern: "fix:"
           enable_prerelease_mode: true
-          search_commit_body: true
+          search_commit_body: false
           branch: master
           tag_prefix: "v"
-          debug: true
       - name: Create Release
         if: ${{ steps.semantic.outputs.version_tag != steps.tag.outputs.tag }}
         uses: actions/create-release@latest

@@ -159,6 +159,7 @@ const (
 	ConditionFieldSlaNextBreachAt ConditionField = "sla_next_breach_at"
 	ConditionFieldRole            ConditionField = "role"
 	ConditionFieldWithinSchedule  ConditionField = "within_schedule"
+	ConditionFieldScheduleId      ConditionField = "schedule_id"
 )
 
 type ConditionFields []ConditionField
@@ -884,6 +885,14 @@ var ValidConditionOperatorValues = ConditionsValueValidator{
 		},
 	},
 	ConditionFieldWithinSchedule: {
+		ValidationRegex: regexp.MustCompile(`^\d+$`),
+		ResourceTypes:   triggerConditionTypes,
+		ValidOperators: []Operator{
+			Is,
+			IsNot,
+		},
+	},
+	ConditionFieldScheduleId: {
 		ValidationRegex: regexp.MustCompile(`^\d+$`),
 		ResourceTypes:   triggerConditionTypes,
 		ValidOperators: []Operator{

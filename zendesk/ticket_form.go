@@ -52,7 +52,7 @@ type ConditionalTicketField struct {
 type ChildField struct {
 	Id                 int64              `json:"id"`
 	IsRequired         bool               `json:"is_required"`
-	RequiredOnStatuses RequiredOnStatuses `json:"required_on_statuses"`
+	RequiredOnStatuses RequiredOnStatuses `json:"required_on_statuses,omitempty"`
 }
 
 // RequiredOnStatuses is an object that defines how status requires a child field on a form.
@@ -60,7 +60,7 @@ type ChildField struct {
 // Statuses will enclose the statuses the field is required when Type is SOME_STATUSES.
 // Otherwise, it is empty
 type RequiredOnStatuses struct {
-	Statuses []string        `json:"statuses"`
+	Statuses []string        `json:"statuses,omitempty"`
 	Type     RequirementType `json:"type"`
 }
 
